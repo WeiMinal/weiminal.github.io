@@ -142,6 +142,8 @@ img {
 /*==================== REUSABLE CSS CLASSES ====================*/
 .section {
   padding: 2rem 0 4rem;
+  height: 1080px;
+/*设置还不完美，没找到适合的height填满，插眼*/
 }
 
 .section__title {
@@ -389,7 +391,7 @@ img {
   background-color: var(--first-color);
   color: #FFFFFF;
   padding: .7rem;
-  border-radius: 1rem;
+  border-radius: 18rem;
   font-weight: var(--font-medium);
   text-shadow: rgb(0 0 0 / 90%) 0 1px 8px;
   -o-box-shadow: hsla(0, 0%, 100%, .25) 0 1px 0,
@@ -398,12 +400,12 @@ img {
             inset hsla(0, 0%, 100%, .03) 0 20px 0,
             inset rgba(0, 0, 0, .15) 0 -20px 20px,             
             inset hsla(0, 0%, 100%, .05) 0 20px 20px;
-  box-shadow: 0 1px 0 hsl(0deg 0% 100% / 25%), 
+  /*box-shadow: 0 1px 0 hsl(0deg 0% 100% / 25%), 
             inset 0 1px 0 hsl(0deg 0% 100% / 25%), 
             inset 0 0 0 rgb(0 0 0 / 25%),
             inset 0 20px 0 hsl(0deg 0% 100% / 3%),
             inset 0 -20px 20px rgb(0 0 0 / 15%), 
-            inset 0 20px 20px hsl(0deg 0% 100% / 5%);
+            inset 0 20px 20px hsl(0deg 0% 100% / 5%);*/
   -webkit-transition: all .1s linear;
             transition: all .1s linear;
 
@@ -744,11 +746,11 @@ img {
 }
 
 .swiper-button-prev {
-  left: -.5rem;
+  left: -.2rem;
 }
 
 .swiper-button-next {
-  right: -.5rem;
+  right: -.2rem;
 }
 
 .swiper-container-horizontal > .swiper-pagination-bullets {
@@ -883,13 +885,13 @@ img {
 /*========== SCROLL UP ==========*/
 .scrollup {
   position: fixed;
-  right: 1rem;
+  right: 2rem;
   bottom: -20%;
   background-color: var(--first-color);
   opacity: .9;
-  padding: .5rem;
-  width: 40px;
-  height: 50px;
+  padding: .8rem;
+  width: 50px;
+  height: 60px;
   border-radius: 6rem;
   box-shadow: 0 4px 24px hsla(222, 68%, 12%, .1);
   z-index: var(--z-tooltip);
@@ -898,7 +900,7 @@ img {
 
 .scrollup:hover {
   color: var(--first-color-alt);
-    transform: translateY(-0.3rem);
+    transform: translateY(-0.5rem);
 }
 
 .scrollup__icon {
@@ -930,7 +932,7 @@ img {
 
 
 /*==================== MEDIA QUERIES ====================*/
-/* For small devices */
+/*小屏幕显示*/
 @media screen and (max-width: 350px) {
   .container {
       margin-left: var(--mb-1);
@@ -991,7 +993,7 @@ img {
   }
 }
 
-/* For medium devices */
+/*常规屏幕显示 */
 @media screen and (min-width: 568px) {
   .home__content {
       grid-template-columns: max-content 1fr 1fr;
@@ -1082,7 +1084,7 @@ img {
       }
 
       .home__content {
-          padding-top: 5.5rem;
+          padding-top: 10rem;
           column-gap: 2rem;
       }
       .home__blob {
@@ -1177,7 +1179,7 @@ img {
   }
 }
 
-/* For large devices */
+/*大屏幕显示*/
 @media screen and (min-width: 1024px) {
   .header,
   .main,
@@ -1200,10 +1202,10 @@ img {
       font-size: 3.5rem;
   }
   .swiper-button-prev {
-      left: 3.5rem;
+      left: -6rem;
   }
   .swiper-button-next {
-      right: 3.5rem;
+      right: -6rem;
   }
   .swiper-container-horizontal > .swiper-pagination-bullets {
       bottom: -4.5rem
