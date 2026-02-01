@@ -1,703 +1,1246 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <!-- 基础元数据设置 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-    <!--==================== REMIXICONS ====================-->
-    <link href="https://cdn.bootcdn.net/ajax/libs/remixicon/3.5.0/remixicon.css" rel="stylesheet"/>
-    <!--==================== UNICONS 图标====================-->
-    <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css" rel="stylesheet"/>
-    <!--==================== SWIPER CSS ====================-->
-    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css" />
-    <!--==================== CSS ====================-->
-    <link rel="stylesheet" href="assets/css/styles.css" />
-    <!--==================== FONTAWESOME 图标====================-->
-    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.2/css/all.css" rel="stylesheet">
+    <title>WeiMinal's Pages 2.0.0</title>
+    
+    <!-- ============================================
+         CDN依赖库引入
+         ============================================ -->
+    <!-- Vue 3 - 核心框架 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Tailwind CSS - 样式系统 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP - 动画引擎 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Lucide Icons - 图标库 -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- ============================================
+         Tailwind CSS 自定义配置
+         ============================================ -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // 主色调配置
+                        primary: '#6e57e0',
+                        'primary-light': '#8b7af0',
+                        'primary-dark': '#5a47c0',
+                        // 文本色
+                        'text-primary': '#242329',
+                        'text-secondary': '#6b7280',
+                        // 背景色
+                        'bg-light': '#fafafa',
+                        'bg-dark': '#0f0f12',
+                        'card-dark': '#1a1a1f',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    },
+                    animation: {
+                        'marquee': 'marquee 30s linear infinite',
+                        'marquee-reverse': 'marquee-reverse 30s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        'marquee-reverse': {
+                            '0%': { transform: 'translateX(-50%)' },
+                            '100%': { transform: 'translateX(0%)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <!-- ============================================
+         全局样式定义
+         ============================================ -->
+    <style>
+        /* ===== 字体引入 ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        /* ===== 基础样式重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* ===== 液态玻璃效果 ===== */
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark .liquid-glass {
+            background: rgba(26, 26, 31, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        /* ===== 噪点纹理 ===== */
+        .noise-texture {
+            position: relative;
+        }
+        
+        .noise-texture::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* ===== 磁吸光晕效果 - 光晕散开 ===== */
+        .magnetic-glow {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .magnetic-glow::before {
+            content: '';
+            position: absolute;
+            inset: -15px;
+            border-radius: 50%;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(110, 87, 224, 0.5) 0%, 
+                rgba(110, 87, 224, 0.2) 30%,
+                transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(35px);
+        }
+        
+        .magnetic-glow:hover::before {
+            opacity: 1;
+        }
+        
+        /* 悬停时字体/图标发光 */
+        .magnetic-glow:hover {
+            color: #6e57e0;
+            text-shadow: 0 0 20px rgba(110, 87, 224, 0.6), 0 0 40px rgba(110, 87, 224, 0.3);
+        }
+        
+        .dark .magnetic-glow:hover {
+            color: #8b7af0;
+            text-shadow: 0 0 20px rgba(139, 122, 240, 0.6), 0 0 40px rgba(139, 122, 240, 0.3);
+        }
+        
+        /* 图标发光效果 */
+        .magnetic-glow:hover svg {
+            filter: drop-shadow(0 0 8px rgba(110, 87, 224, 0.8));
+        }
+        
+        /* ===== 联系我按钮 - 悬停展开效果（带层次感修饰） ===== */
+        .contact-btn-wrapper {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .contact-btn-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 32px;
+            background: linear-gradient(135deg, rgba(110, 87, 224, 0.3) 0%, rgba(139, 122, 240, 0.2) 50%, rgba(110, 87, 224, 0.1) 100%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .contact-btn-wrapper:hover::before {
+            opacity: 1;
+        }
+
+        .contact-btn-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 36px;
+            background: linear-gradient(135deg, rgba(110, 87, 224, 0.15) 0%, rgba(139, 122, 240, 0.1) 50%, transparent 100%);
+            z-index: -2;
+            opacity: 0;
+            transition: opacity 0.4s ease 0.1s;
+        }
+
+        .contact-btn-wrapper:hover::after {
+            opacity: 1;
+        }
+
+        .contact-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, #6e57e0 0%, #8b7af0 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            border: none; /* 【修复】重置按钮默认边框，避免占位 */
+            padding: 0;   /* 【修复】强制重置内边距，无多余间距 */
+        }
+
+        .contact-btn:hover {
+            width: 160px;
+            padding: 0 24px;
+            box-shadow: 0 10px 30px rgba(110, 87, 224, 0.4);
+        }
+
+        .contact-btn .btn-icon {
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 【修复】核心：强制图标容器无默认间距，适配所有图标 */
+            margin: 0;
+            padding: 0;
+            /* 【删除】font-size: 20px; （对Lucide图标无效，干扰对齐） */
+        }
 
 
-    <title>WeiMinal's Pages 1.0.1</title>
-  </head>
-  <body>
-    <!--==================== HEADER ====================-->
-    <header class="header scroll-header" id="header">
-      <nav class="nav container">
-        <a href="#" class="nav__logo">WEIMINAL</a>
+        .contact-btn:hover .btn-icon {
+            transform: scale(0.9);
+        }
 
-        <div class="nav__menu" id="nav-menu">
-          <ul class="nav__list grid">
-            <li class="nav__item">
-              <a href="#home" class="nav__link">
-                <i class="uil uil-estate nav__icon"></i>
-                <p i18n="home">主页</p>
-              </a>
-            </li>
-            <li class="nav__item">
-              <a href="#about" class="nav__link">
-                <i class="uil uil-user nav__icon"></i>
-                <p i18n="about">关于</p>
-              </a>
-            </li>
-            <li class="nav__item">
-              <a href="#skills" class="nav__link">
-                <i class="uil uil-lightbulb-alt nav__icon"></i>
-                <p i18n="skills">技能</p>
-              </a>
-            </li>
-            <li class="nav__item">
-              <a href="#portfolio" class="nav__link">
-                <i class="uil uil-image nav__icon"></i>
-                <p i18n="portfolio">作品集</p>
-              </a>
-            </li>
-            <li class="nav__item">
-              <a href="#contact" class="nav__link">
-                <i class="uil uil-comment-alt-lines nav__icon"></i>
-                <p i18n="contact">联系方式</p>
-              </a>
-            </li>
-            <li class="nav__item">
-              <div class="nav__link" id="translate" value="cn">
-                <i class="uil uil-english-to-chinese nav__icon_tran"></i>
-                <a class="=nav__link" id="nav__translate">中/En</a>
-              </div>
-            </li>
-          </ul>
-          <i class="uil uil-times nav__close" id="nav-close"></i>
-        </div>
+        .contact-btn .btn-text {
+            opacity: 0;
+            transform: translateX(-10px);
+            white-space: nowrap;
+            /* 【20260131修改点：删除】margin-left: 8px; （核心！彻底消除隐性占位，不挤图标） */
+            font-weight: 500;
+            transition: all 0.3s ease 0.1s;
+            /* 【修复】关键：初始状态让文本完全不占位，彻底不挤图标 */
+            width: 0;
+            overflow: hidden;
+        }
 
-        <div class="nav__btns">
-          <i class="uil uil-moon change-theme" id="theme-button"></i>
-          <div class="nav__toggle" id="nav-toggle">
-            <i class="uil uil-bars"></i>
-          </div>
-        </div>
-      </nav>
-    </header>
-
-    <!--==================== MAIN ====================-->
-    <main class="main">
-      <!--==================== HOME ====================-->
-      <section class="home section" id="home">
-        <div class="home__container container grid">
-          <div class="home__content grid">
-            <div class="home__social">
-              <a
-                href="https://github.com/WeiMinal/weiminal.github.io/blob/main/weiminal-wechat.jpg?raw=true"
-                target="_blank"
-                class="home__social-icon">
-                <i class="fa-brands fa-weixin"></i>
-              </a>
-              <a
-                href="https://space.bilibili.com/35606358"
-                target="_blank"
-                class="home__social-icon">
-                <i class="fa-brands fa-bilibili"></i>
-              </a>
-              <a
-                href="https://github.com/weiminal"
-                target="_blank"
-                class="home__social-icon">
-                <i class="fa-brands fa-github"></i>             
-                  </a>
-              
-            </div>
-
-            <div class="home__img">
-              <svg
-                class="home__blob"
-                viewBox="0 0 200 187"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink">
-                <mask id="mask0" mask-type="alpha">
-                  <path
-                    d="M190.312 36.4879C206.582 62.1187 201.309 102.826 182.328 134.186C163.346 165.547 
-                                130.807 187.559 100.226 186.353C69.6454 185.297 41.0228 161.023 21.7403 129.362C2.45775 
-                                97.8511 -7.48481 59.1033 6.67581 34.5279C20.9871 10.1032 59.7028 -0.149132 97.9666 
-                                0.00163737C136.23 0.303176 174.193 10.857 190.312 36.4879Z"
-                  />
-                </mask>
-                <g mask="url(#mask0)">
-                  <path
-                    d="M190.312 36.4879C206.582 62.1187 201.309 102.826 182.328 134.186C163.346 
-                                165.547 130.807 187.559 100.226 186.353C69.6454 185.297 41.0228 161.023 21.7403 
-                                129.362C2.45775 97.8511 -7.48481 59.1033 6.67581 34.5279C20.9871 10.1032 59.7028 
-                                -0.149132 97.9666 0.00163737C136.23 0.303176 174.193 10.857 190.312 36.4879Z"
-                  />
-                  <image
-                    class="home__blob-img"
-                    xlink:href="assets/img/weiminal.png"/>
-                </g>
-              </svg>
-            </div>
-
-            <div class="home__data">
-              <h1 class="home__title" i18n="home__title">
-                你好，我叫<br>李伟民
-              </h1>
-              <h3 class="home__subtitle" i18n="home__subtitle">
-                学者 / 开发者 / 艺术者
-              </h3>
-              <p class="home__description" i18n="home__description">
-                做不了艺术家，但要做个很艺术的人。
-              </p>
-              <a href="#contact" class="button button--flex button--small act__button">
-              
-                <i class="fa-regular fa-comment"></i>
-                <!-- <span i18n="home__contact">与我联系</span> -->
-              </a>
-            </div>
-          </div>
-          <div class="home__scroll">
-            <a href="#about" class="home__scroll-button button--flex">
-              <i class="uil uil-arrow-down home__scroll-arrow"></i>
-              <span class="home__scroll-name" i18n="home__scroll-name">往下滑</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!--==================== ABOUT ====================-->
-      <section class="about section" id="about">
-        <h2 class="section__title" i18n="about__title">关于</h2>
-        <span class="section__subtitle" i18n="about__subtitle">自我介绍</span>
-        <div class="about__container container grid">
-          <img src="assets/img/about.png" alt="" class="about__img" />
-
-          <div class="about__data">
-            <p class="about__description" i18n="about__description">
-              Bilibili LV6硬核玩家
-            </p>
-
-            <div class="about__info">
-              <div>
-                <span class="about__info-title">0</span>
-                <span class="about__info-name" i18n="about__info-name1">年工作<br/>经验</span>
-              </div>
-
-              <div>
-                <span class="about__info-title">0</span>
-                <span class="about__info-name" i18n="about__info-name2">个完整<br/>项目</span>
-              </div>
-
-              <div>
-                <span class="about__info-title">0</span>
-                <span class="about__info-name" i18n="about__info-name3">家公司<br/>任职</span>
-              </div>
-            </div>
-<!-- WeiMinal暂时不需要你看简历 -->
-<!--             <div class="about__buttons"> -->
-<!--               <a -->
-<!--                 download="" -->
-<!--                 href="assets/pdf/简历.pdf" -->
-<!--                 class="button button--flex button--small act__button" -->
-<!--               > -->
-<!--                 <i class="uil uil-file-download-alt button__icon"></i> -->
-<!--                 <span i18n="download">查看简历</span> -->
-<!--                  -->
-<!--               </a> -->
-<!--             </div> -->
-          </div>
-        </div>
-      </section>
-
-      <!--==================== SKILLS ====================-->
-      <section class="skills section" id="skills">
-        <h2 class="section__title" i18n="skills__title">技能</h2>
-        <span class="section__subtitle" i18n="skills__subtitle">技能水平</span>
-
-        <div class="skills__container container grid">
-          <div>
-            <!--==================== SKILLS 1 ====================-->
-            <div class="skills__content skills__open">
-              <div class="skills__header">
-                <i class="uil uil-browser skills__icon"></i>
-
-                <div>
-                  <h1 class="skills__title" i18n="skills__title1">
-                    前端开发
-                  </h1>
-                  <span class="skills__subtitle" i18n="skills__years1">5年学习经验</span>
-                </div>
-
-                <i class="uil uil-angle-down skills__arrow"></i>
-              </div>
-
-              <div class="skills__list grid">
-                <div class="skills__data">
-                  <div class="skills__titles">
-                    <h3 class="skills__name">Android</h3>
-                    <span class="skills__number">70%</span>
-                  </div>
-                  <div class="skills__bar">
-                    <div class="skills__percentage skills__70"></div>
-                  </div>
-                </div>
-
-                <div class="skills__data">
-                  <div class="skills__titles">
-                    <h3 class="skills__name">HTML</h3>
-                    <span class="skills__number">60%</span>
-                  </div>
-                  <div class="skills__bar">
-                    <div class="skills__percentage skills__60"></div>
-                  </div>
+        .contact-btn:hover .btn-text {
+            opacity: 1;
+            transform: translateX(0);
+            width: auto; /* 【修复】hover时恢复文本宽度，正常显示 */
+        }
+        
+        /* ===== 时间轴样式 - 统一左时间右内容 ===== */
+        .timeline-item {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .timeline-container:hover .timeline-item {
+            opacity: 0.4;
+            filter: blur(1px);
+        }
+        
+        .timeline-container:hover .timeline-item:hover {
+            opacity: 1;
+            filter: blur(0);
+        }
+        
+        /* ===== 跑马灯样式 ===== */
+        .marquee-track {
+            display: flex;
+            width: fit-content;
+        }
+        
+        .marquee-content {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding-right: 2rem;
+        }
+        
+        /* ===== 滚动条美化 ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(110, 87, 224, 0.3);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(110, 87, 224, 0.5);
+        }
+        
+        /* ===== 渐变背景 ===== */
+        .gradient-bg {
+            background: linear-gradient(135deg, 
+                rgba(110, 87, 224, 0.08) 0%, 
+                rgba(139, 122, 240, 0.05) 50%, 
+                rgba(110, 87, 224, 0.03) 100%);
+        }
+        
+        .dark .gradient-bg {
+            background: linear-gradient(135deg, 
+                rgba(110, 87, 224, 0.05) 0%, 
+                rgba(90, 71, 192, 0.03) 50%, 
+                transparent 100%);
+        }
+        
+        /* ===== 玻璃卡片 ===== */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+        
+        .dark .glass-card {
+            background: rgba(26, 26, 31, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* ===== 导航栏玻璃效果 ===== */
+        .nav-glass {
+            background: rgba(250, 250, 250, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark .nav-glass {
+            background: rgba(15, 15, 18, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* ===== 选中文字高亮 ===== */
+        ::selection {
+            background: rgba(110, 87, 224, 0.3);
+            color: inherit;
+        }
+        
+        /* ===== 淡入动画初始状态 ===== */
+        .reveal-element {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        /* ===== 隐藏标语 ===== */
+        .tagline-hidden {
+            display: none;
+        }
+        
+        /* ===== 自定义图标样式 ===== */
+        .weibo-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+        
+        /* ===== 页脚样式 ===== */
+        .footer-bottom {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .dark .footer-bottom {
+            background: rgba(255, 255, 255, 0.03);
+        }
+    </style>
+</head>
+<body class="bg-bg-light dark:bg-bg-dark text-text-primary dark:text-white transition-colors duration-500">
+    
+    <!-- ============================================
+         Vue 3 应用根节点
+         ============================================ -->
+    <div id="app">
+        
+        <!-- ============================================
+             导航栏
+             ============================================ -->
+        <nav class="fixed top-0 left-0 right-0 z-50 nav-glass transition-all duration-500" 
+             :class="{ 'py-4': !isScrolled, 'py-2': isScrolled }">
+            <div class="w-full px-6 lg:px-12 flex items-center justify-between">
+                <!-- Logo -->
+                <a href="#home" class="text-xl font-bold tracking-tight magnetic-glow px-3 py-2"
+                   @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                    <span class="text-primary">W</span>EIMINAL
+                </a>
+                
+                <!-- 导航链接 -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a v-for="item in navItems" :key="item.id" 
+                       :href="item.href"
+                       class="text-sm font-medium text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors magnetic-glow px-3 py-2"
+                       @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                        {{ currentLang === 'zh' ? item.labelZh : item.labelEn }}
+                    </a>
                 </div>
                 
-                <div class="skills__data">
-                  <div class="skills__titles">
-                    <h3 class="skills__name">CSS</h3>
-                    <span class="skills__number">50%</span>
-                  </div>
-                  <div class="skills__bar">
-                    <div class="skills__percentage skills__50"></div>
-                  </div>
+                <!-- 右侧控制按钮 -->
+                <div class="flex items-center gap-3">
+                    <!-- 语言切换 -->
+                    <button @click="toggleLang" 
+                            class="w-10 h-10 flex items-center justify-center text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-all magnetic-glow"
+                            @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition"
+                            :title="currentLang === 'zh' ? 'Switch to English' : '切换到中文'">
+                        <i data-lucide="languages" class="w-5 h-5"></i>
+                    </button>
+                    
+                    <!-- 深色模式切换 -->
+                    <button @click="toggleDarkMode" 
+                            class="w-10 h-10 flex items-center justify-center text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-all magnetic-glow"
+                            @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                        <i v-if="isDarkMode" data-lucide="sun" class="w-5 h-5"></i>
+                        <i v-else data-lucide="moon" class="w-5 h-5"></i>
+                    </button>
+                    
+                    <!-- 移动端菜单按钮 -->
+                    <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
+                            class="md:hidden w-10 h-10 flex items-center justify-center magnetic-glow"
+                            @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                        <i v-if="!isMobileMenuOpen" data-lucide="menu" class="w-5 h-5"></i>
+                        <i v-else data-lucide="x" class="w-5 h-5"></i>
+                    </button>
                 </div>
-
-                <div class="skills__data">
-                  <div class="skills__titles">
-                    <h3 class="skills__name">JavaScript</h3>
-                    <span class="skills__number">20%</span>
-                  </div>
-                  <div class="skills__bar">
-                    <div class="skills__percentage skills__20"></div>
-                  </div>
-                </div>
-
-                
-              </div>
             </div>
-
-            <!--==================== SKILLS 2 ====================-->
-            <div class="skills__content skills__close">
-              <div class="skills__header">
-                <i class="uil uil-database skills__icon"></i>
-
-                <div>
-                  <h1 class="skills__title" i18n="skills__title2">
-                    后端开发
-                  </h1>
-                  <span class="skills__subtitle" i18n="skills__years2">5年学习经验</span>
-                </div>
-
-                <i class="uil uil-angle-down skills__arrow"></i>
-              </div>
-
-              <div class="skills__list grid">
-                <div class="skills__data">
-                  <div class="skills__titles">
-                    <h3 class="skills__name">Java</h3>
-                    <span class="skills__number">70%</span>
-                  </div>
-                  <div class="skills__bar">
-                    <div class="skills__percentage skills__70"></div>
-                  </div>
-                </div>
-
-                <div class="skills__data">
-                  <div class="skills__titles">
-                    <h3 class="skills__name">C++</h3>
-                    <span class="skills__number">50%</span>
-                  </div>
-                  <div class="skills__bar">
-                    <div class="skills__percentage skills__50"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!--==================== SKILLS 3 ====================-->
-            <div class="skills__content skills__close">
-              <div class="skills__header">
-                <i class="uil uil-video skills__icon"></i>
-
-                <div>
-                  <h1 class="skills__title" i18n="skills__title3">
-                    视频创作
-                  </h1>
-                  <span class="skills__subtitle" i18n="skills__years3"
-                    >4年创作经验</span
-                  >
-                </div>
-
-                <i class="uil uil-angle-down skills__arrow"></i>
-              </div>
-
-              <div class="skills__list grid">
-                <div class="skills__data">
-                  <div class="skills__titles">
-                    <h3 class="skills__name">Premiere Pro</h3>
-                    <span class="skills__number">80%</span>
-                  </div>
-                  <div class="skills__bar">
-                    <div class="skills__percentage skills__80"></div>
-                  </div>
-                </div>
-
-                <div class="skills__data">
-                  <div class="skills__titles">
-                    <h3 class="skills__name" i18n="skill__jianying">剪映</h3>
-                    <span class="skills__number">50%</span>
-                  </div>
-                  <div class="skills__bar">
-                    <div class="skills__percentage skills__50"></div>
-                  </div>
-                </div>
-
-                <div class="skills__data">
-                  <div class="skills__titles">
-                    <h3 class="skills__name">After Effects</h3>
-                    <span class="skills__number">30%</span>
-                  </div>
-                  <div class="skills__bar">
-                    <div class="skills__percentage skills__30"></div>
-                  </div>
-                </div>
-
-                <div class="skills__data">
-                  <div class="skills__titles">
-                    <h3 class="skills__name">Final Cut Pro</h3>
-                    <span class="skills__number">30%</span>
-                  </div>
-                  <div class="skills__bar">
-                    <div class="skills__percentage skills__30"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!--==================== QUALIFICATION ====================-->
-      <section class="qualification section">
-        <h2 class="section__title" i18n="qualification__title">
-          资历
-        </h2>
-        <span class="section__subtitle" i18n="qualification__subtitle"
-          >个人履历</span>
-        <div class="qualification__container container">
-          <div class="qualification__tabs">
-            <div
-              class="qualification__button button--flex qualification__active"
-              data-target="#education">
-              <i class="fa-solid fa-user-graduate"></i>
-              <span i18n="education" style="padding-left: 5px;">教育</span>
-            </div>
-
-            <div class="qualification__button button--flex" data-target="#work">
-              <i class="fa-solid fa-laptop-code"></i>
-              <span i18n="work" style="padding-left: 5px;">工作</span>
-            </div>
-          </div>
-          <div class="qualification__sections">
-            <!--==================== QUALIFICATION CONTENT 1 ====================-->
-            <div
-              class="qualification__content qualification__active"
-              data-content
-              id="education">
-              <!--==================== QUALIFICATION 1 ====================-->
-              <div class="qualification__data">
-                <div>
-                  <h3 class="qualification__title" i18n="qualification1__title">软件工程</h3>
-                  <span
-                    class="qualification__subtitle" i18n="qualification1__subtitle">某不知名大学全日制本科</span>
-                  <div class="qualification__calendar">
-                    <i class="fa-regular fa-calendar-days"></i>
-                    2021 - 2023
-                  </div>
-                </div>
-
-                <div>
-                  <span class="qualification__rounder"></span>
-                  <span class="qualification__line"></span>
-                </div>
-              </div>
-              <!--==================== QUALIFICATION 2 ====================-->
-              <div class="qualification__data">
-                <div></div>
-                <div>
-                  <span class="qualification__rounder"></span>
-                  <span class="qualification__line"></span>
-                </div>
-
-                <div>
-                  <h3 class="qualification__title" i18n="qualification2__title">软件技术</h3>
-                  <span
-                    class="qualification__subtitle" i18n="qualification2__subtitle">某不知名大学</span>
-                  <div class="qualification__calendar">
-                    <i class="fa-regular fa-calendar-days"></i>
-                    2018 - 2021
-                  </div>
-                </div>
-              </div>
-              <!--==================== QUALIFICATION 3 ====================-->
-              <div class="qualification__data">
-                <div>
-                  <h3 class="qualification__title" i18n="qualification3__title">理科</h3>
-                  <span 
-                    class="qualification__subtitle" i18n="qualification3__subtitle">中学生</span>
-                  <div class="qualification__calendar">
-                    <i class="fa-regular fa-calendar-days"></i>
-                    2012 - 2018
-                  </div>
-                </div>
-
-                <div>
-                  <span class="qualification__rounder"></span>
-                  <!-- <span class="qualification__line"></span> -->
-                </div>
-              </div>
-            </div>
-            <!--==================== QUALIFICATION CONTENT 2 ====================-->
-            <div class="qualification__content" data-content id="work">
-              <!--==================== QUALIFICATION 1 ====================-->
-              <div class="qualification__data">
-                <div></div>
-                <div>
-                  <span class="qualification__rounder"></span>
-                  <!-- <span class="qualification__line"></span> -->
-                </div>
-                <div>
-                  <h3 class="qualification__title" i18n="qualification4__title">即将更新</h3>
-                  <span
-                    class="qualification__subtitle" i18n="qualification4__subtitle"></span>
-                  <!-- WeiMinal hasn't worked formally -->
-                  <!-- <div class="qualification__calendar">
-                    <i class="fa-regular fa-calendar-days"></i>
-                    null
-                  </div> -->
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!--==================== PORTFOLIO ====================-->
-      <section class="portfolio section" id="portfolio">
-        <h2 class="section__title" i18n="portfolio__title">作品集</h2>
-        <span class="section__subtitle" i18n="portfolio__subtitle">近期作品</span>
-
-        <div class="portfolio__container container swiper-container">
-          <div class="swiper-wrapper">
-          <!--==================== PORTFOLIO 1 ====================-->
-
-          <div class="portfolio__content grid swiper-slide">
-            <!--               <img -->
-<!--               <img -->
-<!--                 src="assets/img/portfolio1.jpg" -->
-<!--                 alt="" -->
-<!--                 class="portfolio__img" -->
-<!--               /> -->
-            <iframe src="//player.bilibili.com/player.html?aid=1650477928&bvid=BV16j421Q7Xf&cid=1431326501&p=1"
-                scrolling="no"
-                border="0"
-                frameborder="no"
-                framespacing="0"
-                allowfullscreen="true"> </iframe>
             
-            <div class="portfolio_">
-                <h3 class="portfolio__title" i18n="portfolio1__title">
-                  「AI补全官方配音」仙剑奇侠传四结局百年之后
-                </h3>
-                <p class="portfolio__description" i18n="portfolio1__description">
-                  韶华白首，不过转瞬
-                </p>
-                <a href="https://www.bilibili.com/video/BV1ag4y1b76i/"
-                  target="_blank"
-                  class="button button--flex button--small portfolio__button">
-                  <i class="uil uil-arrow-right button__icon"></i>
+            <!-- 移动端菜单 -->
+            <div v-if="isMobileMenuOpen" class="md:hidden px-6 py-4 border-t border-gray-200 dark:border-gray-800">
+                <a v-for="item in navItems" :key="item.id" 
+                   :href="item.href"
+                   @click="isMobileMenuOpen = false"
+                   class="block py-3 text-sm font-medium text-text-secondary dark:text-gray-400 hover:text-primary transition-colors">
+                    {{ currentLang === 'zh' ? item.labelZh : item.labelEn }}
                 </a>
             </div>
-          </div>
-            <!--==================== PORTFOLIO 2 ====================-->
-
-            <div class="portfolio__content grid swiper-slide">
-<!--               <img -->
-<!--                 src="assets/img/portfolio2.jpg" -->
-<!--                 alt="" -->
-<!--                 class="portfolio__img" -->
-<!--               /> -->
-
-              <iframe src="//player.bilibili.com/player.html?aid=749089466&bvid=BV1sC4y1A7oJ&cid=1349122039&p=1"
-                  scrolling="no"
-                  border="0"
-                  frameborder="no"
-                  framespacing="0"
-                  allowfullscreen="true"
-                  class="portfolio__img"> </iframe>
-              <div class="portfolio_">
-                  <h3 class="portfolio__title" i18n="portfolio2__title">
-                    魅族21首发开箱
-                  </h3>
-                  <p class="portfolio__description" i18n="portfolio2__description">
-                    魅族重庆授权服务中心
-                  </p>
-                  <a href="https://www.bilibili.com/video/BV1sC4y1A7oJ/"
-                    target="_blank"
-                    class="button button--flex button--small portfolio__button">
-                    <i class="uil uil-arrow-right button__icon"></i>
-                  </a>
-              </div>
-            </div>
-
-            <!--==================== PORTFOLIO 3 ====================-->
-
-            <div class="portfolio__content grid swiper-slide">
-<!--               <img -->
-<!--                 src="assets/img/portfolio3.jpg" -->
-<!--                 alt="" -->
-<!--                 class="portfolio__img" -->
-<!--               /> -->
-
-              <iframe src="//player.bilibili.com/player.html?aid=951723826&bvid=BV1es4y1J7dD&cid=1073623202&p=1"
-                  scrolling="no"
-                  border="0"
-                  frameborder="no"
-                  framespacing="0"
-                  allowfullscreen="true"
-                  class="portfolio__img"> </iframe>
-              <div class="portfolio_">
-                  <h3 class="portfolio__title" i18n="portfolio3__title">
-                    文件投送+文本传输+全平台≈localsend
-                  </h3>
-                  <p class="portfolio__description" i18n="portfolio3__description">
-                    好用分享系列
-                  </p>
-                  <a href="https://www.bilibili.com/video/BV1es4y1J7dD/"
-                    target="_blank"
-                    class="button button--flex button--small portfolio__button">
-                    <i class="uil uil-arrow-right button__icon"></i>
-                  </a>
-              </div>
-            </div>
-
-          </div>
-          <!-- add arrows-->
-          <div class="swiper-button-next">
-            <i class="uil uil-angle-right-b swiper-portfolio-icon"></i>
-          </div>
-
-          <div class="swiper-button-prev">
-            <i class="uil uil-angle-left-b swiper-portfolio-icon"></i>
-          </div>
-
-          <!-- Add Pagination -->
-          <div class="swiper-pagination"></div>
-        </div>
-      </section>
-
-      <!--==================== CONTACT ====================-->
-      <section class="contact section" id="contact">
-        <h2 class="section__title" i18n="contact__title">联系方式</h2>
-        <span class="section__subtitle" i18n="contact__subtitle">（点击下方文字即可跳转）</span>
-
-      <div class="contact__container container grid">
-       <div>
-        <div class="contact__information">
-          <i class="fa-regular fa-envelope contact__icon"></i>
-          <div>
-            <a href="mailto:weiminal@126.com" target="_blank">
-            <h3 class="contact__title" i18n="email">电子邮件</h3>
-              <span class="contatc__subtitle">
-                weiminal@126.com</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="contact__information">
-          <i class="ri-wechat-line contact__icon"></i>
-          <div>
-            <a href="" target="_blank">
-            <h3 class="contact__title" i18n="wechat">微信</h3>
-              <span class="contatc__subtitle">WeiMinal</span>
-            </a>
-          </div>
-        </div>
+        </nav>
         
-        <div class="contact__information">
-          <i class="ri-qq-line contact__icon"></i>
-          <div>
-            <a href="http://wpa.qq.com/msgrd?v=1&uin=1245757848&site=qq&menu=yes" target="_blank">
-            <h3 class="contact__title" i18n="QQ">QQ</h3>
-              <span class="contatc__subtitle">WeiMinal</span>
-            </a>
-          </div>
-        </div>
-        
-        <!--<div class="contact__information">
-          <i class="ri-telegram-line contact__icon"></i>
-          <div>
-            <a href="" target="_blank">
-            <h3 class="contact__title" i18n="telegram">电报</h3>
-              <span class="contatc__subtitle">WeiMinal</span>
-            </a>
-          </div>
-        </div>-->
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!--==================== FOOTER ====================-->
-    <footer class="footer">
-      <div class="footer__bg">
-        <div class="footer__container container grid">
-          <div>
-            <h1 class="footer__title" i18n="name">李伟民</h1>
-            <span class="footer__subtitle" i18n="home__subtitle">学者 / 开发者 / 艺术者
-            </span>
-          </div>
-          
-          <ul class="footer__links">
-            <li>
-              <a href="#skills" class="footer__link" i18n="skills">技能</a>
-            </li>
-            <li>
-              <a href="#portfolio" class="footer__link" i18n="portfolio">作品集</a>
-            </li>
-            <li>
-              <a href="#contact" class="footer__link" i18n="contact">联系方式</a>
-            </li>
-          </ul>
-
-          <div class="footer__socials"> 
-            <a href="https://github.com/WeiMinal/weiminal.github.io/blob/main/weiminal-wechat.jpg?raw=true" target="_blank">
-              <i class="ri-wechat-fill icon footer__social"></i>
-            </a>
-            <a href="https://space.bilibili.com/35606358" target="_blank">
-              <i class="ri-bilibili-fill icon footer__social"></i>
-            </a>
-            <a href="https://github.com/WeiMinal" target="_blank">
-              <i class="ri-github-fill icon footer__social"></i>
-            </a>
+        <!-- ============================================
+             页面首屏
+             ============================================ -->
+        <section id="home" class="min-h-screen w-full flex items-center justify-center relative overflow-hidden gradient-bg noise-texture">
+            <!-- 装饰性背景元素 -->
+            <div class="absolute top-20 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-slow"></div>
+            <div class="absolute bottom-20 right-1/4 w-64 h-64 bg-primary-light/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
             
-          </div>
-        </div>
+            <div class="w-full px-6 lg:px-12 pt-24 pb-12 flex flex-col items-center justify-center text-center">
+                <!-- 社交图标 -->
+                <div class="flex items-center justify-center gap-4 mb-10 home-social-icons">
+                    <a v-for="social in profileData.socialLinks" :key="social.name"
+                       :href="social.url"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:scale-110 transition-transform magnetic-glow"
+                       @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                        <!-- GitHub图标 -->
+                        <i v-if="social.icon === 'github'" :data-lucide="social.icon" class="w-5 h-5"></i>
+                        <!-- 微博图标 -->
+                        <svg v-else-if="social.name === '微博'" class="weibo-icon" viewBox="0 0 24 24">
+                            <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.09-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.194.573zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.579-.18-.405-.649.381-1.017.421-1.896.002-2.521-.786-1.17-2.938-1.109-5.399-.031 0 0-.772.338-.575-.273.381-1.205.324-2.213-.27-2.8-1.347-1.327-4.928.047-8.001 3.07C1.019 10.729 0 13.347 0 15.565c0 4.247 5.443 6.832 10.766 6.832 6.976 0 11.613-4.053 11.613-7.272 0-1.943-1.64-3.043-3.32-3.476zM20.756 8.4c-.954-1.063-2.358-1.505-3.82-1.35-.399.043-.671.4-.629.8.043.4.4.672.8.629.991-.106 1.947.195 2.588.91.641.715.859 1.68.607 2.644-.105.399.132.809.531.914.399.105.809-.132.914-.531.372-1.401.061-2.853-.991-4.016zm-1.803 2.013c-.357-.398-.883-.563-1.433-.508-.2.021-.346.195-.325.395.021.2.195.346.395.325.32-.034.609.058.8.272.191.214.26.502.186.777-.053.198.064.401.262.454.198.053.401-.064.454-.262.133-.494.008-1.021-.379-1.453z"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <!-- 主标题 -->
+                <div class="home-title mb-8">
+                    <p class="text-xl text-text-secondary dark:text-gray-400 mb-4">
+                        {{ currentLang === 'zh' ? profileData.greetingZh : profileData.greetingEn }}
+                    </p>
+                    <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight mb-6">
+                        {{ profileData.name }}
+                    </h1>
+                    <p class="text-2xl md:text-3xl text-primary font-medium">
+                        {{ currentLang === 'zh' ? profileData.titleZh : profileData.titleEn }}
+                    </p>
+                </div>
+                
+                <!-- 副标题 - 隐藏 -->
+                <p class="tagline-hidden text-lg text-text-secondary dark:text-gray-400 mb-10 max-w-lg home-subtitle">
+                    {{ currentLang === 'zh' ? profileData.taglineZh : profileData.taglineEn }}
+                </p>
+                
+                <!-- CTA 按钮 - 联系我悬停展开（带层次感修饰） -->
+                <div class="flex items-center justify-center gap-4 home-cta">
+                    <!-- 20260130修改点 -->
+                    <div class="magnetic-glow" @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                        <a :href="profileData.contactEmail" class="contact-btn">
+                            <span class="btn-icon">
+                                <i data-lucide="mail" class="w-5 h-5"></i>
+                            </span>
+                            <!-- 20260131最笨的方法加空格优化图标居中问题 -->
+                            <span class="btn-text">&nbsp;&nbsp;{{ currentLang === 'zh' ? '联系我' : 'Contact' }}</span>
+                        </a>
+                    </div>
 
-        <p class="footer__copy">
-          &#169; WEIMINAL |
-          <a class="footer__copy"
-            href="https://www.youtube.com/c/Bedimcode"
-            target="_blank">Bedimcode</a>
-        </p>
-      </div>
-    </footer>
-    <!--==================== SCROLL TOP ====================-->
-    <a href="#" class="scrollup" id="scroll-up">
-      <i class="uil uil-arrow-up scrollup__icon"></i>
-    </a>
-    <!--==================== SWIPER JS ====================-->
-    <script src="assets/js/swiper-bundle.min.js"></script>
-    <!-- iconfont JS -->
-    <script src="assets/js/iconfont.js"></script>
-    <!-- jquery -->
-    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="assets/js/jquery.i18n.min.js"></script>
-    <!--==================== MAIN JS ====================-->
-    <script src="assets/js/main.js"></script>
-    <!-- translate JS -->
-    <script src="assets/js/cn-en-translate.js"></script>
-  </body>
+                </div>
+                
+                <!-- 滚动提示 -->
+                <div class="mt-20 flex items-center justify-center home-scroll-hint">
+                    <i data-lucide="arrow-down" class="w-5 h-5 text-text-secondary dark:text-gray-500 animate-bounce"></i>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ============================================
+             About 关于板块 (Bento Grid)
+             ============================================ -->
+        <section id="about" class="w-full py-24 lg:py-32 relative noise-texture">
+            <div class="w-full px-6 lg:px-12">
+                <!-- 标题 -->
+                <div class="mb-16 reveal-element">
+                    <p class="text-primary font-medium mb-2">{{ currentLang === 'zh' ? '关于我' : 'About Me' }}</p>
+                    <h2 class="text-4xl md:text-5xl font-bold">{{ currentLang === 'zh' ? '认识一下' : 'Get to Know Me' }}</h2>
+                </div>
+                
+                <!-- Bento Grid 布局 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- 个人简介卡片 (大) -->
+                    <div class="lg:col-span-2 glass-card rounded-3xl p-8 reveal-element">
+                        <div class="flex items-start gap-4 mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                <i data-lucide="user" class="w-6 h-6 text-primary"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-1">{{ currentLang === 'zh' ? '个人简介' : 'Profile' }}</h3>
+                                <p class="text-text-secondary dark:text-gray-400 text-sm">
+                                    {{ currentLang === 'zh' ? profileData.titleBZh : profileData.titleBEn }}
+                                </p>
+                            </div>
+                        </div>
+                        <p class="text-text-secondary dark:text-gray-300 leading-relaxed">
+                            {{ currentLang === 'zh' ? profileData.bioZh : profileData.bioEn }}
+                        </p>
+                        <div class="mt-6 flex flex-wrap gap-2">
+                            <!-- 20260201修改点增加翻译v-for="tag in profileData.tags" :key="tag" -->
+                            <span v-for="tag in currentLang === 'zh' ? profileData.tagsZh : profileData.tagsEn" :key="tag"
+                                  class="px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                                {{ tag }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- 合并的信息卡片 - 经验、年龄、城市 -->
+                    <div class="glass-card rounded-3xl p-6 reveal-element">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                <i data-lucide="info" class="w-5 h-5 text-primary"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold">{{ currentLang === 'zh' ? '基本信息' : 'Basic Info' }}</h3>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <!-- 工作经验 -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="briefcase" class="w-4 h-4 text-text-secondary"></i>
+                                    <span class="text-sm text-text-secondary">{{ currentLang === 'zh' ? '工作经验' : 'Experience' }}</span>
+                                </div>
+                                <span class="font-semibold text-primary">{{ profileData.experienceYears }} {{ currentLang === 'zh' ? '年' : 'Years' }}</span>
+                            </div>
+                            
+                            <!-- 年龄 - 自动计算 -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="calendar" class="w-4 h-4 text-text-secondary"></i>
+                                    <span class="text-sm text-text-secondary">{{ currentLang === 'zh' ? '当前年龄' : 'Age' }}</span>
+                                </div>
+                                <span class="font-semibold text-primary">{{ calculatedAge }} {{ currentLang === 'zh' ? '岁' : 'Years' }}</span>
+                            </div>
+                            
+                            <!-- 所在城市 -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="map-pin" class="w-4 h-4 text-text-secondary"></i>
+                                    <span class="text-sm text-text-secondary">{{ currentLang === 'zh' ? '所在城市' : 'Location' }}</span>
+                                </div>
+                                <span class="font-semibold text-primary">{{ currentLang === 'zh' ? profileData.locationZh : profileData.locationEn }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 教育背景卡片 -->
+                    <!-- 20260201修改点增加翻译 -->
+                    <div class="glass-card rounded-3xl p-6 reveal-element">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                <i data-lucide="graduation-cap" class="w-5 h-5 text-primary"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold">{{ currentLang === 'zh' ? '教育背景' : 'Education' }}</h3>
+                        </div>
+                        <p class="font-semibold text-primary mb-1">{{ currentLang === 'zh' ? profileData.education.schoolZh : profileData.education.schoolEn }}</p>
+                        <p class="text-text-secondary dark:text-gray-400 text-sm">
+                            {{ currentLang === 'zh' ? profileData.education.degreeZh : profileData.education.degreeEn }} · {{ currentLang === 'zh' ? profileData.education.majorZh : profileData.education.majorEn }}
+                        </p>
+                        <p class="text-text-secondary dark:text-gray-500 text-xs mt-2">{{ currentLang === 'zh' ? profileData.education.yearZh : profileData.education.yearEn }}</p>
+                    </div>
+                    
+                    <!-- 兴趣爱好卡片 -->
+                    <div class="lg:col-span-2 glass-card rounded-3xl p-6 reveal-element">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                <i data-lucide="heart" class="w-5 h-5 text-primary"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold">{{ currentLang === 'zh' ? '兴趣爱好' : 'Hobbies' }}</h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
+                                <i data-lucide="smartphone" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '安卓苹果刷机折腾' : 'Android / Apple Tinkering' }}</span>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
+                                <i data-lucide="hard-drive" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '飞牛NAS / AppleTV' : 'FnOS / AppleTV' }}</span>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
+                                <i data-lucide="home" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '智能家居联动' : 'Smart Home Automation' }}</span>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
+                                <i data-lucide="camera" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '摄影 / 电影 / 音乐' : 'Photography / Movies / Music' }}</span>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
+                                <i data-lucide="gamepad-2" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '仙剑奇侠传' : 'Chinese Paladin' }}</span>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5"><!-- 大屏时占两列 sm:col-span-2 -->
+                                <i data-lucide="gamepad-2" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '黑神话：悟空' : 'Black Myth: Wukong' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ============================================
+             Experience 经历板块 (时间轴) - 统一左时间右内容
+             ============================================ -->
+        <section id="experience" class="w-full py-24 lg:py-32 relative gradient-bg noise-texture">
+            <div class="w-full px-6 lg:px-12">
+                <!-- 标题 -->
+                <div class="mb-16 reveal-element">
+                    <p class="text-primary font-medium mb-2">{{ currentLang === 'zh' ? '工作经历' : 'Experience' }}</p>
+                    <h2 class="text-4xl md:text-5xl font-bold">{{ currentLang === 'zh' ? '职业历程' : 'Career Journey' }}</h2>
+                </div>
+                
+                <!-- 时间轴 - 统一左边时间、右边内容 -->
+                <div class="timeline-container max-w-4xl">
+                    <div v-for="(exp, index) in currentLang === 'zh' ? profileData.experiencesZh : profileData.experiencesEn" :key="index"
+                         class="timeline-item relative pl-8 md:pl-0 pb-12 last:pb-0 reveal-element">
+                        <!-- 时间轴线 -->
+                        <div class="absolute left-0 md:left-[120px] top-0 bottom-0 w-px bg-gradient-to-b from-primary via-primary/50 to-transparent"></div>
+                        
+                        <!-- 时间节点 -->
+                        <div class="absolute left-0 md:left-[120px] top-2 w-4 h-4 rounded-full bg-primary border-4 border-white dark:border-bg-dark transform -translate-x-1/2 z-10"></div>
+                        
+                        <!-- 内容卡片 - 统一布局：左边时间、右边内容 -->
+                        <div class="md:flex md:items-start md:gap-8">
+                            <!-- 日期标签 - 左边固定宽度 -->
+                            <div class="md:w-[100px] mb-3 md:mb-0 md:text-right flex-shrink-0">
+                                <span class="inline-block px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                                    {{ exp.period }}
+                                </span>
+                            </div>
+                            
+                            <!-- 占位符用于对齐 -->
+                            <div class="hidden md:block w-4 flex-shrink-0"></div>
+                            
+                            <!-- 内容 - 右边 -->
+                            <div class="flex-1">
+                                <div class="glass-card rounded-2xl p-6 hover:shadow-xl transition-shadow">
+                                    <h3 class="text-xl font-semibold mb-1">{{ exp.company }}</h3>
+                                    <p class="text-primary font-medium mb-2">{{ exp.position }}</p>
+                                    <p v-if="exp.project" class="text-text-secondary dark:text-gray-400 text-sm mb-4">{{ exp.project }}</p>
+                                    
+                                    <!-- 工具标签 -->
+                                    <div v-if="exp.tools && exp.tools.length > 0" class="flex flex-wrap gap-2 mb-4">
+                                        <span v-for="tool in exp.tools" :key="tool"
+                                              class="px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs text-text-secondary dark:text-gray-400">
+                                            {{ tool }}
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- 成就列表 - 限制4条 -->
+                                    <ul class="space-y-2">
+                                        <li v-for="(achievement, i) in exp.achievements.slice(0, 4)" :key="i"
+                                            class="flex items-start gap-2 text-sm text-text-secondary dark:text-gray-400">
+                                            <i data-lucide="check-circle-2" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                            <span>{{ achievement }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ============================================
+             Skills 技能板块 (跑马灯)
+             ============================================ -->
+        <section id="skills" class="w-full py-24 lg:py-32 relative overflow-hidden noise-texture">
+            <div class="w-full px-6 lg:px-12 mb-12">
+                <!-- 标题 -->
+                <div class="text-center reveal-element">
+                    <p class="text-primary font-medium mb-2">{{ currentLang === 'zh' ? '技能栈' : 'Skills' }}</p>
+                    <h2 class="text-4xl md:text-5xl font-bold">{{ currentLang === 'zh' ? '技术能力' : 'Technical Skills' }}</h2>
+                </div>
+            </div>
+            
+            <!-- 跑马灯区域 -->
+            <div class="space-y-6">
+                <!-- 第一行 - 向左滚动 -->
+                <div class="relative">
+                    <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-bg-light dark:from-bg-dark to-transparent z-10"></div>
+                    <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-bg-light dark:from-bg-dark to-transparent z-10"></div>
+                    
+                    <div class="animate-marquee">
+                        <div class="marquee-track">
+                            <div class="marquee-content">
+                                <span v-for="skill in profileData.skillsRow1" :key="skill"
+                                      class="px-6 py-3 rounded-full glass-card text-lg font-medium whitespace-nowrap hover:bg-primary hover:text-white transition-colors cursor-default">
+                                    {{ skill }}
+                                </span>
+                            </div>
+                            <div class="marquee-content">
+                                <span v-for="skill in profileData.skillsRow1" :key="skill + '-dup'"
+                                      class="px-6 py-3 rounded-full glass-card text-lg font-medium whitespace-nowrap hover:bg-primary hover:text-white transition-colors cursor-default">
+                                    {{ skill }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第二行 - 向右滚动 -->
+                <div class="relative">
+                    <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-bg-light dark:from-bg-dark to-transparent z-10"></div>
+                    <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-bg-light dark:from-bg-dark to-transparent z-10"></div>
+                    
+                    <div class="animate-marquee-reverse">
+                        <div class="marquee-track">
+                            <div class="marquee-content">
+                                <span v-for="skill in currentLang === 'zh' ? profileData.skillsRow2Zh : profileData.skillsRow2En" :key="skill"
+                                      class="px-6 py-3 rounded-full glass-card text-lg font-medium whitespace-nowrap hover:bg-primary hover:text-white transition-colors cursor-default">
+                                    {{ skill }}
+                                </span>
+                            </div>
+                            <div class="marquee-content">
+                                <span v-for="skill in currentLang === 'zh' ? profileData.skillsRow2Zh : profileData.skillsRow2En" :key="skill + '-dup'"
+                                      class="px-6 py-3 rounded-full glass-card text-lg font-medium whitespace-nowrap hover:bg-primary hover:text-white transition-colors cursor-default">
+                                    {{ skill }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 获奖经历 -->
+            <div class="w-full px-6 lg:px-12 mt-16">
+                <div class="glass-card rounded-3xl p-8 max-w-4xl mx-auto reveal-element">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                            <i data-lucide="trophy" class="w-6 h-6 text-primary"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">{{ currentLang === 'zh' ? '获奖经历' : 'Awards' }}</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div v-for="(award, index) in currentLang === 'zh'?profileData.awardsZh : profileData.awardsEn" :key="index"
+                             class="flex items-start gap-3 p-4 rounded-xl bg-primary/5">
+                            <i data-lucide="award" class="w-5 h-5 text-primary mt-0.5 flex-shrink-0"></i>
+                            <span class="text-sm text-text-secondary dark:text-gray-300">{{ award }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ============================================
+             Footer 联系区域
+             ============================================ -->
+        <footer id="contact" class="w-full min-h-[60vh] flex flex-col justify-center relative gradient-bg noise-texture">
+            <!-- 装饰背景 -->
+            <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl"></div>
+            </div>
+            
+            <div class="w-full px-6 lg:px-12 py-24 relative z-10 flex-1 flex flex-col justify-center">
+                <div class="max-w-4xl mx-auto text-center">
+                    <!-- 大标题 -->
+                    <div class="reveal-element">
+                        <p class="text-primary font-medium mb-4">{{ currentLang === 'zh' ? '联系方式' : 'Get in Touch' }}</p>
+                        <h2 class="text-5xl md:text-7xl lg:text-8xl font-bold mb-8">
+                            {{ currentLang === 'zh' ? '一起学习吧' : "Let's Learn" }}
+                            <span class="block text-primary">{{ currentLang === 'zh' ? '' : 'Together' }}</span>
+                        </h2>
+                        <p class="text-xl text-text-secondary dark:text-gray-400 mb-12 max-w-2xl mx-auto">
+                            {{ currentLang === 'zh' ? '如果您有任何创意和想法想交流，欢迎随时联系我。' : 'Feel free to reach out if you have any creative ideas to share.' }}
+                        </p>
+                    </div>
+                    
+                    <!-- 邮箱按钮 -->
+                    <div class="reveal-element mb-16">
+                        <a :href="profileData.contactEmail" 
+                           class="inline-flex items-center gap-4 px-10 py-6 rounded-full bg-primary text-white hover:text-white text-xl font-medium magnetic-glow hover:shadow-lg hover:shadow-primary/30 transition-all"
+                           @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                           <!-- 20260201修改点：添加hover:text-white强制鼠标悬停时文字依然为白色 -->
+                            <i data-lucide="mail" class="w-6 h-6"></i>
+                            {{ profileData.email }}
+                        </a>
+                    </div>
+                    
+                    <!-- 社交链接 -->
+                    <div class="reveal-element flex items-center justify-center gap-6 mb-16">
+                        <a v-for="social in profileData.socialLinks" :key="social.name"
+                           :href="social.url"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="w-14 h-14 rounded-full glass-card flex items-center justify-center text-text-secondary dark:text-gray-400 hover:text-primary hover:scale-110 transition-all magnetic-glow"
+                           @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                            <!-- GitHub图标 -->
+                            <i v-if="social.icon === 'github'" :data-lucide="social.icon" class="w-6 h-6"></i>
+                            <!-- 微博图标 -->
+                            <svg v-else-if="social.name === '微博'" class="weibo-icon" viewBox="0 0 24 24">
+                                <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.09-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.194.573zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.579-.18-.405-.649.381-1.017.421-1.896.002-2.521-.786-1.17-2.938-1.109-5.399-.031 0 0-.772.338-.575-.273.381-1.205.324-2.213-.27-2.8-1.347-1.327-4.928.047-8.001 3.07C1.019 10.729 0 13.347 0 15.565c0 4.247 5.443 6.832 10.766 6.832 6.976 0 11.613-4.053 11.613-7.272 0-1.943-1.64-3.043-3.32-3.476zM20.756 8.4c-.954-1.063-2.358-1.505-3.82-1.35-.399.043-.671.4-.629.8.043.4.4.672.8.629.991-.106 1.947.195 2.588.91.641.715.859 1.68.607 2.644-.105.399.132.809.531.914.399.105.809-.132.914-.531.372-1.401.061-2.853-.991-4.016zm-1.803 2.013c-.357-.398-.883-.563-1.433-.508-.2.021-.346.195-.325.395.021.2.195.346.395.325.32-.034.609.058.8.272.191.214.26.502.186.777-.053.198.064.401.262.454.198.053.401-.064.454-.262.133-.494.008-1.021-.379-1.453z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 页脚底部 -->
+            <div class="text-center py-4">
+                <p class="text-sm text-text-secondary dark:text-gray-500">
+                            2023 - 2026 © WEIMINAL 
+                            {{ currentLang === 'zh' ? '保留所有权利。' : 'All rights reserved.' }}
+                </p>
+                        
+            </div>
+        </footer>
+        
+    </div><!-- /#app -->
+    
+    <!-- ============================================
+         JavaScript 逻辑
+         ============================================ -->
+    <script>
+        // ============================================
+        // 个人资料配置对象 - 易于修改的配置区域
+        // ============================================
+        const profileData = {
+            // 基本信息
+            name: '李伟民',
+            experienceYears: 2,
+            
+            // 出生日期 - 用于自动计算年龄
+            birthDate: '2000-04-30',
+            
+            // 职位信息
+            titleZh: 'AI测试工程师',
+            titleEn: 'AI Test Engineer',
+
+            // 身份信息
+            titleBZh: '学者',
+            titleBEn: 'A Lifelong Learner',
+            
+            // 问候语
+            greetingZh: '你好，我叫',
+            greetingEn: "Hello, I'm",
+            
+            // 非主流个性签名 (已隐藏)
+            taglineZh: '做不了艺术家，但要做个很艺术的人。',
+            taglineEn: 'Not an artist, but living artistically.',
+            
+            // 个人简介
+            bioZh: '热衷于学习与折腾，具备2年测试经验。能快速理解需求文档、能快速上手测试工具、积极搭建标准化作业流程、擅长跨部门协作、进度风险管控。热衷于用用户导向思维决策、结果导向思维执行，确保数据内容高质量交付。',
+            bioEn: 'With 2 years of experience in software testing, I am passionate about continuous learning and hands-on exploration. I excel at quickly understanding requirements, mastering testing tools efficiently, and establishing standardized workflows. I thrive in cross-functional collaboration and am skilled in managing project progress and mitigating risks. Guided by a user-centric approach in decision-making and a results-driven mindset in execution, I am committed to ensuring the delivery of high-quality data and content.',
+            
+            // 标签
+            tagsZh: ['快速理解上手', '标准化作业', '跨部门协作', '进度风险管控', '用户导向', '结果导向'],
+            tagsEn: ['Quick Understanding', 'Standardized Workflow', 'Cross-Department Collaboration', 'Progress Risk Control', 'User-Centric', 'Results-Driven'],
+            
+            // 联系方式
+            email: 'weiminal@126.com',
+            contactEmail: 'mailto:weiminal@126.com',
+            
+            // 位置
+            locationZh: '深圳',
+            locationEn: 'Shenzhen, China',
+            
+            // 教育背景
+            education: {
+                schoolZh: '广东理工学院',
+                schoolEn: 'Guangdong Technology College',
+                degreeZh: '统招全日制本科',
+                degreeEn: 'Full-time Undergraduate',
+                majorZh: '软件工程',
+                majorEn: 'Software Engineering',
+                yearZh: '2023年6月毕业',
+                yearEn: 'June 2023 Graduation'
+            },
+            
+            // 工作经历
+            experiencesZh: [
+                {
+                    company: '元时空智能科技（重庆）有限公司',
+                    position: 'AI软件测试 / 数据交付PM',
+                    project: 'OPPO小布记忆项目',
+                    period: '2024.06 - 2026.01',
+                    tools: ['Python', 'SQLite', 'Xmind', '石墨文档'],
+                    achievements: [
+                        '面试组建小组推进项目执行，统筹内外部协作',
+                        '主导多个小布记忆子项目数据交付启动，应对紧急需求变更',
+                        '主动解决任务过程中的关键问题',
+                        '建立规则答疑表流程标准，以减少数据返工概率',
+                        '确保关键节点准时达成，输出详细的测试报告'
+                    ]
+                },
+                {
+                    company: '备考研究生公务员事业单位',
+                    position: '',
+                    project: '',
+                    period: '2022.06 - 2024.06',
+                    tools: ['848计算机基础综合','数学一','英语一','公基','行测','申论'],
+                    achievements: [
+                        '2022年12月参与1次计算机考研',
+                        '国考参加1次，广东省考参加2次',
+                        '事业编考试20+次'
+                    ]
+                },
+                {
+                    company: '广东理工学院',
+                    position: '软件工程 / 校报记者站摄影记者',
+                    project: '校园新闻宣传工作',
+                    period: '2018.09 - 2023.06',
+                    tools: ['Java','Android Studio','PR', 'PS'],
+                    achievements: [
+                        '负责参与校内外大小型活动的新闻拍摄工作',
+                        '图片后期调色加工，整理规范图片视频文档',
+                        '配合新闻报纸出版公众号发文等宣传工作',
+                        '多次获得校级优秀奖学金及宣传工作先进个人奖'
+                    ]
+                },
+                {
+                    company: '信宜中学',
+                    position: '理科生',
+                    project: '',
+                    period: '2015.09 - 2018.06',
+                    tools: ['Canon EOS600D'],
+                    achievements: [
+                        '参与拍摄制作无厘头短片《喋血双熊》',
+                        '参与拍摄校园心理社团微电影《校园失窃案》'
+                    ]
+                }
+            ],
+
+            experiencesEn: [
+                {
+                    company: 'Meta-Spacetime Intelligent Technology (Chongqing) Co., Ltd.',
+                    position: 'AI Software Testing / Data Delivery PM',
+                    project: 'OPPO AI Memory Project',
+                    period: '2024.06 - 2026.01',
+                    tools: ['Python', 'SQLite', 'Xmind', 'Shimo Docs'],
+                    achievements: [
+                        'Interviewed and formed a team to promote project execution, coordinating internal and external collaboration',
+                        'Led the initiation of data delivery for multiple OPPO AI Memory sub-projects, responding to urgent requirement changes',
+                        'Proactively solved key problems during task execution',
+                        'Established a rule-based Q&A table process standard to reduce data rework probability',
+                        'Ensured timely achievement of key milestones and delivered detailed test reports'
+                    ]
+                },
+                {
+                    company: 'Preparing for Postgraduate Entrance Exam, Civil Service and Public Institution Exams',
+                    position: '',
+                    project: '',
+                    period: '2022.06 - 2024.06',
+                    tools: ['848 Computer Basic Comprehensive', 'Mathematics I', 'English I', 'Public Basic Knowledge', 'Administrative Professional Ability Test', 'Essay'],
+                    achievements: [
+                        'Took 1 computer postgraduate entrance exam in December 2022',
+                        'Participated in 1 national civil service exam and 2 Guangdong provincial civil service exams',
+                        'Took over 20 public institution exams'
+                    ]
+                },
+                {
+                    company: 'Guangdong Technology College',
+                    position: 'Major in Software Engineering / Photojournalist at University Newspaper Press',
+                    project: 'Campus News and Publicity Work',
+                    period: '2018.09 - 2023.06',
+                    tools: ['Java', 'Android Studio', 'PR', 'PS'],
+                    achievements: [
+                        'Responsible for news photography of various on-campus and off-campus activities',
+                        'Conducted post-processing color correction of images, organized and standardized image and video documents',
+                        'Cooperated with publicity work such as newspaper publication and official account article release',
+                        'Received multiple university-level excellent scholarships and Advanced Individual in Publicity Work awards'
+                    ]
+                },
+                {
+                    company: 'Xinyi Middle School',
+                    position: 'High School Science Student',
+                    project: '',
+                    period: '2015.09 - 2018.06',
+                    tools: ['Canon EOS600D'],
+                    achievements: [
+                        'Participated in shooting and producing the nonsensical short film "Bloody Two Bears"',
+                        'Participated in shooting the campus psychology club microfilm "Campus Theft Case"'
+                    ]
+                }
+            ],
+            
+            // 技能栈 - 第一行
+            skillsRow1: ['Java','Python', 'SQLite', 'ADB', 'Linux', 'Xmind', 'Excel', 'Android Studio','Visual Studio Code'],
+            
+            // 技能栈 - 第二行
+            skillsRow2Zh: ['需求分析', '进度管控', '风险管理', '团队协作', '质量管控', '标准化作业流程', '测试报告'],
+            skillsRow2En: ['Requirements Analysis', 'Schedule Management', 'Risk Management', 'Team Collaboration', 'Quality Control', 'Standardized Operating Procedures (SOP)', 'Test Reports'],
+
+            // 获奖经历
+            awardsZh: [
+                '元时空青云计划四期（领导力发展培训）',
+                '元时空2025年第二季度进取之星',
+                '校级优秀奖学金（2022 / 2020 / 2019）',
+                '广东高校校报好新闻图片类二等奖（2019）',
+                '党委宣传部优秀新闻工作者（2020）',
+                '党委宣传部宣传先进个人奖（2019）'
+            ],
+            awardsEn: [
+                'Meta-SpaceTime Qingyunjihua 4th Session (Leadership Development Training)',
+                'Meta-SpaceTime Q2 2025 Progressive Star',
+                'University-level Excellent Scholarship (2022 / 2020 / 2019)',
+                'Guangdong University Newspapers Good News Competition, Second Prize in Photography Category (2019)',
+                'Party Committee Publicity Department, Outstanding Journalist (2020)',
+                'Party Committee Publicity Department, Advanced Individual in Publicity (2019)'
+            ],
+            
+            // 社交链接 - 只保留GitHub和微博，GitHub在前
+            socialLinks: [
+                { name: 'GitHub', icon: 'github', url: 'https://github.com/WeiMinal' },
+                { name: '微博', icon: 'weibo', url: 'https://weibo.com/u/2439841461' }
+            ]
+        };
+        
+        // ============================================
+        // Vue 3 应用
+        // ============================================
+        const { createApp, ref, onMounted, computed, watch } = Vue;
+        
+        createApp({
+            setup() {
+                // ===== 响应式状态 =====
+                const isDarkMode = ref(false);          // 深色模式状态
+                const currentLang = ref('zh');          // 当前语言
+                const isScrolled = ref(false);          // 是否已滚动
+                const isMobileMenuOpen = ref(false);    // 移动端菜单状态
+                
+                // ===== 导航项配置 =====
+                const navItems = [
+                    { id: 'home', labelZh: '主页', labelEn: 'Home', href: '#home' },
+                    { id: 'about', labelZh: '关于', labelEn: 'About', href: '#about' },
+                    { id: 'experience', labelZh: '经历', labelEn: 'Experience', href: '#experience' },
+                    { id: 'skills', labelZh: '技能', labelEn: 'Skills', href: '#skills' },
+                    { id: 'contact', labelZh: '联系方式', labelEn: 'Contact', href: '#contact' }
+                ];
+                
+                // ===== 计算属性 - 自动计算年龄 =====
+                const calculatedAge = computed(() => {
+                    const birthDate = new Date(profileData.birthDate);
+                    const today = new Date();
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+                    
+                    // 如果还没到生日，年龄减1
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+                    
+                    return age;
+                });
+                
+                // ===== 方法 =====
+                
+                // 切换深色/浅色模式
+                const toggleDarkMode = () => {
+                    isDarkMode.value = !isDarkMode.value;
+                    if (isDarkMode.value) {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                    }
+                };
+                
+                // 切换语言
+                const toggleLang = () => {
+                    currentLang.value = currentLang.value === 'zh' ? 'en' : 'zh';
+                    localStorage.setItem('lang', currentLang.value);
+                };
+                
+                // 更新磁吸光晕位置
+                const updateGlowPosition = (e) => {
+                    const target = e.currentTarget;
+                    const rect = target.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    target.style.setProperty('--mouse-x', `${x}%`);
+                    target.style.setProperty('--mouse-y', `${y}%`);
+                };
+                
+                // 重置磁吸光晕位置
+                const resetGlowPosition = (e) => {
+                    const target = e.currentTarget;
+                    target.style.setProperty('--mouse-x', '50%');
+                    target.style.setProperty('--mouse-y', '50%');
+                };
+                
+                // 处理滚动事件
+                const handleScroll = () => {
+                    isScrolled.value = window.scrollY > 50;
+                };
+                
+                // 初始化GSAP动画
+                const initAnimations = () => {
+                    // 注册ScrollTrigger
+                    gsap.registerPlugin(ScrollTrigger);
+                    
+                    // ===== 首屏入场动画 =====
+                    const homeTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+                    
+                    homeTl
+                        .from('.home-title', {
+                            y: 60,
+                            opacity: 0,
+                            duration: 1,
+                            delay: 0.3
+                        })
+                        .from('.home-social-icons a', {
+                            scale: 0,
+                            opacity: 0,
+                            duration: 0.5,
+                            stagger: 0.1
+                        }, '-=0.5')
+                        .from('.home-cta', {
+                            y: 30,
+                            opacity: 0,
+                            duration: 0.6
+                        }, '-=0.3')
+                        .from('.home-scroll-hint', {
+                            opacity: 0,
+                            duration: 0.5
+                        }, '-=0.3');
+                    
+                    // ===== 滚动触发动画 =====
+                    const revealElements = document.querySelectorAll('.reveal-element');
+                    
+                    revealElements.forEach((el) => {
+                        gsap.fromTo(el, 
+                            { y: 30, opacity: 0 },
+                            {
+                                y: 0,
+                                opacity: 1,
+                                duration: 0.6,
+                                ease: 'power2.out',
+                                scrollTrigger: {
+                                    trigger: el,
+                                    start: 'top 85%',
+                                    toggleActions: 'play none none none'
+                                }
+                            }
+                        );
+                    });
+                };
+                
+                // ===== 生命周期钩子 =====
+                onMounted(() => {
+                    // 初始化Lucide图标
+                    lucide.createIcons();
+                    
+                    // 从localStorage读取主题设置
+                    const savedTheme = localStorage.getItem('theme');
+                    if (savedTheme === 'dark') {
+                        isDarkMode.value = true;
+                        document.documentElement.classList.add('dark');
+                    } else if (savedTheme === 'light') {
+                        isDarkMode.value = false;
+                        document.documentElement.classList.remove('dark');
+                    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        // 检测系统偏好
+                        isDarkMode.value = true;
+                        document.documentElement.classList.add('dark');
+                    }
+                    
+                    // 从localStorage读取语言设置
+                    const savedLang = localStorage.getItem('lang');
+                    if (savedLang) {
+                        currentLang.value = savedLang;
+                    }
+                    
+                    // 绑定滚动事件
+                    window.addEventListener('scroll', handleScroll, { passive: true });
+                    
+                    // 初始化动画
+                    initAnimations();
+                });
+                
+                // ===== 监听语言变化，重新初始化图标 =====
+                watch(currentLang, () => {
+                    // 使用setTimeout确保DOM更新后再初始化图标
+                    setTimeout(() => {
+                        lucide.createIcons();
+                    }, 0);
+                });
+                
+                // ===== 返回值 =====
+                return {
+                    profileData,
+                    isDarkMode,
+                    currentLang,
+                    isScrolled,
+                    isMobileMenuOpen,
+                    navItems,
+                    calculatedAge,
+                    toggleDarkMode,
+                    toggleLang,
+                    updateGlowPosition,
+                    resetGlowPosition
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
 </html>
