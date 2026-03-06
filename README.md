@@ -1,8 +1,20 @@
+
 # WeiMinal's Pages
-> 用于个人基本介绍的静态网页<br/>
-> 使用Cloudflare代理<br/>
+
+- https://weiminal.com
+
+- 主要用于搜索导航及个人履历介绍
+
+---
+## LICENSE
+
+- Apache License 2.0
+
+- 欢迎参与贡献代码，使用本代码请添加说明或友情链接。
 
 
-## 地址访问
-- [https://weiminal.eu.org/](https://weiminal.eu.org/)<br/>
+---
+## API来源
+
+- [api_favicon](https://github.com/xinac721/api_favicon)
 
