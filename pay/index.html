@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <title>工资计算器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Inter', 'Noto Sans SC', sans-serif;
+                background-color: #fafafa;
+                color: #1a1a1a;
+                -webkit-tap-highlight-color: transparent;
+            }
+            input[type="number"]::-webkit-inner-spin-button,
+            input[type="number"]::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+        }
+        @layer components {
+            .glass-card {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+            .glass-card.has-dropdown {
+                overflow: visible;
+            }
+            .input-minimal {
+                border: none;
+                border-bottom: 1px solid #e5e5e5;
+                background: transparent;
+                transition: all 0.3s ease;
+                width: 100%;
+            }
+            .input-minimal:focus {
+                outline: none;
+                border-bottom-color: #1a1a1a;
+            }
+            .input-blue {
+                color: #2563eb;
+                font-weight: 500;
+            }
+            .number-display {
+                font-variant-numeric: tabular-nums;
+                letter-spacing: -0.02em;
+            }
+            .editable-field {
+                position: relative;
+                padding: 8px 12px;
+                background: #fafafa;
+                border-radius: 6px;
+                border: 1px solid transparent;
+                transition: all 0.2s ease;
+            }
+            .editable-field:hover {
+                border-color: #e5e5e5;
+                background: #f5f5f5;
+            }
+            .editable-field:focus-within {
+                border-color: #1a1a1a;
+                background: #fff;
+            }
+            .section-title {
+                font-size: 0.75rem;
+                color: #9ca3af;
+                margin-bottom: 0.25rem;
+                font-weight: 400;
+            }
+            .rate-input {
+                width: 2.75rem;
+                min-width: 2.75rem;
+                padding: 4px 6px;
+                font-size: 0.75rem;
+                text-align: center;
+                background: #f3f4f6;
+                border: none;
+                border-radius: 6px;
+                font-variant-numeric: tabular-nums;
+            }
+            .rate-input:focus {
+                outline: none;
+                background: #e5e7eb;
+            }
+            .rates-reset-btn {
+                width: 5.5rem;
+                padding: 6px 12px;
+                font-size: 0.75rem;
+                text-align: center;
+                background: #f3f4f6;
+                border: none;
+                border-radius: 9999px;
+                color: #4b5563;
+                transition: background 0.2s;
+            }
+            .rates-reset-btn:hover {
+                background: #e5e7eb;
+            }
+            .leave-days-input {
+                width: 2.75rem;
+                min-width: 2.75rem;
+                padding: 4px 6px;
+                font-size: 0.8125rem;
+                text-align: center;
+                background: #f3f4f6;
+                border: none;
+                border-radius: 6px;
+                font-variant-numeric: tabular-nums;
+            }
+            .leave-days-input:focus {
+                outline: none;
+                background: #e5e7eb;
+            }
+            .insurance-base-input {
+                width: 3.5rem;
+                min-width: 3.5rem;
+                padding: 4px 8px;
+                font-size: 0.8125rem;
+                text-align: center;
+                background: #f3f4f6;
+                border: none;
+                border-radius: 6px;
+                font-variant-numeric: tabular-nums;
+                color: #2563eb;
+                font-weight: 500;
+            }
+            .insurance-base-input:focus {
+                outline: none;
+                background: #e5e7eb;
+            }
+            .insurance-rates-table .grid {
+                min-width: 0;
+            }
+            .insurance-rates-table .grid > *:nth-child(4n+1) {
+                min-width: 3rem;
+            }
+
+            .custom-select {
+                position: relative;
+                cursor: pointer;
+            }
+            .custom-select-trigger {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 12px;
+                background: #fafafa;
+                border: 1px solid transparent;
+                border-radius: 6px;
+                transition: all 0.2s ease;
+            }
+            .custom-select-trigger:hover {
+                border-color: #e5e5e5;
+                background: #f5f5f5;
+            }
+            .custom-select.open .custom-select-trigger {
+                border-color: #1a1a1a;
+                background: #fff;
+            }
+            .custom-options {
+                position: fixed;
+                min-width: 0;
+                margin-top: 0;
+                background: #fff;
+                border: 1px solid rgba(0, 0, 0, 0.08);
+                border-radius: 8px;
+                box-shadow: 0 10px 40px -10px rgba(0,0,0,0.2);
+                max-height: 200px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-4px);
+                transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+                z-index: 2147483647;
+                left: 0;
+                top: 0;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            .custom-options::-webkit-scrollbar {
+                display: none;
+            }
+            .custom-select.open .custom-options,
+            .custom-options.is-open {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+            .custom-option {
+                padding: 8px 12px;
+                cursor: pointer;
+                transition: all 0.15s ease;
+                font-size: 0.875rem;
+                white-space: nowrap;
+                text-align: center;
+            }
+            .custom-option:hover {
+                background: #f9fafb;
+            }
+            .custom-option.selected {
+                background: #f3f4f6;
+                font-weight: 500;
+            }
+            .chevron {
+                width: 16px;
+                height: 16px;
+                transition: transform 0.2s ease;
+                color: #9ca3af;
+            }
+            .custom-select.open .chevron {
+                transform: rotate(180deg);
+            }
+
+            @media (min-width: 1024px) {
+                .panel-wrap {
+                    border-radius: 1rem;
+                    overflow: hidden;
+                    border: 1px solid rgba(0, 0, 0, 0.06);
+                    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+                    background: rgba(255, 255, 255, 0.95);
+                }
+                .panel-wrap .grid-inner {
+                    gap: 0;
+                }
+                .panel-wrap .glass-card {
+                    border: none;
+                    border-radius: 0;
+                    box-shadow: none;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                }
+                .panel-wrap .left-col {
+                    border-right: 1px solid rgba(0, 0, 0, 0.05);
+                }
+                .panel-wrap .left-col .glass-card:last-child,
+                .panel-wrap .right-col .glass-card:last-child {
+                    border-bottom: none;
+                }
+                .panel-wrap .left-col .glass-card:first-child {
+                    border-radius: 1rem 0 0 0;
+                }
+                .panel-wrap .left-col .glass-card:last-child {
+                    border-radius: 0 0 0 1rem;
+                }
+                .panel-wrap .right-col .glass-card:first-child {
+                    border-radius: 0 1rem 0 0;
+                }
+                .panel-wrap .right-col .glass-card:last-child {
+                    border-radius: 0 0 1rem 0;
+                    padding-bottom: 1rem;
+                }
+                .panel-wrap .detail-summary-row .net-salary-card,
+                .panel-wrap .detail-summary-row .company-cost-card {
+                    border-radius: 0 !important;
+                }
+                .detail-summary-row {
+                    display: grid;
+                    grid-template-rows: 1fr 1fr;
+                    gap: 0.75rem;
+                }
+                .detail-summary-row .net-salary-card,
+                .detail-summary-row .company-cost-card {
+                    min-height: 0;
+                    display: flex;
+                    align-items: center;
+                }
+            }
+
+            .detail-summary-row {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .detail-summary-row .net-salary-card .summary-right,
+            .detail-summary-row .company-cost-card .summary-right {
+                text-align: right;
+            }
+
+            @media (max-width: 640px) {
+                .glass-card { padding: 1rem !important; }
+                .editable-field { padding: 6px 10px; min-height: 44px; }
+                .input-minimal.text-2xl { font-size: 1.25rem; }
+                .section-title { font-size: 0.7rem; }
+                .custom-select-trigger { min-height: 40px; padding: 10px 12px; }
+                .custom-option { padding: 10px 12px; min-height: 44px; display: flex; align-items: center; }
+            }
+            @media (max-width: 480px) {
+                .salary-base-grid { grid-template-columns: 1fr !important; }
+                .detail-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-3 sm:p-4 md:p-6">
+    <div class="max-w-7xl mx-auto w-full min-w-0">
+        <header class="mb-4 sm:mb-6">
+            <h1 class="text-2xl sm:text-3xl font-light tracking-tight mb-1">工资计算器</h1>
+            <p class="text-gray-500 text-sm" id="currentDate"></p>
+        </header>
+
+        <div class="panel-wrap">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 grid-inner">
+            <div class="lg:col-span-3 space-y-4 left-col lg:space-y-0">
+                <div class="glass-card has-dropdown rounded-xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-base font-medium">考勤数据</h2>
+                        <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-xs text-gray-400 uppercase tracking-wider">事假天数</span>
+                            <span class="flex items-center gap-1.5 shrink-0">
+                                <input type="number" id="leaveDays" value="0" min="0" step="0.5"
+                                    class="leave-days-input number-display"
+                                    placeholder="0">
+                                <span class="text-xs text-gray-500">天</span>
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-xs text-gray-400 uppercase tracking-wider">病假天数</span>
+                            <span class="flex items-center gap-1.5 shrink-0">
+                                <input type="number" id="sickLeaveDays" value="0" min="0" step="0.5"
+                                    class="leave-days-input number-display"
+                                    placeholder="0">
+                                <span class="text-xs text-gray-500">天</span>
+                            </span>
+                        </div>
+
+                        <div class="pt-3 border-t border-gray-100 space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">当前月份</span>
+                                <div class="custom-select" id="monthSelect">
+                                    <div class="custom-select-trigger">
+                                        <span id="currentMonth" class="text-xs font-medium"></span>
+                                        <svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="custom-options" id="monthOptions"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">节假日天数</span>
+                                <span id="holidayDays" class="text-xs font-medium text-blue-600"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">调休天数</span>
+                                <span id="workWeekendDays" class="text-xs font-medium"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">应工作日</span>
+                                <span id="workDays" class="text-xs font-medium"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500" title="应工作日+节假日天数-调休天数-请假天数">实际计薪天数</span>
+                                <span id="actualDays" class="text-sm font-semibold"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-xl p-5">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <h2 class="text-base font-medium">社保公积金</h2>
+                        <button type="button" id="ratesResetBtn" class="rates-reset-btn">非深户二档</button>
+                    </div>
+                    <div class="insurance-rates-table text-xs">
+                        <div class="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-3 gap-y-2 items-center">
+                            <span class="text-gray-400 py-1"></span>
+                            <span class="text-gray-500 font-medium py-1">缴纳基数</span>
+                            <span class="text-gray-500 font-medium py-1 text-center">个人</span>
+                            <span class="text-gray-500 font-medium py-1 text-center">公司</span>
+                            <span class="text-gray-600 py-1">养老</span>
+                            <input type="number" id="basePension" value="0" min="0" class="insurance-base-input number-display" placeholder="0">
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="ratePensionP" min="0" max="100" step="0.1" value="8" class="rate-input">%</span>
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="ratePensionC" min="0" max="100" step="0.1" value="16" class="rate-input">%</span>
+                            <span class="text-gray-600 py-1">医疗</span>
+                            <input type="number" id="baseMedical" value="0" min="0" class="insurance-base-input number-display" placeholder="0">
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="rateMedicalP" min="0" max="100" step="0.1" value="0.5" class="rate-input">%</span>
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="rateMedicalC" min="0" max="100" step="0.1" value="1.5" class="rate-input">%</span>
+                            <span class="text-gray-600 py-1">失业</span>
+                            <input type="number" id="baseUnemployment" value="0" min="0" class="insurance-base-input number-display" placeholder="0">
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="rateUnemploymentP" min="0" max="100" step="0.1" value="0.2" class="rate-input">%</span>
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="rateUnemploymentC" min="0" max="100" step="0.1" value="0.8" class="rate-input">%</span>
+                            <span class="text-gray-600 py-1">工伤</span>
+                            <input type="number" id="baseInjury" value="0" min="0" class="insurance-base-input number-display" placeholder="0">
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="rateInjuryP" min="0" max="100" step="0.1" value="0" class="rate-input">%</span>
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="rateInjuryC" min="0" max="100" step="0.1" value="0.2" class="rate-input">%</span>
+                            <span class="text-gray-600 py-1">生育</span>
+                            <input type="number" id="baseMaternity" value="0" min="0" class="insurance-base-input number-display" placeholder="0">
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="rateMaternityP" min="0" max="100" step="0.1" value="0" class="rate-input">%</span>
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="rateMaternityC" min="0" max="100" step="0.1" value="0.5" class="rate-input">%</span>
+                            <span class="text-gray-600 py-1">公积金</span>
+                            <input type="number" id="baseFund" value="0" min="0" class="insurance-base-input number-display" placeholder="0">
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="rateFundP" min="0" max="100" step="0.1" value="5" class="rate-input">%</span>
+                            <span class="flex justify-center items-center gap-0.5"><input type="number" id="rateFundC" min="0" max="100" step="0.1" value="5" class="rate-input">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-9 space-y-3 right-col lg:space-y-0">
+                <div class="glass-card rounded-xl p-4 sm:p-5">
+                    <h2 class="text-base font-medium mb-4">工资基数设置</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 salary-base-grid">
+                        <div class="editable-field">
+                            <label class="section-title">基本工资</label>
+                            <input type="number" id="salaryBase" value="0" min="0"
+                                class="input-minimal input-blue text-xl number-display"
+                                placeholder="0">
+                        </div>
+                        <div class="editable-field">
+                            <label class="section-title">项目津贴</label>
+                            <input type="number" id="salaryAllowance" value="0" min="0"
+                                class="input-minimal input-blue text-xl number-display"
+                                placeholder="0">
+                        </div>
+                        <div class="editable-field">
+                            <label class="section-title">项目奖金</label>
+                            <input type="number" id="salaryBonus" value="0" min="0"
+                                class="input-minimal input-blue text-xl number-display"
+                                placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-xl p-4 sm:p-5 pb-5 sm:pb-6">
+                    <h2 class="text-base font-medium mb-3 sm:mb-4"><span id="detailMonthLabel" class="text-gray-500 font-normal">2026年3月</span> 工资明细</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8 detail-grid">
+                        <div class="space-y-5 detail-block">
+                            <div>
+                                <div class="text-xs text-gray-500 mb-0.5">基本工资</div>
+                                <div class="text-xl font-light number-display" id="baseSalary">¥0.00</div>
+                                <div class="text-xs text-gray-400">基数÷21.75×实际计薪天数（扣事假病假）</div>
+                                <div class="text-xs text-gray-500 mt-0.5 font-mono" id="baseSalaryFormula"></div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-0.5">项目津贴</div>
+                                <div class="text-xl font-light number-display text-blue-600" id="projectAllowance">¥0.00</div>
+                                <div class="text-xs text-gray-400">基数÷21.75×应工作日</div>
+                                <div class="text-xs text-gray-500 mt-0.5 font-mono" id="projectAllowanceFormula"></div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-0.5">项目奖金</div>
+                                <div class="text-xl font-light number-display text-blue-600" id="projectBonus">¥0.00</div>
+                                <div class="text-xs text-gray-400">基数÷21.75×应工作日</div>
+                                <div class="text-xs text-gray-500 mt-0.5 font-mono" id="projectBonusFormula"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-5 detail-block">
+                            <div>
+                                <div class="text-xs text-gray-500 mb-0.5">事假扣款</div>
+                                <div class="text-xl font-light number-display text-red-500" id="attendanceDeduction">-¥0.00</div>
+                                <div class="text-xs text-gray-400">基本工资基数÷21.75×事假天数</div>
+                                <div class="text-xs text-gray-500 mt-0.5 font-mono" id="attendanceDeductionFormula"></div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-0.5">病假扣款</div>
+                                <div class="text-xl font-light number-display text-red-500" id="sickLeaveDeduction">-¥0.00</div>
+                                <div class="text-xs text-gray-400">基本工资基数÷21.75×病假天数×80%</div>
+                                <div class="text-xs text-gray-500 mt-0.5 font-mono" id="sickLeaveDeductionFormula"></div>
+                            </div>
+                            <div class="pt-3 border-t border-gray-100">
+                                <div class="text-xs text-gray-500 mb-0.5">个人社保公积金</div>
+                                <div class="text-lg font-light number-display text-gray-600" id="insuranceTotal">-¥0.00</div>
+                                <div class="text-xs text-gray-400">根据基数计算</div>
+                                <div class="text-xs text-gray-500 mt-0.5 font-mono" id="insuranceTotalFormula"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-summary-row">
+                    <div class="glass-card rounded-xl p-4 sm:p-5 bg-gradient-to-br from-gray-900 to-gray-800 text-white net-salary-card">
+                        <div class="flex justify-between items-center gap-4 w-full">
+                            <div class="text-sm opacity-90">实发工资</div>
+                            <div class="summary-right min-w-0 flex flex-col items-end">
+                                <div class="text-2xl sm:text-4xl font-light tracking-tight number-display truncate" id="netSalary">¥0.00</div>
+                                <div class="text-xs opacity-60 mt-1">已扣除个人社保公积金</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card rounded-xl p-4 sm:p-5 company-cost-card">
+                        <div class="flex justify-between items-center gap-4 w-full">
+                            <div class="text-xs text-gray-500 uppercase tracking-wider">公司用人成本</div>
+                            <div class="summary-right flex flex-col items-end">
+                                <div class="text-xl font-light number-display" id="companyCost">¥0.00</div>
+                                <div class="text-xs text-gray-400">含公司承担社保公积金</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <footer class="mt-3 sm:mt-4 text-center text-xs text-gray-400">
+            <p>数据仅供参考，实际金额以财务部门核算为准</p>
+            <p class="select-none">2026 © WEIMINAL</p>
+        </footer>
+    </div>
+
+    <script>
+        const now = new Date();
+        let currentYear = 2026;
+        let currentMonthNum = Math.min(12, Math.max(1, now.getMonth() + 1));
+
+        const RATES_DEFAULT = {
+            personal: { pension: 8, medical: 0.5, unemployment: 0.2, injury: 0, maternity: 0, fund: 5 },
+            company: { pension: 16, medical: 1.5, unemployment: 0.8, injury: 0.2, maternity: 0.5, fund: 5 }
+        };
+        const RATE_KEYS = ['pension', 'medical', 'unemployment', 'injury', 'maternity', 'fund'];
+        const STORAGE_INSURANCE = 'payroll_insurance_bases';
+        const STORAGE_SALARY = 'payroll_salary_bases';
+        const STORAGE_RATES = 'payroll_rates';
+
+        const RATE_INPUT_IDS = {
+            pension: ['ratePensionP', 'ratePensionC'],
+            medical: ['rateMedicalP', 'rateMedicalC'],
+            unemployment: ['rateUnemploymentP', 'rateUnemploymentC'],
+            injury: ['rateInjuryP', 'rateInjuryC'],
+            maternity: ['rateMaternityP', 'rateMaternityC'],
+            fund: ['rateFundP', 'rateFundC']
+        };
+
+        function getRatesFromInputs() {
+            const personal = {}, company = {};
+            RATE_KEYS.forEach(key => {
+                const [pid, cid] = RATE_INPUT_IDS[key];
+                const pEl = document.getElementById(pid), cEl = document.getElementById(cid);
+                personal[key] = (parseFloat(pEl && pEl.value) || 0) / 100;
+                company[key] = (parseFloat(cEl && cEl.value) || 0) / 100;
+            });
+            return { personal, company };
+        }
+
+        const holidays2026 = {
+            1: [1, 2, 3], 2: [15, 16, 17, 18, 19, 20, 21, 22, 23], 4: [4, 5, 6],
+            5: [1, 2, 3, 4, 5], 6: [19, 20, 21], 9: [25, 26, 27], 10: [1, 2, 3, 4, 5, 6, 7]
+        };
+        const workWeekends2026 = { 1: [4], 2: [14, 28], 5: [9], 9: [20], 10: [10] };
+        const workDays2026 = {
+            1: 21, 2: 16, 3: 22, 4: 21, 5: 19, 6: 20,
+            7: 22, 8: 21, 9: 22, 10: 18, 11: 22, 12: 22
+        };
+
+        function getHolidays(year, month) {
+            return (year === 2026 && holidays2026[month]) ? holidays2026[month] : [];
+        }
+
+        function getWorkWeekends(year, month) {
+            return (year === 2026 && workWeekends2026[month]) ? workWeekends2026[month] : [];
+        }
+
+        function calculateWorkDays(year, month) {
+            if (year === 2026 && workDays2026[month] !== undefined) {
+                return workDays2026[month];
+            }
+            const holidays = getHolidays(year, month);
+            const workWeekends = getWorkWeekends(year, month);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            let workDays = 0;
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month - 1, day);
+                const dayOfWeek = date.getDay();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                if (workWeekends.includes(day)) {
+                    workDays++;
+                } else if (!isWeekend && !holidays.includes(day)) {
+                    workDays++;
+                }
+            }
+            return workDays;
+        }
+
+        function calculateInsurance() {
+            const bases = {
+                pension: parseFloat(document.getElementById('basePension').value) || 0,
+                medical: parseFloat(document.getElementById('baseMedical').value) || 0,
+                unemployment: parseFloat(document.getElementById('baseUnemployment').value) || 0,
+                injury: parseFloat(document.getElementById('baseInjury').value) || 0,
+                maternity: parseFloat(document.getElementById('baseMaternity').value) || 0,
+                fund: parseFloat(document.getElementById('baseFund').value) || 0
+            };
+            const RATES = getRatesFromInputs();
+            const personal = {};
+            const company = {};
+            let personalTotal = 0, companyTotal = 0;
+
+            for (let key in bases) {
+                personal[key] = bases[key] * RATES.personal[key];
+                company[key] = bases[key] * RATES.company[key];
+                personalTotal += personal[key];
+                companyTotal += company[key];
+            }
+
+            return { personal, company, personalTotal, companyTotal };
+        }
+
+        const MONTHLY_PAY_DAYS = 21.75;
+
+        function calculateSalary() {
+            const leaveDays = parseFloat(document.getElementById('leaveDays').value) || 0;
+            const sickLeaveDays = parseFloat(document.getElementById('sickLeaveDays').value) || 0;
+            const salaryBase = parseFloat(document.getElementById('salaryBase').value) || 0;
+            const salaryAllowance = parseFloat(document.getElementById('salaryAllowance').value) || 0;
+            const salaryBonus = parseFloat(document.getElementById('salaryBonus').value) || 0;
+
+            const holidays = getHolidays(currentYear, currentMonthNum);
+            const holidayCount = holidays.length;
+            const workWeekends = getWorkWeekends(currentYear, currentMonthNum);
+            const workWeekendCount = workWeekends.length;
+            const workDays = calculateWorkDays(currentYear, currentMonthNum);
+            const actualPayDays = Math.max(0, workDays + holidayCount - workWeekendCount - leaveDays - sickLeaveDays);
+            const effectivePayDaysForBase = Math.max(0, workDays + holidayCount - workWeekendCount - leaveDays - sickLeaveDays * 0.8);
+
+            const monthLabel = `${currentYear}年${currentMonthNum}月`;
+            document.getElementById('currentMonth').textContent = monthLabel;
+            const detailEl = document.getElementById('detailMonthLabel');
+            if (detailEl) detailEl.textContent = monthLabel;
+            document.getElementById('holidayDays').textContent = `${holidayCount}天`;
+            const wwEl = document.getElementById('workWeekendDays');
+            if (wwEl) wwEl.textContent = `${workWeekendCount}天`;
+            document.getElementById('workDays').textContent = `${workDays}天`;
+            document.getElementById('actualDays').textContent = `${actualPayDays}天`;
+
+            const baseSalary = (salaryBase / MONTHLY_PAY_DAYS) * effectivePayDaysForBase;
+            const projectAllowance = (salaryAllowance / MONTHLY_PAY_DAYS) * workDays;
+            const projectBonus = (salaryBonus / MONTHLY_PAY_DAYS) * workDays;
+            const attendanceDeduction = (salaryBase / MONTHLY_PAY_DAYS) * leaveDays;
+            const sickLeaveDeduction = (salaryBase / MONTHLY_PAY_DAYS) * sickLeaveDays * 0.8;
+
+            const insurance = calculateInsurance();
+            const grossSalary = baseSalary + projectAllowance + projectBonus;
+            const netSalary = grossSalary - insurance.personalTotal;
+            const companyCost = grossSalary + insurance.companyTotal;
+
+            updateNumber('baseSalary', baseSalary);
+            updateNumber('projectAllowance', projectAllowance);
+            updateNumber('projectBonus', projectBonus);
+            updateNumber('attendanceDeduction', attendanceDeduction, true);
+            updateNumber('sickLeaveDeduction', sickLeaveDeduction, true);
+            updateNumber('insuranceTotal', insurance.personalTotal, true);
+            updateNumber('netSalary', netSalary);
+            updateNumber('companyCost', companyCost);
+
+            const fmt = (n) => (typeof n === 'number' && !isNaN(n)) ? n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00';
+            const setFormula = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+            setFormula('baseSalaryFormula', `${salaryBase}÷21.75×${effectivePayDaysForBase.toFixed(2)}=${fmt(baseSalary)}`);
+            setFormula('projectAllowanceFormula', `${salaryAllowance}÷21.75×${workDays}=${fmt(projectAllowance)}`);
+            setFormula('projectBonusFormula', `${salaryBonus}÷21.75×${workDays}=${fmt(projectBonus)}`);
+            setFormula('attendanceDeductionFormula', `${salaryBase}÷21.75×${leaveDays}=${fmt(attendanceDeduction)}`);
+            setFormula('sickLeaveDeductionFormula', `${salaryBase}÷21.75×${sickLeaveDays}×80%=${fmt(sickLeaveDeduction)}`);
+            setFormula('insuranceTotalFormula', '各险种基数×比例之和=' + fmt(insurance.personalTotal));
+        }
+
+        function updateNumber(id, value, isNegative = false) {
+            const element = document.getElementById(id);
+            const formatted = '¥' + value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            element.textContent = isNegative ? '-' + formatted : formatted;
+        }
+
+        function initMonthSelect() {
+            const select = document.getElementById('monthSelect');
+            const optionsContainer = document.getElementById('monthOptions');
+            const trigger = select.querySelector('.custom-select-trigger');
+            for (let m = 1; m <= 12; m++) {
+                const option = document.createElement('div');
+                option.className = 'custom-option' + (m === currentMonthNum ? ' selected' : '');
+                option.textContent = `${currentYear}年${m}月`;
+                option.dataset.month = m;
+                option.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    currentMonthNum = parseInt(this.dataset.month);
+                    document.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    closeDropdown();
+                    calculateSalary();
+                });
+                optionsContainer.appendChild(option);
+            }
+
+            function positionDropdown() {
+                const rect = trigger.getBoundingClientRect();
+                optionsContainer.style.position = 'fixed';
+                optionsContainer.style.top = (rect.bottom + 4) + 'px';
+                optionsContainer.style.left = rect.left + 'px';
+                optionsContainer.style.width = 'max-content';
+                optionsContainer.style.minWidth = '6.5rem';
+            }
+
+            function closeDropdown() {
+                select.classList.remove('open');
+                optionsContainer.classList.remove('is-open');
+                if (optionsContainer.parentNode === document.body) {
+                    optionsContainer.parentNode.removeChild(optionsContainer);
+                    select.appendChild(optionsContainer);
+                }
+            }
+
+            function openDropdown() {
+                positionDropdown();
+                document.body.appendChild(optionsContainer);
+                select.classList.add('open');
+                optionsContainer.classList.add('is-open');
+            }
+
+            trigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                if (select.classList.contains('open')) {
+                    closeDropdown();
+                } else {
+                    openDropdown();
+                }
+            });
+
+            window.addEventListener('scroll', function() {
+                if (optionsContainer.classList.contains('is-open')) positionDropdown();
+            }, true);
+            window.addEventListener('resize', function() {
+                if (optionsContainer.classList.contains('is-open')) positionDropdown();
+            });
+
+            document.addEventListener('click', function(e) {
+                if (select.contains(e.target) || optionsContainer.contains(e.target)) return;
+                closeDropdown();
+            });
+        }
+
+        function saveInsuranceBases() {
+            const o = {
+                basePension: document.getElementById('basePension').value,
+                baseMedical: document.getElementById('baseMedical').value,
+                baseUnemployment: document.getElementById('baseUnemployment').value,
+                baseInjury: document.getElementById('baseInjury').value,
+                baseMaternity: document.getElementById('baseMaternity').value,
+                baseFund: document.getElementById('baseFund').value
+            };
+            try { localStorage.setItem(STORAGE_INSURANCE, JSON.stringify(o)); } catch (e) {}
+        }
+
+        function saveSalaryBases() {
+            const o = {
+                salaryBase: document.getElementById('salaryBase').value,
+                salaryAllowance: document.getElementById('salaryAllowance').value,
+                salaryBonus: document.getElementById('salaryBonus').value
+            };
+            try { localStorage.setItem(STORAGE_SALARY, JSON.stringify(o)); } catch (e) {}
+        }
+
+        function loadInsuranceBases() {
+            try {
+                const s = localStorage.getItem(STORAGE_INSURANCE);
+                if (s) {
+                    const o = JSON.parse(s);
+                    ['basePension','baseMedical','baseUnemployment','baseInjury','baseMaternity','baseFund'].forEach(id => {
+                        if (o[id] !== undefined) document.getElementById(id).value = o[id];
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function loadSalaryBases() {
+            try {
+                const s = localStorage.getItem(STORAGE_SALARY);
+                if (s) {
+                    const o = JSON.parse(s);
+                    if (o.salaryBase !== undefined) document.getElementById('salaryBase').value = o.salaryBase;
+                    if (o.salaryAllowance !== undefined) document.getElementById('salaryAllowance').value = o.salaryAllowance;
+                    if (o.salaryBonus !== undefined) document.getElementById('salaryBonus').value = o.salaryBonus;
+                }
+            } catch (e) {}
+        }
+
+        function setRatesToDefault() {
+            RATE_KEYS.forEach(key => {
+                const [pid, cid] = RATE_INPUT_IDS[key];
+                const pe = document.getElementById(pid), ce = document.getElementById(cid);
+                if (pe) pe.value = RATES_DEFAULT.personal[key];
+                if (ce) ce.value = RATES_DEFAULT.company[key];
+            });
+            saveRates();
+            updateRatesButtonText();
+        }
+
+        function saveRates() {
+            const o = { personal: {}, company: {} };
+            RATE_KEYS.forEach(key => {
+                const [pid, cid] = RATE_INPUT_IDS[key];
+                const pe = document.getElementById(pid), ce = document.getElementById(cid);
+                o.personal[key] = pe ? parseFloat(pe.value) : RATES_DEFAULT.personal[key];
+                o.company[key] = ce ? parseFloat(ce.value) : RATES_DEFAULT.company[key];
+            });
+            try { localStorage.setItem(STORAGE_RATES, JSON.stringify(o)); } catch (e) {}
+        }
+
+        function loadRates() {
+            try {
+                const s = localStorage.getItem(STORAGE_RATES);
+                if (s) {
+                    const o = JSON.parse(s);
+                    RATE_KEYS.forEach(key => {
+                        const [pid, cid] = RATE_INPUT_IDS[key];
+                        const pe = document.getElementById(pid), ce = document.getElementById(cid);
+                        if (o.personal && o.personal[key] !== undefined && pe) pe.value = o.personal[key];
+                        if (o.company && o.company[key] !== undefined && ce) ce.value = o.company[key];
+                    });
+                } else {
+                    setRatesToDefault();
+                }
+            } catch (e) {
+                setRatesToDefault();
+            }
+        }
+
+        function isRatesDefault() {
+            const eq = (a, b) => Math.abs((parseFloat(a) || 0) - (typeof b === 'number' ? b : parseFloat(b) || 0)) < 0.001;
+            for (let key of RATE_KEYS) {
+                const [pid, cid] = RATE_INPUT_IDS[key];
+                const pe = document.getElementById(pid), ce = document.getElementById(cid);
+                if (!eq(pe && pe.value, RATES_DEFAULT.personal[key]) || !eq(ce && ce.value, RATES_DEFAULT.company[key])) return false;
+            }
+            return true;
+        }
+
+        function updateRatesButtonText() {
+            const btn = document.getElementById('ratesResetBtn');
+            if (!btn) return;
+            btn.textContent = isRatesDefault() ? '非深户二档' : '恢复默认';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadInsuranceBases();
+            loadSalaryBases();
+            loadRates();
+            updateRatesButtonText();
+
+            initMonthSelect();
+            calculateSalary();
+
+            const insuranceIds = ['basePension','baseMedical','baseUnemployment','baseInjury','baseMaternity','baseFund'];
+            const salaryIds = ['salaryBase','salaryAllowance','salaryBonus'];
+            insuranceIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', function() { saveInsuranceBases(); calculateSalary(); });
+            });
+            salaryIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', function() { saveSalaryBases(); calculateSalary(); });
+            });
+            document.getElementById('leaveDays').addEventListener('input', calculateSalary);
+            document.getElementById('sickLeaveDays').addEventListener('input', calculateSalary);
+
+            RATE_KEYS.forEach(key => {
+                const [pid, cid] = RATE_INPUT_IDS[key];
+                [pid, cid].forEach(rid => {
+                    const el = document.getElementById(rid);
+                    if (el) el.addEventListener('input', function() { saveRates(); updateRatesButtonText(); calculateSalary(); });
+                });
+            });
+
+            document.getElementById('ratesResetBtn').addEventListener('click', function() {
+                if (this.textContent === '恢复默认') {
+                    setRatesToDefault();
+                    calculateSalary();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
