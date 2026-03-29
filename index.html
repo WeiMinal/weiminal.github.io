@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <!-- 基础元数据设置 -->
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#e8eef6" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#2e3038" media="(prefers-color-scheme: dark)" />
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
   <title>新标签页</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  
-  <!-- ============================================
-         全局样式定义
-         ============================================ -->
   <style>
     :root {
       --glass-bg: rgba(255, 255, 255, 0.12);
@@ -53,6 +51,8 @@
       --tt-glass-after-dark: 0.25;
       --tt-glass-shadow-light: rgba(0, 0, 0, 0.06);
       --tt-glass-shadow-dark: rgba(0, 0, 0, 0.2);
+      --tt-footer-muted-light: rgba(30, 30, 38, 0.22);
+      --tt-footer-muted-dark: rgba(255, 255, 255, 0.22);
     }
     body.night-mode {
       --glass-bg: rgba(60, 62, 72, 0.35);
@@ -94,6 +94,11 @@
       --glass-border: color-mix(in srgb, var(--tt-glass-border-light) calc((1 - var(--theme-t)) * 100%), var(--tt-glass-border-dark) calc(var(--theme-t) * 100%));
       --glass-shadow: 0 8px 32px color-mix(in srgb, var(--tt-glass-shadow-light) calc((1 - var(--theme-t)) * 100%), var(--tt-glass-shadow-dark) calc(var(--theme-t) * 100%));
       --glass-inset: inset 0 1px 0 0 color-mix(in srgb, rgba(255, 255, 255, 0.5) calc((1 - var(--theme-t)) * 100%), rgba(255, 255, 255, 0.12) calc(var(--theme-t) * 100%)), inset 0 -1px 0 0 color-mix(in srgb, rgba(255, 255, 255, 0.15) calc((1 - var(--theme-t)) * 100%), rgba(255, 255, 255, 0.12) calc(var(--theme-t) * 100%));
+      --bg-gradient: linear-gradient(165deg,
+        color-mix(in srgb, #e8eef6 calc((1 - var(--theme-t)) * 100%), #383a42 calc(var(--theme-t) * 100%)) 0%,
+        color-mix(in srgb, #dde5f0 calc((1 - var(--theme-t)) * 100%), #3d3f48 calc(var(--theme-t) * 100%)) 35%,
+        color-mix(in srgb, #f0f4fb calc((1 - var(--theme-t)) * 100%), #34363e calc(var(--theme-t) * 100%)) 70%,
+        color-mix(in srgb, #e2eaf5 calc((1 - var(--theme-t)) * 100%), #2e3038 calc(var(--theme-t) * 100%)) 100%);
     }
     body.theme-transitioning .glass::after {
       opacity: calc(0.6 - 0.35 * var(--theme-t));
@@ -120,6 +125,23 @@
     body.theme-transitioning .top-bar-btn:hover {
       background: color-mix(in srgb, var(--tt-topbar-hover-light) calc((1 - var(--theme-t)) * 100%), var(--tt-topbar-hover-dark) calc(var(--theme-t) * 100%));
     }
+    body.theme-transitioning .link-add-btn .link-add-inner {
+      background: color-mix(in srgb, var(--tt-link-bg-light) calc((1 - var(--theme-t)) * 100%), var(--tt-link-bg-dark) calc(var(--theme-t) * 100%));
+      border-color: color-mix(in srgb, var(--tt-link-border-light) calc((1 - var(--theme-t)) * 100%), var(--tt-link-border-dark) calc(var(--theme-t) * 100%));
+    }
+    body.theme-transitioning .link-add-btn .link-add-inner:hover {
+      background: color-mix(in srgb, var(--tt-link-hover-light) calc((1 - var(--theme-t)) * 100%), var(--tt-link-hover-dark) calc(var(--theme-t) * 100%));
+    }
+    body.theme-transitioning .engine-dropdown {
+      background: color-mix(in srgb, rgba(255, 255, 255, 0.14) calc((1 - var(--theme-t)) * 100%), rgba(40, 40, 48, 0.9) calc(var(--theme-t) * 100%));
+      border-color: color-mix(in srgb, var(--tt-glass-border-light) calc((1 - var(--theme-t)) * 100%), rgba(255, 255, 255, 0.1) calc(var(--theme-t) * 100%));
+    }
+    body.theme-transitioning .engine-option:hover {
+      background: color-mix(in srgb, rgba(255, 255, 255, 0.35) calc((1 - var(--theme-t)) * 100%), rgba(255, 255, 255, 0.1) calc(var(--theme-t) * 100%));
+    }
+    body.theme-transitioning .engine-option.active {
+      background: color-mix(in srgb, rgba(255, 255, 255, 0.4) calc((1 - var(--theme-t)) * 100%), rgba(255, 255, 255, 0.15) calc(var(--theme-t) * 100%));
+    }
 
     * {
       box-sizing: border-box;
@@ -129,20 +151,58 @@
 
     html {
       height: 100%;
+      min-height: 100dvh;
+      min-height: -webkit-fill-available;
     }
 
     body {
       font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
       min-height: 100%;
       min-height: 100dvh;
-      background: var(--bg-gradient);
-      background-attachment: fixed;
+      min-height: -webkit-fill-available;
+      position: relative;
+      background: transparent;
       color: var(--text);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: clamp(0.75rem, 4vw, 2rem);
+      --page-pad: clamp(0.75rem, 4vw, 2rem);
+      padding: var(--page-pad);
+      padding-left: max(var(--page-pad), env(safe-area-inset-left, 0px));
+      padding-right: max(var(--page-pad), env(safe-area-inset-right, 0px));
+      padding-bottom: max(var(--page-pad), env(safe-area-inset-bottom, 0px));
       -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      width: 100%;
+      min-height: 100%;
+      min-height: 100dvh;
+      min-height: -webkit-fill-available;
+      background: var(--bg-gradient);
+      pointer-events: none;
+    }
+
+    @media (pointer: coarse) {
+      html,
+      body {
+        -webkit-user-select: none;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-touch-callout: none;
+      }
+
+      .search-input,
+      .modal input {
+        -webkit-user-select: text;
+        user-select: text;
+        -moz-user-select: text;
+        -webkit-touch-callout: default;
+      }
     }
     .glass {
       position: relative;
@@ -174,26 +234,34 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      width: 100%;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-top: calc(52px + env(safe-area-inset-top, 0px));
+      padding-bottom: max(0.35rem, env(safe-area-inset-bottom, 0px));
+    }
+
+    .main-center-stack {
       width: 100%;
       max-width: min(580px, calc(100vw - 2rem));
-      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      margin-top: auto;
+      margin-bottom: auto;
+      padding: 0.25rem 0;
     }
-    body.lang-switching [data-i18n],
-    body.lang-switching .search-input-hint {
-      opacity: 0;
-      transition: opacity 0.14s ease-out;
-    }
+
     .search-wrap {
       width: 100%;
       margin-bottom: 1.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
-    }
-    .main-center.edit-empty .search-wrap {
-      transform: translateY(-20px);
+      flex-shrink: 0;
     }
 
     .search-bar {
@@ -251,6 +319,8 @@
       font-size: 1rem;
       color: var(--text);
       outline: none;
+      -webkit-user-select: text;
+      user-select: text;
     }
 
     .search-input::placeholder {
@@ -346,14 +416,12 @@
     }
     .quick-links-wrap {
       width: 100%;
-      max-width: min(580px, calc(100vw - 2rem));
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    .quick-links-toolbar {
-      display: none;
+      position: relative;
+      overflow: visible;
+      flex-shrink: 0;
     }
 
     .link-add-btn {
@@ -380,12 +448,35 @@
       background: rgba(255, 255, 255, 0.35);
       transform: scale(1.08);
     }
-    .main-center.edit-empty .link-add-btn {
-      opacity: 0;
-      transition: opacity 0.3s ease-out;
+
+    @keyframes edit-add-fade-soft {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
-    .main-center.edit-empty .link-add-btn.visible {
-      opacity: 1;
+
+    .quick-links-wrap.edit-mode.link-add-enter .link-item:not(.link-add-btn) {
+      animation: none;
+    }
+
+    .quick-links-wrap.edit-mode.link-add-enter .link-item.link-add-btn {
+      animation: edit-add-fade-soft 0.42s ease-out 0.05s both;
+    }
+
+    @media (max-width: 560px) {
+      .main-center-stack:has(.quick-links-wrap.link-add-enter) .search-wrap {
+        animation: none;
+        transform: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .quick-links-wrap.edit-mode.link-add-enter .link-item.link-add-btn {
+        animation: none;
+      }
     }
 
     body.night-mode .link-add-btn .link-add-inner {
@@ -398,26 +489,18 @@
       height: 24px;
     }
 
-    .btn-edit, .btn-add {
-      padding: 0.4rem 0.75rem;
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      background: rgba(255, 255, 255, 0.25);
-      color: var(--text);
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-edit:hover, .btn-add:hover {
-      background: rgba(255, 255, 255, 0.4);
-    }
-
     .links-grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
+      align-items: center;
       gap: 1rem;
+      position: relative;
+      overflow: visible;
+    }
+
+    .quick-links-wrap.links-empty .links-grid {
+      min-height: 52px;
     }
 
     .link-item {
@@ -448,6 +531,11 @@
       background: rgba(255, 255, 255, 0.35);
       transform: scale(1.08);
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .quick-links-wrap.edit-mode .link-card:hover {
+      transform: none;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
     }
 
     .link-card img.link-favicon {
@@ -489,15 +577,46 @@
 
     .quick-links-wrap.edit-mode .link-item .btn-delete {
       display: flex;
+      opacity: 1;
+      transition: opacity 0.22s ease-out;
     }
-    .quick-links-wrap.edit-mode .link-item .link-card,
-    .quick-links-wrap.edit-mode .link-item .link-add-inner,
-    .quick-links-wrap.edit-mode .link-item .btn-delete {
-      animation: edit-wiggle 0.18s ease-in-out infinite;
+
+    .links-grid .link-item:not(.link-add-btn) .link-card {
+      touch-action: manipulation;
+      cursor: grab;
+      -webkit-user-drag: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
     }
-    @keyframes edit-wiggle {
-      0%, 100% { transform: rotate(-0.9deg); }
-      50% { transform: rotate(0.9deg); }
+    @media (pointer: fine) {
+      .links-grid .link-item:not(.link-add-btn) .link-card {
+        touch-action: none;
+      }
+    }
+    @media (pointer: coarse) {
+      .links-grid .link-item:not(.link-add-btn) .link-card {
+        cursor: pointer;
+      }
+    }
+
+    .links-grid .link-item:not(.link-add-btn) .link-card img {
+      -webkit-user-drag: none;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .links-grid.link-sort-active {
+      cursor: grabbing;
+    }
+
+    .link-item--placeholder {
+      opacity: 0.38;
+      pointer-events: none;
+    }
+
+    .link-item--drag-ghost {
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.18));
     }
     .modal-overlay {
       position: fixed;
@@ -510,47 +629,79 @@
       z-index: 1000;
     }
 
+    body:not(.night-mode) .modal-overlay {
+      background: rgba(72, 86, 108, 0.13);
+    }
+
     .modal-overlay.show {
       display: flex;
     }
     .modal {
       position: relative;
+      overflow: hidden;
+      min-width: min(320px, calc(100vw - 2rem));
+      max-width: min(440px, calc(100vw - 2rem));
+      padding: 1.35rem 1.35rem 1.2rem;
+      box-sizing: border-box;
       background: var(--glass-bg);
       backdrop-filter: blur(28px) saturate(160%);
       -webkit-backdrop-filter: blur(28px) saturate(160%);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius);
-      padding: 1.5rem;
-      min-width: 320px;
       box-shadow: var(--glass-shadow), var(--glass-inset);
     }
 
     body:not(.night-mode) .modal {
-      background: rgba(255, 255, 255, 0.88);
-      border-color: rgba(255, 255, 255, 0.6);
-      box-shadow: 0 20px 56px rgba(0, 0, 0, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+      background: linear-gradient(
+        165deg,
+        rgba(250, 251, 255, 0.44) 0%,
+        rgba(238, 242, 250, 0.38) 42%,
+        rgba(228, 235, 248, 0.32) 100%
+      );
+      border-color: rgba(220, 228, 242, 0.65);
+      backdrop-filter: blur(28px) saturate(152%);
+      -webkit-backdrop-filter: blur(28px) saturate(152%);
+      box-shadow:
+        var(--glass-shadow),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.55),
+        inset 0 0 0 1px rgba(230, 236, 248, 0.45),
+        0 20px 48px rgba(72, 92, 120, 0.07);
+    }
+
+    .modal > * {
+      position: relative;
+      z-index: 1;
     }
 
     .modal::after {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(165deg, rgba(255,255,255,0.2) 0%, transparent 50%);
-      border-radius: var(--radius);
+      inset: 0;
+      z-index: 0;
+      border-radius: inherit;
       pointer-events: none;
-      opacity: 0.5;
+      background: linear-gradient(165deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.04) 42%, transparent 62%);
+      opacity: 0.55;
+    }
+
+    body:not(.night-mode) .modal::after {
+      background: linear-gradient(
+        165deg,
+        rgba(255, 255, 255, 0.42) 0%,
+        rgba(232, 240, 252, 0.16) 52%,
+        transparent 76%
+      );
+      opacity: 0.32;
     }
 
     body.night-mode .modal::after {
-      opacity: 0.15;
+      opacity: 0.22;
     }
 
     .modal h3 {
       font-size: 1rem;
-      margin-bottom: 1rem;
+      font-weight: 600;
+      margin: 0 0 1rem;
       color: var(--text);
     }
 
@@ -558,75 +709,170 @@
       display: block;
       font-size: 0.8rem;
       color: var(--text-muted);
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.3rem;
     }
 
     .modal input {
       width: 100%;
-      padding: 0.6rem 0.85rem;
-      border: 1px solid var(--glass-border);
+      padding: 0.5rem 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.52);
       border-radius: var(--radius-sm);
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.38);
       color: var(--text);
-      font-size: 0.95rem;
-      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      margin-bottom: 0.85rem;
       box-sizing: border-box;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(22px) saturate(200%);
+      -webkit-backdrop-filter: blur(22px) saturate(200%);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.7),
+        0 1px 3px rgba(0, 0, 0, 0.05);
       outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .modal input:focus {
-      border-color: rgba(255, 255, 255, 0.55);
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.68);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.88),
+        0 0 0 1px rgba(255, 255, 255, 0.22);
     }
 
     body.night-mode .modal input {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.26);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+        0 1px 4px rgba(0, 0, 0, 0.18);
     }
 
     body.night-mode .modal input:focus {
-      border-color: rgba(255, 255, 255, 0.3);
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.38);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.32),
+        0 0 0 1px rgba(255, 255, 255, 0.12);
+    }
+
+    body:not(.night-mode) .modal input {
+      background: rgba(255, 255, 255, 0.45);
+      border-color: rgba(200, 214, 232, 0.75);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.72),
+        0 1px 3px rgba(80, 100, 130, 0.04);
+    }
+
+    body:not(.night-mode) .modal input:focus {
+      border-color: rgba(175, 198, 228, 0.9);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.85),
+        0 0 0 1px rgba(190, 210, 235, 0.45);
     }
 
     .modal-actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.5rem;
       justify-content: flex-end;
+      margin-top: 0.25rem;
+    }
+
+    #engineModal .modal-actions {
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid color-mix(in srgb, var(--glass-border) 85%, transparent);
     }
 
     .modal-actions button {
-      padding: 0.5rem 1rem;
+      padding: 0.42rem 0.85rem;
       border-radius: var(--radius-sm);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.52);
+      background: rgba(255, 255, 255, 0.4);
       color: var(--text);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: background 0.2s;
+      backdrop-filter: blur(22px) saturate(200%);
+      -webkit-backdrop-filter: blur(22px) saturate(200%);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.78),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+        0 1px 3px rgba(0, 0, 0, 0.06);
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .modal-actions button:hover {
-      background: rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.52);
+      border-color: rgba(255, 255, 255, 0.62);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+        0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .modal-actions button.primary {
-      background: rgba(255, 255, 255, 0.5);
-      font-weight: 500;
+      background: rgba(255, 255, 255, 0.52);
+      border-color: rgba(255, 255, 255, 0.62);
+      font-weight: 600;
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+        0 1px 4px rgba(0, 0, 0, 0.07);
+    }
+
+    .modal-actions button.primary:hover {
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    body:not(.night-mode) .modal-actions button {
+      background: rgba(255, 255, 255, 0.48);
+      border-color: rgba(205, 218, 235, 0.85);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.75),
+        inset 0 0 0 1px rgba(230, 238, 250, 0.55),
+        0 1px 3px rgba(80, 100, 130, 0.04);
+    }
+
+    body:not(.night-mode) .modal-actions button:hover {
+      background: rgba(248, 250, 255, 0.62);
+      border-color: rgba(190, 208, 232, 0.95);
+    }
+
+    body:not(.night-mode) .modal-actions button.primary {
+      background: rgba(240, 246, 255, 0.58);
+      border-color: rgba(175, 200, 235, 0.95);
+    }
+
+    body:not(.night-mode) .modal-actions button.primary:hover {
+      background: rgba(232, 242, 252, 0.72);
+      border-color: rgba(165, 192, 230, 1);
     }
 
     body.night-mode .modal-actions button {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.24);
+      color: var(--text);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.28),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 1px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    body.night-mode .modal-actions button:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.34);
     }
 
     body.night-mode .modal-actions button.primary {
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.34);
+    }
+
+    body.night-mode .modal-actions button.primary:hover {
+      background: rgba(255, 255, 255, 0.3);
     }
     .undo-toast {
       position: fixed;
-      bottom: clamp(1rem, 4vw, 2rem);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(1rem, 4vw, 2rem));
       left: 50%;
       transform: translateX(-50%) translateY(80px);
       display: flex;
@@ -637,12 +883,31 @@
       backdrop-filter: blur(28px) saturate(160%);
       -webkit-backdrop-filter: blur(28px) saturate(160%);
       border: 1px solid var(--glass-border);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius);
       box-shadow: var(--glass-shadow);
       z-index: 1100;
       opacity: 0;
       visibility: hidden;
       transition: transform 0.3s, opacity 0.3s, visibility 0.3s;
+    }
+
+    #undoToast,
+    #resetConfirmToast {
+      max-width: min(580px, calc(100vw - 2rem));
+      width: max-content;
+      flex-wrap: nowrap;
+      box-sizing: border-box;
+    }
+
+    #undoToast .undo-toast-msg {
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    #undoToast .undo-toast-btn {
+      flex-shrink: 0;
+      white-space: nowrap;
     }
 
     .undo-toast.show {
@@ -665,6 +930,115 @@
       font-size: 0.8rem;
       cursor: pointer;
       font-weight: 500;
+    }
+
+    .undo-toast-btn.undo-toast-btn-danger {
+      background: rgba(235, 76, 88, 0.4);
+      backdrop-filter: blur(22px) saturate(200%);
+      -webkit-backdrop-filter: blur(22px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.48);
+      color: rgba(76, 12, 18, 0.94);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.72),
+        inset 0 0 0 1px rgba(255, 200, 203, 0.35),
+        0 1px 3px rgba(200, 48, 58, 0.14);
+      transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, color 0.22s ease;
+    }
+
+    .undo-toast-btn.undo-toast-btn-danger:hover {
+      background: rgba(232, 68, 80, 0.52);
+      border-color: rgba(255, 255, 255, 0.58);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.82),
+        inset 0 0 0 1px rgba(255, 210, 212, 0.45),
+        0 2px 10px rgba(195, 45, 55, 0.18);
+    }
+
+    body.night-mode .undo-toast-btn.undo-toast-btn-danger {
+      background: rgba(255, 92, 102, 0.26);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 242, 242, 0.96);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.28),
+        inset 0 0 0 1px rgba(255, 150, 158, 0.12),
+        0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    body.night-mode .undo-toast-btn.undo-toast-btn-danger:hover {
+      background: rgba(255, 92, 102, 0.38);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.38),
+        inset 0 0 0 1px rgba(255, 160, 168, 0.18),
+        0 2px 12px rgba(0, 0, 0, 0.22);
+    }
+
+    .reset-confirm-toast {
+      z-index: 1110;
+      max-width: min(580px, calc(100vw - 2rem));
+      flex-wrap: nowrap;
+      align-items: center;
+    }
+
+    .reset-confirm-toast .undo-toast-msg {
+      flex: 1 1 auto;
+      min-width: 0;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .reset-confirm-toast .undo-toast-row-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+      margin-left: 0.65rem;
+    }
+
+    .reset-confirm-toast .undo-toast-row-actions .undo-toast-btn {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .reset-confirm-toast .undo-toast-row-actions > .undo-toast-btn:not(.undo-toast-btn-danger) {
+      background: rgba(255, 255, 255, 0.34);
+      backdrop-filter: blur(22px) saturate(200%);
+      -webkit-backdrop-filter: blur(22px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.52);
+      color: var(--text);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.78),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+        0 1px 3px rgba(0, 0, 0, 0.06);
+      transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, color 0.22s ease;
+    }
+
+    .reset-confirm-toast .undo-toast-row-actions > .undo-toast-btn:not(.undo-toast-btn-danger):hover {
+      background: rgba(255, 255, 255, 0.48);
+      border-color: rgba(255, 255, 255, 0.62);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.38),
+        0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    body.night-mode .reset-confirm-toast .undo-toast-row-actions > .undo-toast-btn:not(.undo-toast-btn-danger) {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      color: var(--text);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.32),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 1px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    body.night-mode .reset-confirm-toast .undo-toast-row-actions > .undo-toast-btn:not(.undo-toast-btn-danger):hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.34);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.42),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 2px 12px rgba(0, 0, 0, 0.22);
     }
 
     .engine-icon-wrap {
@@ -710,12 +1084,16 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 52px;
       display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 0 clamp(0.75rem, 4vw, 1.5rem);
-      gap: 0.5rem;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 0;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-left: max(clamp(0.75rem, 4vw, 1.5rem), env(safe-area-inset-left, 0px));
+      padding-right: max(clamp(0.75rem, 4vw, 1.5rem), env(safe-area-inset-right, 0px));
+      min-height: calc(52px + env(safe-area-inset-top, 0px));
+      box-sizing: border-box;
+      gap: 0;
       z-index: 100;
       pointer-events: none;
     }
@@ -727,34 +1105,10 @@
     .top-bar-actions {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       gap: 0.5rem;
-    }
-    .top-bar-reveal {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      max-width: 0;
-      overflow: hidden;
-      transition: max-width 0.38s cubic-bezier(0.34, 1.2, 0.64, 1);
-    }
-    .top-bar-actions.expanded .top-bar-reveal {
-      max-width: 88px;
-    }
-    .top-bar-reveal .top-bar-btn {
+      min-height: 52px;
       flex-shrink: 0;
-      transform: scale(0);
-      opacity: 0;
-      transition: transform 0.48s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.28s ease-out;
-    }
-    .top-bar-actions.expanded .top-bar-reveal .top-bar-btn {
-      transform: scale(1);
-      opacity: 1;
-    }
-    .top-bar-actions.expanded .top-bar-reveal .top-bar-btn:nth-child(1) {
-      transition-delay: 0.02s;
-    }
-    .top-bar-actions.expanded .top-bar-reveal .top-bar-btn:nth-child(2) {
-      transition-delay: 0.07s;
     }
 
     .top-bar-btn {
@@ -805,37 +1159,6 @@
         opacity: 0;
       }
     }
-    .theme-spread-overlay {
-      position: fixed;
-      left: 0;
-      top: 0;
-      border-radius: 50%;
-      transform: scale(0);
-      transform-origin: center center;
-      pointer-events: none;
-      z-index: 1;
-      will-change: transform;
-      backface-visibility: hidden;
-    }
-    .theme-spread-overlay.theme-spread-run {
-      animation: theme-spread 0.88s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-    }
-    .theme-spread-overlay.theme-spread-to-light.theme-spread-run {
-      animation: theme-spread 1.05s cubic-bezier(0.2, 0.5, 0.35, 1) forwards;
-    }
-    @keyframes theme-spread {
-      to {
-        transform: scale(1);
-      }
-    }
-    .theme-spread-overlay.theme-spread-fade-out {
-      opacity: 0;
-      transition: opacity 0.18s ease-out;
-    }
-    .theme-spread-overlay.theme-spread-to-light.theme-spread-fade-out {
-      transition-duration: 0.25s;
-    }
-
     .top-bar-btn:hover {
       background: rgba(255, 255, 255, 0.35);
     }
@@ -915,25 +1238,40 @@
 
     .settings-dropdown {
       position: fixed;
-      min-width: 180px;
-      padding: 0.4rem;
-      border-radius: var(--radius-sm);
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+      min-width: 188px;
+      padding: 0.5rem;
+      border-radius: var(--radius);
+      background: var(--glass-bg);
+      backdrop-filter: blur(28px) saturate(175%);
+      -webkit-backdrop-filter: blur(28px) saturate(175%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow), var(--glass-inset);
       z-index: 1001;
       display: none;
+      max-width: calc(100vw - 16px);
+      overflow: hidden;
     }
 
     .settings-dropdown.show {
       display: block;
     }
 
-    body.night-mode .settings-dropdown {
-      background: rgba(38, 38, 44, 0.95);
-      border-color: rgba(255, 255, 255, 0.1);
+    .settings-dropdown::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: linear-gradient(165deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.04) 42%, transparent 62%);
+      opacity: 0.55;
+    }
+
+    body.night-mode .settings-dropdown::after {
+      opacity: 0.22;
+    }
+
+    body.theme-transitioning .settings-dropdown::after {
+      opacity: calc(0.55 - 0.33 * var(--theme-t));
     }
 
     .settings-item {
@@ -941,23 +1279,49 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.6rem 0.85rem;
-      border-radius: 0.5rem;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       font-size: 0.9rem;
       color: var(--text);
-      transition: background 0.15s;
+      transition: background 0.18s ease;
       border: none;
       background: none;
       width: 100%;
       text-align: left;
+      position: relative;
+      z-index: 1;
     }
 
     .settings-item:hover {
-      background: rgba(0, 0, 0, 0.06);
+      background: color-mix(in srgb, var(--text) 9%, transparent);
     }
 
-    body.night-mode .settings-item:hover {
-      background: rgba(255, 255, 255, 0.08);
+    .settings-menu-divider {
+      height: 1px;
+      margin: 0.4rem 0.55rem;
+      background: color-mix(in srgb, var(--glass-border) 70%, var(--text) 30%);
+      opacity: 0.55;
+      pointer-events: none;
+      position: relative;
+      z-index: 1;
+    }
+    .settings-item.settings-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .settings-item-label {
+      flex: 1;
+      min-width: 0;
+    }
+    .settings-item-check {
+      flex-shrink: 0;
+      min-width: 1.35em;
+      text-align: center;
+      font-size: 1.05rem;
+      line-height: 1;
+      font-weight: 400;
     }
     .search-hint-wrap {
       position: relative;
@@ -982,10 +1346,45 @@
       opacity: 0;
       pointer-events: none;
     }
+    .engine-list {
+      max-height: min(40vh, 280px);
+      overflow-x: hidden;
+      overflow-y: auto;
+      margin-bottom: 0.75rem;
+      -webkit-overflow-scrolling: touch;
+      padding-right: 2px;
+    }
+
     .engine-list-item {
       overflow: hidden;
       border-radius: var(--radius-sm);
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.45rem;
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(18px) saturate(165%);
+      -webkit-backdrop-filter: blur(18px) saturate(165%);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.45),
+        0 1px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    body.night-mode .engine-list-item {
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.14),
+        0 1px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    body:not(.night-mode) .modal .engine-list-item {
+      background: linear-gradient(
+        165deg,
+        rgba(252, 253, 255, 0.5) 0%,
+        rgba(236, 242, 250, 0.42) 100%
+      );
+      border-color: rgba(210, 222, 238, 0.75);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.65),
+        0 1px 5px rgba(70, 92, 118, 0.045);
     }
 
     .engine-list-item-inner {
@@ -999,8 +1398,8 @@
     .engine-list-row-content {
       flex: 1;
       min-width: 0;
-      padding: 0.65rem 0.75rem;
-      font-size: 0.9rem;
+      padding: 0.62rem 0.8rem;
+      font-size: 0.875rem;
       color: var(--text);
     }
 
@@ -1009,7 +1408,7 @@
       display: flex;
       align-items: center;
       gap: 0.35rem;
-      padding: 0.5rem 0.75rem;
+      padding: 0.45rem 0.65rem;
       opacity: 0;
       transition: opacity 0.2s;
     }
@@ -1030,10 +1429,17 @@
       .engine-list-row-actions {
         flex: 0 0 140px;
         opacity: 1;
-        background: rgba(0, 0, 0, 0.05);
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-left: 1px solid color-mix(in srgb, var(--glass-border) 70%, transparent);
       }
       body.night-mode .engine-list-row-actions {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.06);
+      }
+      body:not(.night-mode) .modal .engine-list-row-actions {
+        background: rgba(244, 248, 252, 0.55);
+        border-left: 1px solid rgba(200, 214, 232, 0.7);
       }
       .engine-list-item:not(.swiped) .engine-list-item-inner {
         transform: translateX(0);
@@ -1044,76 +1450,124 @@
     }
 
     .engine-list-row-actions .btn-engine-action {
-      padding: 0.35rem 0.6rem;
-      border-radius: 0.4rem;
-      border: none;
-      background: rgba(0, 0, 0, 0.06);
+      padding: 0.32rem 0.55rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.48);
+      background: rgba(255, 255, 255, 0.38);
       color: var(--text);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 500;
       cursor: pointer;
       white-space: nowrap;
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.65),
+        0 1px 2px rgba(0, 0, 0, 0.05);
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .engine-list-row-actions .btn-engine-action:hover {
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.5);
+      border-color: rgba(255, 255, 255, 0.58);
     }
 
     .engine-list-row-actions .btn-engine-action.primary {
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.52);
+      border-color: rgba(255, 255, 255, 0.58);
+      font-weight: 600;
     }
 
     body.night-mode .engine-list-row-actions .btn-engine-action {
       background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+        0 1px 3px rgba(0, 0, 0, 0.15);
     }
 
     body.night-mode .engine-list-row-actions .btn-engine-action:hover {
       background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.32);
+    }
+
+    body.night-mode .engine-list-row-actions .btn-engine-action.primary {
+      background: rgba(255, 255, 255, 0.2);
     }
 
     .engine-list-row-actions .btn-engine-action.danger {
-      background: rgba(220, 60, 60, 0.2);
-      color: #e57373;
+      background: rgba(235, 76, 88, 0.35);
+      border-color: rgba(255, 255, 255, 0.42);
+      color: rgba(76, 12, 18, 0.94);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.55),
+        0 1px 3px rgba(200, 48, 58, 0.12);
     }
 
     .engine-list-row-actions .btn-engine-action.danger:hover {
-      background: rgba(220, 60, 60, 0.35);
+      background: rgba(232, 68, 80, 0.48);
+      border-color: rgba(255, 255, 255, 0.52);
+    }
+
+    body.night-mode .engine-list-row-actions .btn-engine-action.danger {
+      background: rgba(255, 92, 102, 0.28);
+      border-color: rgba(255, 255, 255, 0.22);
+      color: rgba(255, 242, 242, 0.96);
+    }
+
+    body.night-mode .engine-list-row-actions .btn-engine-action.danger:hover {
+      background: rgba(255, 92, 102, 0.4);
     }
     .footer {
       position: relative;
       z-index: 10;
       margin-top: auto;
       flex-shrink: 0;
-      padding: clamp(0.75rem, 3vw, 1.5rem) 0;
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      padding: clamp(0.65rem, 2.5vw, 1.1rem) 0;
+      font-size: 0.72rem;
+      letter-spacing: 0.03em;
+      text-align: center;
+      color: var(--tt-footer-muted-light);
       user-select: none;
       -webkit-user-select: none;
+    }
+
+    body.night-mode .footer {
+      color: var(--tt-footer-muted-dark);
+    }
+
+    body.theme-transitioning .footer {
+      color: color-mix(
+        in srgb,
+        var(--tt-footer-muted-light) calc((1 - var(--theme-t)) * 100%),
+        var(--tt-footer-muted-dark) calc(var(--theme-t) * 100%)
+      );
     }
   </style>
 </head>
 <body>
   <div class="top-bar">
     <div class="top-bar-actions" id="topBarActions">
-      <div class="top-bar-reveal">
-        <button type="button" class="top-bar-btn" id="btnLang" title="语言切换" aria-label="语言切换">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h2"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
-        </button>
-        <button type="button" class="top-bar-btn" id="btnNight" title="夜间模式" aria-label="深色模式切换">
-          <span class="night-icon icon-moon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
-          <span class="night-icon icon-sun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></span>
-        </button>
-      </div>
-      <button type="button" class="top-bar-btn" id="btnSettings" title="设置" aria-label="设置">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      <button type="button" class="top-bar-btn" id="btnNight" title="切换为深色模式" aria-label="当前为浅色模式，点击切换为深色模式">
+        <span class="night-icon icon-moon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
+        <span class="night-icon icon-sun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></span>
       </button>
     </div>
-    <div class="settings-dropdown" id="settingsDropdown">
-      <button type="button" class="settings-item" id="settingsManageLinks" data-i18n="menuManageLinks">管理快捷链接</button>
-      <button type="button" class="settings-item" id="settingsManageEngines" data-i18n="menuManageEngines">管理搜索引擎</button>
-    </div>
+  </div>
+  <div class="settings-dropdown" id="settingsDropdown">
+    <button type="button" class="settings-item" id="settingsRefresh">刷新</button>
+    <button type="button" class="settings-item" id="settingsManageLinks">管理快捷链接</button>
+    <button type="button" class="settings-item" id="settingsManageEngines">管理搜索引擎</button>
+    <button type="button" class="settings-item" id="settingsResetAll">恢复默认设置</button>
+    <div class="settings-menu-divider" role="separator" aria-hidden="true"></div>
+    <button type="button" class="settings-item settings-item-row" id="settingsFollowSystem">
+      <span class="settings-item-label">主题色跟随系统</span>
+      <span class="settings-item-check" id="settingsFollowSystemCheck" aria-hidden="true"></span>
+    </button>
   </div>
 
   <main class="main-center">
+  <div class="main-center-stack">
   <div class="search-wrap">
     <div class="glass search-bar">
       <div class="search-engine-wrap">
@@ -1140,63 +1594,68 @@
   </div>
 
   <div class="quick-links-wrap" id="quickLinksWrap">
-    <div class="quick-links-toolbar">
-      <button type="button" class="btn-edit" id="btnEdit" data-i18n="btnDone">完成</button>
-      <button type="button" class="btn-add" id="btnAdd" data-i18n="btnAddLink">添加链接</button>
-    </div>
     <div class="links-grid" id="linksGrid"></div>
+  </div>
   </div>
   </main>
 
   <div class="modal-overlay" id="linkModal">
     <div class="modal">
-      <h3 id="modalTitle" data-i18n="modalAddLink">添加快捷链接</h3>
-      <label for="linkName" data-i18n="labelName">名称</label>
+      <h3 id="modalTitle">添加快捷链接</h3>
+      <label for="linkName">名称</label>
       <input type="text" id="linkName" placeholder="例如：GitHub" />
-      <label for="linkUrl" data-i18n="labelUrl">网址</label>
+      <label for="linkUrl">网址</label>
       <input type="text" id="linkUrl" placeholder="github.com 或 https://..." autocomplete="url" />
       <div class="modal-actions">
-        <button type="button" id="modalCancel" data-i18n="btnCancel">取消</button>
-        <button type="button" class="primary" id="modalSave" data-i18n="btnSave">保存</button>
+        <button type="button" id="modalCancel">取消</button>
+        <button type="button" class="primary" id="modalSave">保存</button>
       </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="engineModal">
     <div class="modal">
-      <h3 data-i18n="modalEngines">管理搜索引擎</h3>
+      <h3>管理搜索引擎</h3>
       <div id="engineListWrap" class="engine-list"></div>
-      <label data-i18n="labelName">名称</label>
+      <label>名称</label>
       <input type="text" id="engineName" />
-      <label data-i18n="engineHomepageLabel">主页链接或域名</label>
+      <label>主页链接或域名</label>
       <input type="text" id="engineUrl" />
-      <div class="modal-actions" style="margin-top:1rem;">
-        <button type="button" id="engineModalCancel" data-i18n="btnCancel">取消</button>
-        <button type="button" class="primary" id="engineModalAdd" data-i18n="btnAdd">添加</button>
+      <div class="modal-actions">
+        <button type="button" id="engineModalCancel">取消</button>
+        <button type="button" class="primary" id="engineModalAdd">添加</button>
       </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="engineEditModal">
     <div class="modal">
-      <h3 data-i18n="engineEditTitle">修改搜索引擎</h3>
-      <label data-i18n="labelName">名称</label>
+      <h3>修改搜索引擎</h3>
+      <label>名称</label>
       <input type="text" id="engineEditName" />
-      <label data-i18n="engineUrlLabel">搜索 URL（含 {q}）</label>
+      <label>搜索 URL（含 {q}）</label>
       <input type="text" id="engineEditUrl" />
       <div class="modal-actions">
-        <button type="button" id="engineEditCancel" data-i18n="btnCancel">取消</button>
-        <button type="button" class="primary" id="engineEditSave" data-i18n="btnSave">保存</button>
+        <button type="button" id="engineEditCancel">取消</button>
+        <button type="button" class="primary" id="engineEditSave">保存</button>
       </div>
     </div>
   </div>
 
   <div class="undo-toast" id="undoToast">
-    <span class="undo-toast-msg" id="undoToastMsg" data-i18n="toastUndoMsg">已保存，10秒内可撤回</span>
-    <button type="button" class="undo-toast-btn" id="undoToastBtn" data-i18n="toastUndoBtn">撤回</button>
+    <span class="undo-toast-msg" id="undoToastMsg">已保存，10秒内可撤回</span>
+    <button type="button" class="undo-toast-btn" id="undoToastBtn">撤回</button>
   </div>
 
-  <footer class="footer" id="footerEl" data-i18n="footerText">2026 © WEIMINAL</footer>
+  <div class="undo-toast reset-confirm-toast" id="resetConfirmToast" aria-live="polite">
+    <span class="undo-toast-msg" id="resetConfirmMsg"></span>
+    <div class="undo-toast-row-actions">
+      <button type="button" class="undo-toast-btn" id="resetConfirmCancel">取消</button>
+      <button type="button" class="undo-toast-btn undo-toast-btn-danger" id="resetConfirmPrimary">继续</button>
+    </div>
+  </div>
+
+  <footer class="footer" id="footerEl">2026 © WEIMINAL</footer>
 
   <script>
     const DEFAULT_ENGINES = [
@@ -1207,6 +1666,20 @@
 
     const STORAGE_ENGINES = 'navSearchEngines';
     const STORAGE_ENGINE_CURRENT = 'navSearchEngineCurrent';
+    const STORAGE_NIGHT = 'navNightMode';
+    const STORAGE_FOLLOW_SYSTEM = 'navThemeFollowSystem';
+
+    const UI = {
+      searchHint: '请输入搜索内容',
+      modalAddLink: '添加快捷链接',
+      modalEditLink: '编辑链接',
+      engineNamePlaceholder: '如：Bing 必应',
+      engineUrlPlaceholder: '如：bing.com 或 https://www.bing.com/',
+      engineSetDefault: '设为默认',
+      engineDelete: '删除',
+      engineDefault: '(默认)',
+      engineEdit: '修改'
+    };
 
     function getEngines() {
       try {
@@ -1298,18 +1771,10 @@
     function getEngineFaviconUrl(engine) {
       var domain = getEngineDomain(engine && engine.url);
       if (!domain) return '';
-      // return 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(domain) + '&sz=64';
-      //WeiMinal:GG源用不了，哈哈哈
       return 'https://api.xinac.net/icon/?url=https://' + encodeURIComponent(domain);
     }
 
-    const DEFAULT_LINKS = [
-      { name: 'GitHub', url: 'https://www.github.com' },
-      { name: 'Notion', url: 'https://www.notion.so' },
-      { name: 'Google 翻译', url: 'https://translate.google.com.hk/' },
-      { name: 'Apple Music', url: 'https://music.apple.com/' },
-      { name: 'WeiMinal', url: 'https://weiminal.com/cv/' }
-    ];
+    const DEFAULT_LINKS = [];
 
     const STORAGE_KEY = 'navQuickLinks';
 
@@ -1333,8 +1798,6 @@
 
     function faviconUrl(url) {
       const domain = getDomain(url);
-      // return domain ? 'https://www.google.com/s2/favicons?domain=' + domain + '&sz=64' : '';
-      //谷歌源用不了，哈哈哈
       return domain ? 'https://api.xinac.net/icon/?url=https://' + domain : '';
     }
 
@@ -1355,7 +1818,110 @@
 
     const linksGrid = document.getElementById('linksGrid');
     const quickLinksWrap = document.getElementById('quickLinksWrap');
-    const mainCenter = document.querySelector('.main-center');
+    const settingsDropdown = document.getElementById('settingsDropdown');
+    var LINK_SORT_THRESHOLD_SQ = 36;
+
+    function mediaPrimaryPointerFine() {
+      try {
+        return window.matchMedia('(pointer: fine)').matches;
+      } catch (err) {
+        return true;
+      }
+    }
+
+    function isBlankForSettingsMenu(el) {
+      if (!el || el.nodeType !== 1) return false;
+      if (el.closest('.top-bar')) return false;
+      if (el.closest('.search-bar')) return false;
+      if (el.closest('.engine-dropdown')) return false;
+      if (el.closest('.settings-dropdown')) return false;
+      if (el.closest('.modal-overlay')) return false;
+      if (el.closest('.link-card')) return false;
+      if (el.closest('.link-add-btn')) return false;
+      if (el.closest('.btn-delete')) return false;
+      if (el.closest('.search-hint-wrap') || el.classList.contains('search-input')) return false;
+      if (el.closest('.search-btn')) return false;
+      if (el.closest('.undo-toast')) return false;
+      return true;
+    }
+
+    function showSettingsMenuAt(clientX, clientY) {
+      if (!settingsDropdown) return;
+      settingsDropdown.classList.add('show');
+      settingsDropdown.style.visibility = 'hidden';
+      settingsDropdown.style.left = '0px';
+      settingsDropdown.style.top = '0px';
+      settingsDropdown.style.right = 'auto';
+      requestAnimationFrame(function () {
+        var w = settingsDropdown.offsetWidth;
+        var h = settingsDropdown.offsetHeight;
+        var left = clientX;
+        var top = clientY;
+        if (left + w > window.innerWidth - 8) left = window.innerWidth - w - 8;
+        if (top + h > window.innerHeight - 8) top = window.innerHeight - h - 8;
+        if (left < 8) left = 8;
+        if (top < 8) top = 8;
+        settingsDropdown.style.left = left + 'px';
+        settingsDropdown.style.top = top + 'px';
+        settingsDropdown.style.visibility = '';
+        updateFollowSystemMenuCheck();
+      });
+    }
+
+    document.addEventListener('contextmenu', function (e) {
+      var t = e.target;
+      if (t && t.closest('.link-card') && !quickLinksWrap.classList.contains('edit-mode')) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (mediaPrimaryPointerFine()) {
+          setEditMode(true);
+        }
+        return;
+      }
+      if (!isBlankForSettingsMenu(t)) return;
+      e.preventDefault();
+      showSettingsMenuAt(e.clientX, e.clientY);
+    }, true);
+
+    var blankLongTimer = null;
+    var blankLongStart = null;
+    function clearBlankLongPress() {
+      if (blankLongTimer) {
+        clearTimeout(blankLongTimer);
+        blankLongTimer = null;
+      }
+      blankLongStart = null;
+    }
+    document.body.addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1) return;
+      var p = e.touches[0];
+      var el = document.elementFromPoint(p.clientX, p.clientY);
+      if (!isBlankForSettingsMenu(el)) return;
+      blankLongStart = { x: p.clientX, y: p.clientY };
+      blankLongTimer = setTimeout(function () {
+        blankLongTimer = null;
+        showSettingsMenuAt(blankLongStart.x, blankLongStart.y);
+        blankLongStart = null;
+      }, 550);
+    }, { passive: true });
+    document.body.addEventListener('touchmove', function (e) {
+      if (!blankLongStart || !e.touches.length) return;
+      var p = e.touches[0];
+      if (Math.hypot(p.clientX - blankLongStart.x, p.clientY - blankLongStart.y) > 14) clearBlankLongPress();
+    }, { passive: true });
+    document.body.addEventListener('touchend', clearBlankLongPress, { passive: true });
+    document.body.addEventListener('touchcancel', clearBlankLongPress, { passive: true });
+
+    linksGrid.addEventListener('click', function (e) {
+      var card = e.target.closest('.link-card');
+      if (!card) return;
+      if (linkSortBlockNextLinkOpen) {
+        e.preventDefault();
+        e.stopPropagation();
+        linkSortBlockNextLinkOpen = false;
+        return;
+      }
+    }, true);
     const linkModal = document.getElementById('linkModal');
     const modalTitle = document.getElementById('modalTitle');
     const linkNameInput = document.getElementById('linkName');
@@ -1364,6 +1930,51 @@
     const modalSave = document.getElementById('modalSave');
     const undoToast = document.getElementById('undoToast');
     const undoToastBtn = document.getElementById('undoToastBtn');
+    const undoToastMsg = document.getElementById('undoToastMsg');
+
+    function clearToastInlineFontSizes(toastEl) {
+      if (!toastEl) return;
+      var msg = toastEl.querySelector('.undo-toast-msg');
+      if (msg) msg.style.removeProperty('font-size');
+      toastEl.querySelectorAll('.undo-toast-btn').forEach(function (b) {
+        b.style.removeProperty('font-size');
+      });
+    }
+
+    function scheduleFitSingleLineToast(toastEl) {
+      if (!toastEl) return;
+      function runFit() {
+        if (!toastEl.classList.contains('show')) return;
+        var msgEl = toastEl.querySelector('.undo-toast-msg');
+        if (!msgEl) return;
+        var btns = toastEl.querySelectorAll('.undo-toast-btn');
+        msgEl.style.removeProperty('font-size');
+        btns.forEach(function (b) {
+          b.style.removeProperty('font-size');
+        });
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            var maxRem = 0.875;
+            var minRem = 0.45;
+            var step = 0.03125;
+            var r;
+            for (r = maxRem; r >= minRem - 0.0001; r -= step) {
+              msgEl.style.fontSize = r + 'rem';
+              var bfs = Math.max(minRem, r * 0.92);
+              btns.forEach(function (b) {
+                b.style.fontSize = bfs + 'rem';
+              });
+              if (toastEl.scrollWidth <= toastEl.clientWidth + 2 && toastEl.scrollHeight <= toastEl.clientHeight + 2) {
+                return;
+              }
+            }
+          });
+        });
+      }
+      runFit();
+      setTimeout(runFit, 40);
+      setTimeout(runFit, 340);
+    }
 
     let editingIndex = -1;
     let undoToastTimer = null;
@@ -1373,8 +1984,10 @@
       lastLinksForUndo = previousLinks && previousLinks.length ? previousLinks.slice() : null;
       if (undoToastTimer) clearTimeout(undoToastTimer);
       undoToast.classList.add('show');
+      scheduleFitSingleLineToast(undoToast);
       undoToastTimer = setTimeout(() => {
         undoToast.classList.remove('show');
+        clearToastInlineFontSizes(undoToast);
         lastLinksForUndo = null;
         undoToastTimer = null;
       }, 10000);
@@ -1384,6 +1997,7 @@
       if (undoToastTimer) clearTimeout(undoToastTimer);
       undoToastTimer = null;
       undoToast.classList.remove('show');
+      clearToastInlineFontSizes(undoToast);
       lastLinksForUndo = null;
     }
 
@@ -1395,10 +2009,90 @@
       hideUndoToast();
     });
 
-    function renderLinks() {
+    function handleLinkDeleteClick(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const idx = parseInt(e.currentTarget.dataset.index, 10);
+      if (idx < 0 || idx !== idx) return;
+      const links = getLinks().slice();
+      const prev = links.slice();
+      links.splice(idx, 1);
+      saveLinks(links);
+      renderLinks();
+      showUndoToast(prev);
+    }
+
+    function bindLinkAddInnerClick(addInner) {
+      addInner.addEventListener('click', (e) => {
+        e.stopPropagation();
+        editingIndex = -1;
+        modalTitle.textContent = UI.modalAddLink;
+        linkNameInput.value = '';
+        linkUrlInput.value = '';
+        linkModal.classList.add('show');
+      });
+    }
+
+    function bindLinkCardEditClick(card, item) {
+      card.addEventListener('click', (e) => {
+        if (linkSortBlockNextLinkOpen) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        e.preventDefault();
+        const idx = Array.from(linksGrid.querySelectorAll('.link-item:not(.link-add-btn)')).indexOf(item);
+        if (idx >= 0) openEditModal(idx);
+      });
+    }
+
+    function applyEditModeChrome() {
+      if (!quickLinksWrap || !linksGrid) return;
+      const links = getLinks();
+      const items = linksGrid.querySelectorAll('.link-item:not(.link-add-btn)');
+      if (items.length !== links.length) {
+        renderLinks();
+        return;
+      }
+      quickLinksWrap.classList.toggle('links-empty', links.length === 0);
+
+      items.forEach(function (item, index) {
+        if (item.querySelector('.btn-delete')) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-delete';
+        btn.dataset.index = String(index);
+        btn.setAttribute('aria-label', '删除');
+        btn.textContent = '×';
+        btn.addEventListener('click', handleLinkDeleteClick);
+        item.appendChild(btn);
+      });
+
+      if (!linksGrid.querySelector('.link-item.link-add-btn')) {
+        const addItem = document.createElement('div');
+        addItem.className = 'link-item link-add-btn';
+        addItem.innerHTML =
+          '<button type="button" class="link-add-inner" aria-label="添加"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>';
+        bindLinkAddInnerClick(addItem.querySelector('.link-add-inner'));
+        linksGrid.appendChild(addItem);
+      }
+
+      linksGrid.querySelectorAll('.link-item:not(.link-add-btn)').forEach(function (item) {
+        const card = item.querySelector('a.link-card');
+        if (!card) return;
+        bindLinkCardEditClick(card, item);
+      });
+    }
+
+    function renderLinks(keepLinkSortBlock) {
+      abortLinkSortDrag();
+      if (!keepLinkSortBlock) {
+        linkSortBlockNextLinkOpen = false;
+      }
+      linksGrid.classList.remove('link-sort-active');
       const links = getLinks();
       const isEditMode = quickLinksWrap.classList.contains('edit-mode');
-      if (mainCenter) mainCenter.classList.toggle('edit-empty', isEditMode && links.length === 0);
+      quickLinksWrap.classList.toggle('links-empty', links.length === 0);
       linksGrid.innerHTML = '';
       links.forEach((link, index) => {
         const item = document.createElement('div');
@@ -1406,9 +2100,9 @@
         var resolvedUrl = normalizeLinkUrl(link.url);
         const favicon = faviconUrl(resolvedUrl);
         item.innerHTML =
-          '<a class="link-card" href="' + resolvedUrl + '" target="_blank" rel="noopener" title="' + link.name + '">' +
+          '<a class="link-card" draggable="false" href="' + resolvedUrl + '" target="_blank" rel="noopener" title="' + link.name + '">' +
           (favicon
-            ? '<img class="link-favicon" src="' + favicon + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">' +
+            ? '<img class="link-favicon" draggable="false" src="' + favicon + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">' +
               '<span class="link-icon" style="display:none">' + (link.name.charAt(0) || '?') + '</span>'
             : '<span class="link-icon">' + (link.name.charAt(0) || '?') + '</span>') +
           '</a>' +
@@ -1416,58 +2110,256 @@
         linksGrid.appendChild(item);
       });
       if (isEditMode) {
-        linksGrid.querySelectorAll('.btn-delete').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const idx = parseInt(btn.dataset.index, 10);
-            const links = getLinks().slice();
-            const prev = links.slice();
-            links.splice(idx, 1);
-            saveLinks(links);
-            renderLinks();
-            showUndoToast(prev);
-          });
+        linksGrid.querySelectorAll('.btn-delete').forEach(function (btn) {
+          btn.addEventListener('click', handleLinkDeleteClick);
         });
         const addItem = document.createElement('div');
         addItem.className = 'link-item link-add-btn';
-        addItem.innerHTML = '<button type="button" class="link-add-inner" aria-label="添加"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>';
-        addItem.querySelector('.link-add-inner').addEventListener('click', (e) => {
-          e.stopPropagation();
-          editingIndex = -1;
-          modalTitle.textContent = (LANG[lang] && LANG[lang].modalAddLink) || '添加快捷链接';
-          linkNameInput.value = '';
-          linkUrlInput.value = '';
-          linkModal.classList.add('show');
-        });
+        addItem.innerHTML =
+          '<button type="button" class="link-add-inner" aria-label="添加"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>';
+        bindLinkAddInnerClick(addItem.querySelector('.link-add-inner'));
         linksGrid.appendChild(addItem);
-        if (links.length === 0) {
-          requestAnimationFrame(function () { addItem.classList.add('visible'); });
+        linksGrid.querySelectorAll('.link-card').forEach(function (card) {
+          const item = card.closest('.link-item');
+          if (!item || item.classList.contains('link-add-btn')) return;
+          bindLinkCardEditClick(card, item);
+        });
+      }
+    }
+
+    var linkSortState = null;
+    var linkSortBlockNextLinkOpen = false;
+
+    function abortLinkSortDrag() {
+      var st = linkSortState;
+      if (!st) return;
+      if (st.ghost) {
+        st.ghost.remove();
+        st.ghost = null;
+      }
+      if (st.item) {
+        st.item.classList.remove('link-item--placeholder');
+      }
+      linksGrid.classList.remove('link-sort-active');
+      linkSortState = null;
+    }
+
+    function linkSortComputeInsert(clientX, clientY, fromIndex) {
+      var items = Array.from(linksGrid.querySelectorAll('.link-item:not(.link-add-btn)'));
+      var best = fromIndex;
+      var bestD = 1e12;
+      var found = false;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].classList.contains('link-item--placeholder')) continue;
+        found = true;
+        var r = items[i].getBoundingClientRect();
+        var mx = r.left + r.width * 0.5;
+        var my = r.top + r.height * 0.5;
+        var d = (clientX - mx) * (clientX - mx) + (clientY - my) * (clientY - my);
+        if (d < bestD) {
+          bestD = d;
+          best = i;
         }
       }
-      linksGrid.querySelectorAll('.link-card').forEach((card, i) => {
-        if (!isEditMode) return;
-        const item = card.closest('.link-item');
-        if (!item || item.classList.contains('link-add-btn')) return;
-        card.addEventListener('click', (e) => {
-          e.preventDefault();
-          const idx = Array.from(linksGrid.querySelectorAll('.link-item:not(.link-add-btn)')).indexOf(item);
-          if (idx >= 0) openEditModal(idx);
+      if (!found) return fromIndex;
+      var r = items[best].getBoundingClientRect();
+      var before = clientX < r.left + r.width * 0.5;
+      var insertAt;
+      if (before) {
+        insertAt = best <= fromIndex ? best : best - 1;
+      } else {
+        insertAt = best < fromIndex ? best + 1 : best;
+      }
+      return insertAt;
+    }
+
+    function linkSortOnPointerDown(e) {
+      if (!mediaPrimaryPointerFine()) return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      var item = e.target.closest('.link-item:not(.link-add-btn)');
+      if (!item || !linksGrid.contains(item)) return;
+      if (e.target.closest('.btn-delete')) return;
+      if (e.target.closest('.link-add-btn')) return;
+      if (linkSortState) return;
+      if (!e.target.closest('.link-card')) return;
+      linkSortState = {
+        item: item,
+        pointerId: e.pointerId,
+        startX: e.clientX,
+        startY: e.clientY,
+        fromIndex: Array.from(linksGrid.querySelectorAll('.link-item:not(.link-add-btn)')).indexOf(item),
+        dragging: false,
+        ghost: null,
+        ox: 0,
+        oy: 0
+      };
+    }
+
+    function linkSortOnPointerMove(e) {
+      var st = linkSortState;
+      if (!st || e.pointerId !== st.pointerId) return;
+      var dx = e.clientX - st.startX;
+      var dy = e.clientY - st.startY;
+      if (!st.dragging) {
+        if (dx * dx + dy * dy < LINK_SORT_THRESHOLD_SQ) return;
+        st.dragging = true;
+        try {
+          st.item.setPointerCapture(e.pointerId);
+        } catch (err) {}
+        st.item.classList.add('link-item--placeholder');
+        linksGrid.classList.add('link-sort-active');
+        var rect = st.item.getBoundingClientRect();
+        st.ox = st.startX - rect.left;
+        st.oy = st.startY - rect.top;
+        var ghost = st.item.cloneNode(true);
+        ghost.classList.add('link-item--drag-ghost');
+        ghost.classList.remove('link-item--placeholder');
+        ghost.querySelectorAll('.btn-delete').forEach(function (b) {
+          b.remove();
         });
+        document.body.appendChild(ghost);
+        st.ghost = ghost;
+        ghost.style.cssText =
+          'position:fixed;z-index:10050;left:' +
+          rect.left +
+          'px;top:' +
+          rect.top +
+          'px;width:' +
+          rect.width +
+          'px;height:' +
+          rect.height +
+          'px;pointer-events:none;margin:0;box-sizing:border-box;';
+        if (e.cancelable) e.preventDefault();
+      }
+      if (st.ghost) {
+        st.ghost.style.left = e.clientX - st.ox + 'px';
+        st.ghost.style.top = e.clientY - st.oy + 'px';
+      }
+      if (st.dragging && e.cancelable) e.preventDefault();
+    }
+
+    function linkSortFinishPointer(e, st, doRelease) {
+      if (doRelease !== false) {
+        try {
+          st.item.releasePointerCapture(e.pointerId);
+        } catch (err) {}
+      }
+      linkSortState = null;
+      linksGrid.classList.remove('link-sort-active');
+      if (st.ghost) {
+        st.ghost.remove();
+        st.ghost = null;
+      }
+      if (st.item) st.item.classList.remove('link-item--placeholder');
+    }
+
+    function linkSortOnPointerUp(e) {
+      var st = linkSortState;
+      if (!st || e.pointerId !== st.pointerId) return;
+      if (!st.dragging) {
+        linkSortState = null;
+        return;
+      }
+      var fromIndex = st.fromIndex;
+      var rawInsert = linkSortComputeInsert(e.clientX, e.clientY, fromIndex);
+      var links = getLinks().slice();
+      var mv = links.splice(fromIndex, 1)[0];
+      var insertAt = Math.max(0, Math.min(rawInsert, links.length));
+      linkSortFinishPointer(e, st);
+      linkSortBlockNextLinkOpen = true;
+      if (insertAt === fromIndex) {
+        return;
+      }
+      links.splice(insertAt, 0, mv);
+      saveLinks(links);
+      renderLinks(true);
+    }
+
+    linksGrid.addEventListener(
+      'dragstart',
+      function (e) {
+        if (e.target.closest('.link-card')) {
+          e.preventDefault();
+        }
+      },
+      true
+    );
+
+    linksGrid.addEventListener('pointerdown', linkSortOnPointerDown);
+    document.addEventListener('pointermove', linkSortOnPointerMove, { passive: false });
+    document.addEventListener('pointerup', linkSortOnPointerUp, true);
+    document.addEventListener('pointercancel', linkSortOnPointerUp, true);
+    linksGrid.addEventListener('lostpointercapture', function (e) {
+      var st = linkSortState;
+      if (!st || e.pointerId !== st.pointerId || !st.dragging) return;
+      linkSortFinishPointer(e, st, false);
+      linkSortBlockNextLinkOpen = false;
+    });
+
+    function clearLinksGridExitFadeStyles() {
+      if (!linksGrid) return;
+      linksGrid.style.removeProperty('transition');
+      linksGrid.style.removeProperty('opacity');
+    }
+
+    function stripEditModeChrome() {
+      if (!quickLinksWrap || !linksGrid) return;
+      quickLinksWrap.classList.remove('link-add-exit', 'link-add-enter', 'edit-mode');
+      quickLinksWrap.classList.toggle('links-empty', getLinks().length === 0);
+      linksGrid.querySelectorAll('.link-item.link-add-btn').forEach(function (el) {
+        el.remove();
+      });
+      linksGrid.querySelectorAll('.btn-delete').forEach(function (el) {
+        el.remove();
+      });
+      linksGrid.querySelectorAll('.link-item:not(.link-add-btn)').forEach(function (item) {
+        var card = item.querySelector('a.link-card');
+        if (!card) return;
+        card.replaceWith(card.cloneNode(true));
       });
     }
 
     function setEditMode(on) {
-      quickLinksWrap.classList.toggle('edit-mode', on);
-      if (mainCenter) mainCenter.classList.toggle('edit-empty', on && getLinks().length === 0);
-      renderLinks();
+      var wasEdit = quickLinksWrap.classList.contains('edit-mode');
+      window.clearTimeout(quickLinksWrap._linkAddEnterT);
+
+      if (on) {
+        abortLinkSortDrag();
+        clearLinksGridExitFadeStyles();
+        quickLinksWrap.classList.remove('link-add-exit');
+        quickLinksWrap.classList.toggle('edit-mode', true);
+        if (!wasEdit) {
+          quickLinksWrap.classList.remove('link-add-enter');
+          requestAnimationFrame(function () {
+            applyEditModeChrome();
+            requestAnimationFrame(function () {
+              quickLinksWrap.classList.add('link-add-enter');
+              quickLinksWrap._linkAddEnterT = window.setTimeout(function () {
+                quickLinksWrap.classList.remove('link-add-enter');
+              }, 650);
+            });
+          });
+        } else {
+          renderLinks();
+        }
+        return;
+      }
+
+      if (!wasEdit) return;
+
+      window.clearTimeout(quickLinksWrap._linkAddEnterT);
+      quickLinksWrap.classList.remove('link-add-enter');
+      clearLinksGridExitFadeStyles();
+      abortLinkSortDrag();
+      linkSortBlockNextLinkOpen = false;
+      stripEditModeChrome();
     }
 
     document.addEventListener('click', (e) => {
       if (!quickLinksWrap.classList.contains('edit-mode')) return;
       if (quickLinksWrap.contains(e.target)) return;
       if (e.target.closest('.modal-overlay')) return;
-      if (e.target.id === 'settingsManageLinks' || e.target.closest('#settingsManageLinks')) return;
+      if (e.target.closest('#settingsDropdown')) return;
       setEditMode(false);
     });
 
@@ -1475,7 +2367,7 @@
       const links = getLinks();
       const link = links[index];
       editingIndex = index;
-      modalTitle.textContent = (LANG[lang] && LANG[lang].modalEditLink) || '编辑链接';
+      modalTitle.textContent = UI.modalEditLink;
       linkNameInput.value = link.name;
       linkUrlInput.value = link.url;
       linkModal.classList.add('show');
@@ -1501,157 +2393,65 @@
     });
 
     renderLinks();
-    const STORAGE_LANG = 'navLang';
-    const LANG = {
-      zh: {
-        searchHint: '请输入搜索内容',
-        menuManageLinks: '管理快捷链接',
-        menuManageEngines: '管理搜索引擎',
-        btnDone: '完成',
-        btnAddLink: '添加链接',
-        modalAddLink: '添加快捷链接',
-        modalEditLink: '编辑链接',
-        labelName: '名称',
-        labelUrl: '网址',
-        btnCancel: '取消',
-        btnSave: '保存',
-        btnAdd: '添加',
-        modalEngines: '管理搜索引擎',
-        engineUrlLabel: '搜索 URL（含 {q}）',
-        engineHomepageLabel: '主页链接或域名',
-        engineNamePlaceholder: '如：Bing 必应',
-        engineUrlPlaceholder: '如：bing.com 或 https://www.bing.com/',
-        engineSetDefault: '设为默认',
-        engineDelete: '删除',
-        engineDefault: '(默认)',
-        engineEdit: '修改',
-        engineEditTitle: '修改搜索引擎',
-        footerText: '2026 © WEIMINAL',
-        toastUndoMsg: '已保存，10秒内可撤回',
-        toastUndoBtn: '撤回'
-      },
-      en: {
-        searchHint: 'Enter search content',
-        menuManageLinks: 'Manage quick links',
-        menuManageEngines: 'Manage search engines',
-        btnDone: 'Done',
-        btnAddLink: 'Add link',
-        modalAddLink: 'Add quick link',
-        modalEditLink: 'Edit link',
-        labelName: 'Name',
-        labelUrl: 'URL',
-        btnCancel: 'Cancel',
-        btnSave: 'Save',
-        btnAdd: 'Add',
-        modalEngines: 'Manage search engines',
-        engineUrlLabel: 'Search URL (with {q})',
-        engineHomepageLabel: 'Homepage or domain',
-        engineNamePlaceholder: 'e.g. Bing',
-        engineUrlPlaceholder: 'e.g. bing.com or https://www.bing.com/',
-        engineSetDefault: 'Set default',
-        engineDelete: 'Delete',
-        engineDefault: '(default)',
-        engineEdit: 'Edit',
-        engineEditTitle: 'Edit search engine',
-        footerText: '2026 © WEIMINAL',
-        toastUndoMsg: 'Saved. Undo within 10s',
-        toastUndoBtn: 'Undo'
+
+    function isFollowSystem() {
+      var v = localStorage.getItem(STORAGE_FOLLOW_SYSTEM);
+      if (v === null || v === undefined || v === '') return true;
+      return v === '1' || v === 'true';
+    }
+
+    function setFollowSystem(on) {
+      localStorage.setItem(STORAGE_FOLLOW_SYSTEM, on ? '1' : '0');
+    }
+
+    function systemPrefersDark() {
+      try {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      } catch (err) {
+        return false;
       }
-    };
-
-    let lang = localStorage.getItem(STORAGE_LANG) || 'zh';
-    function setLang(l) {
-      lang = l;
-      localStorage.setItem(STORAGE_LANG, l);
-      document.body.classList.add('lang-switching');
-      setTimeout(function () {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-          var key = el.getAttribute('data-i18n');
-          if (LANG[lang] && LANG[lang][key]) el.textContent = LANG[lang][key];
-        });
-        var hintEl = document.getElementById('searchInputHint');
-        if (hintEl) hintEl.textContent = LANG[lang].searchHint;
-        var btnLangEl = document.getElementById('btnLang');
-        if (btnLangEl) {
-          btnLangEl.setAttribute('title', lang === 'zh' ? '中文' : 'English');
-          btnLangEl.setAttribute('aria-label', lang === 'zh' ? '语言：中文' : 'Language: English');
-        }
-        var engineName = document.getElementById('engineName');
-        var engineUrl = document.getElementById('engineUrl');
-        if (engineName) engineName.placeholder = LANG[lang].engineNamePlaceholder || '';
-        if (engineUrl) engineUrl.placeholder = LANG[lang].engineUrlPlaceholder || '';
-        document.body.classList.remove('lang-switching');
-      }, 150);
     }
 
-    function runRipple(btn) {
+    function updateFollowSystemMenuCheck() {
+      var el = document.getElementById('settingsFollowSystemCheck');
+      if (el) el.textContent = isFollowSystem() ? '✅' : '';
+    }
+
+    function updateThemeToggleLabels() {
+      var btn = document.getElementById('btnNight');
       if (!btn) return;
-      var r = document.createElement('span');
-      r.className = 'ripple';
-      btn.insertBefore(r, btn.firstChild);
-      requestAnimationFrame(function () { r.classList.add('ripple-run'); });
-      setTimeout(function () { r.remove(); }, 800);
+      var isDark = document.body.classList.contains('night-mode');
+      btn.setAttribute('title', isDark ? '切换为浅色模式' : '切换为深色模式');
+      btn.setAttribute('aria-label', isDark ? '当前为深色模式，点击切换为浅色模式' : '当前为浅色模式，点击切换为深色模式');
     }
 
-    document.getElementById('btnLang').addEventListener('click', function () {
-      runRipple(this);
-      setLang(lang === 'zh' ? 'en' : 'zh');
-    });
+    function getManualThemeIsDark() {
+      return localStorage.getItem(STORAGE_NIGHT) === 'on';
+    }
 
-    var topBarRevealHideTimer = null;
-    var topBarActionsEl = document.getElementById('topBarActions');
-    if (topBarActionsEl) {
-      topBarActionsEl.addEventListener('mouseenter', function () {
-        if (topBarRevealHideTimer) clearTimeout(topBarRevealHideTimer);
-        topBarActionsEl.classList.add('expanded');
-      });
-      topBarActionsEl.addEventListener('mouseleave', function () {
-        topBarRevealHideTimer = setTimeout(function () {
-          topBarActionsEl.classList.remove('expanded');
-          topBarRevealHideTimer = null;
-        }, 420);
-      });
+    function applyThemeDisplay() {
+      if (isFollowSystem()) {
+        document.body.classList.toggle('night-mode', systemPrefersDark());
+      } else {
+        document.body.classList.toggle('night-mode', getManualThemeIsDark());
+      }
+      updateFollowSystemMenuCheck();
+      updateThemeToggleLabels();
     }
-    const STORAGE_NIGHT = 'navNightMode';
-    function isNightByTime() {
-      const h = new Date().getHours();
-      return h >= 19 || h < 7;
-    }
-    function applyNightMode() {
-      var mode = localStorage.getItem(STORAGE_NIGHT) || 'auto';
-      var on = mode === 'on' || (mode === 'auto' && isNightByTime());
-      document.body.classList.toggle('night-mode', on);
-    }
+
+    var colorSchemeMq = window.matchMedia('(prefers-color-scheme: dark)');
     function easeOutCubic(t) {
       return 1 - Math.pow(1 - t, 3);
     }
     function easeInCubic(t) {
       return t * t * t;
     }
-    function runThemeSpread(btn, toNight) {
-      if (document.querySelector('.theme-spread-overlay')) return;
+    function runThemeTransition(toNight, persistManualTheme) {
+      if (persistManualTheme === undefined) persistManualTheme = true;
+      if (document.body.classList.contains('theme-transitioning')) return;
       var DURATION = toNight ? 880 : 1050;
       document.body.classList.add('theme-transitioning', toNight ? 'theme-transitioning-to-night' : 'theme-transitioning-to-light');
       document.body.style.setProperty('--theme-t', toNight ? '0' : '1');
-      var rect = btn.getBoundingClientRect();
-      var cx = rect.left + rect.width / 2;
-      var cy = rect.top + rect.height / 2;
-      var diag = Math.sqrt(window.innerWidth * window.innerWidth + window.innerHeight * window.innerHeight);
-      var size = diag * 2;
-      var overlay = document.createElement('div');
-      overlay.className = 'theme-spread-overlay' + (toNight ? '' : ' theme-spread-to-light');
-      overlay.style.left = (cx - size / 2) + 'px';
-      overlay.style.top = (cy - size / 2) + 'px';
-      overlay.style.width = size + 'px';
-      overlay.style.height = size + 'px';
-      overlay.style.background = toNight
-        ? 'linear-gradient(165deg, #383a42 0%, #3d3f48 35%, #34363e 70%, #2e3038 100%)'
-        : 'linear-gradient(165deg, #e8eef6 0%, #dde5f0 35%, #f0f4fb 70%, #e2eaf5 100%)';
-      overlay.style.backgroundAttachment = 'fixed';
-      document.body.appendChild(overlay);
-      requestAnimationFrame(function () {
-        overlay.classList.add('theme-spread-run');
-      });
       var start = null;
       function tick(now) {
         if (start == null) start = now;
@@ -1659,54 +2459,163 @@
         var t = Math.min(elapsed / DURATION, 1);
         var eased = toNight ? easeOutCubic(t) : (1 - easeInCubic(t));
         document.body.style.setProperty('--theme-t', String(eased));
-        if (elapsed < DURATION) requestAnimationFrame(tick);
+        if (elapsed < DURATION) {
+          requestAnimationFrame(tick);
+        } else {
+          document.body.classList.toggle('night-mode', toNight);
+          if (persistManualTheme) {
+            localStorage.setItem(STORAGE_NIGHT, toNight ? 'on' : 'off');
+          }
+          document.body.classList.remove('theme-transitioning', 'theme-transitioning-to-night', 'theme-transitioning-to-light');
+          document.body.style.removeProperty('--theme-t');
+          updateThemeToggleLabels();
+          updateFollowSystemMenuCheck();
+        }
       }
       requestAnimationFrame(tick);
-      overlay.addEventListener('animationend', function onEnd() {
-        overlay.removeEventListener('animationend', onEnd);
-        document.body.classList.toggle('night-mode', toNight);
-        localStorage.setItem(STORAGE_NIGHT, toNight ? 'on' : 'off');
-        overlay.classList.add('theme-spread-fade-out');
-        overlay.addEventListener('transitionend', function onFadeEnd(e) {
-          if (e.propertyName !== 'opacity') return;
-          overlay.removeEventListener('transitionend', onFadeEnd);
-          requestAnimationFrame(function () {
-            document.body.classList.remove('theme-transitioning', 'theme-transitioning-to-night', 'theme-transitioning-to-light');
-            document.body.style.removeProperty('--theme-t');
-            overlay.remove();
-          });
-        });
-      });
+    }
+    function onPrefersColorSchemeChange() {
+      if (!isFollowSystem()) return;
+      var toNight = colorSchemeMq.matches;
+      if (document.body.classList.contains('night-mode') === toNight) return;
+      runThemeTransition(toNight, false);
+    }
+    if (colorSchemeMq.addEventListener) {
+      colorSchemeMq.addEventListener('change', onPrefersColorSchemeChange);
+    } else if (colorSchemeMq.addListener) {
+      colorSchemeMq.addListener(onPrefersColorSchemeChange);
     }
     document.getElementById('btnNight').addEventListener('click', function () {
-      var mode = localStorage.getItem(STORAGE_NIGHT) || 'auto';
-      var next = mode === 'on' ? 'off' : 'on';
-      var nextIsNight = (next === 'on');
-      runThemeSpread(this, nextIsNight);
+      setFollowSystem(false);
+      var nextIsNight = !document.body.classList.contains('night-mode');
+      runThemeTransition(nextIsNight, true);
     });
-    setInterval(applyNightMode, 60000);
-    applyNightMode();
-    const btnSettings = document.getElementById('btnSettings');
-    const settingsDropdown = document.getElementById('settingsDropdown');
-    btnSettings.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const show = settingsDropdown.classList.toggle('show');
-      if (show) {
-        const rect = btnSettings.getBoundingClientRect();
-        settingsDropdown.style.top = (rect.bottom + 6) + 'px';
-        settingsDropdown.style.right = (window.innerWidth - rect.right) + 'px';
-        settingsDropdown.style.left = 'auto';
-      }
+    applyThemeDisplay();
+    document.addEventListener('click', function (e) {
+      if (!settingsDropdown.classList.contains('show')) return;
+      if (settingsDropdown.contains(e.target)) return;
+      settingsDropdown.classList.remove('show');
     });
-    document.addEventListener('click', () => settingsDropdown.classList.remove('show'));
 
-    document.getElementById('settingsManageLinks').addEventListener('click', () => {
+    document.getElementById('settingsManageLinks').addEventListener('click', function (e) {
+      e.stopPropagation();
       settingsDropdown.classList.remove('show');
       setEditMode(true);
     });
-    document.getElementById('settingsManageEngines').addEventListener('click', () => {
+    document.getElementById('settingsManageEngines').addEventListener('click', function (e) {
+      e.stopPropagation();
       settingsDropdown.classList.remove('show');
       openEngineModal();
+    });
+    document.getElementById('settingsRefresh').addEventListener('click', function (e) {
+      e.stopPropagation();
+      settingsDropdown.classList.remove('show');
+      location.reload();
+    });
+    var resetConfirmStep = 0;
+    var resetConfirmToast = document.getElementById('resetConfirmToast');
+    var resetConfirmMsg = document.getElementById('resetConfirmMsg');
+    var resetConfirmCancel = document.getElementById('resetConfirmCancel');
+    var resetConfirmPrimary = document.getElementById('resetConfirmPrimary');
+
+    function hideResetConfirmToast() {
+      resetConfirmStep = 0;
+      if (resetConfirmToast) {
+        resetConfirmToast.classList.remove('show');
+        clearToastInlineFontSizes(resetConfirmToast);
+      }
+    }
+
+    function showResetConfirmStep1() {
+      resetConfirmStep = 1;
+      if (resetConfirmMsg) {
+        resetConfirmMsg.textContent = '确认所有设置恢复默认吗';
+      }
+      if (resetConfirmPrimary) {
+        resetConfirmPrimary.textContent = '继续';
+        resetConfirmPrimary.classList.add('undo-toast-btn-danger');
+      }
+      if (resetConfirmToast) {
+        resetConfirmToast.classList.add('show');
+        scheduleFitSingleLineToast(resetConfirmToast);
+      }
+    }
+
+    function showResetConfirmStep2() {
+      resetConfirmStep = 2;
+      if (resetConfirmMsg) {
+        resetConfirmMsg.textContent = '所有个性化设置即将清除';
+      }
+      if (resetConfirmPrimary) {
+        resetConfirmPrimary.textContent = '重置';
+        resetConfirmPrimary.classList.add('undo-toast-btn-danger');
+      }
+      if (resetConfirmToast) scheduleFitSingleLineToast(resetConfirmToast);
+    }
+
+    function performResetAllAndReload() {
+      [STORAGE_KEY, STORAGE_ENGINES, STORAGE_ENGINE_CURRENT, STORAGE_NIGHT, STORAGE_FOLLOW_SYSTEM, 'navLang'].forEach(function (key) {
+        try {
+          localStorage.removeItem(key);
+        } catch (err) {}
+      });
+      location.reload();
+    }
+
+    document.getElementById('settingsResetAll').addEventListener('click', function (e) {
+      e.stopPropagation();
+      settingsDropdown.classList.remove('show');
+      showResetConfirmStep1();
+    });
+    if (resetConfirmCancel) {
+      resetConfirmCancel.addEventListener('click', function () {
+        hideResetConfirmToast();
+      });
+    }
+    if (resetConfirmPrimary) {
+      resetConfirmPrimary.addEventListener('click', function () {
+        if (resetConfirmStep === 1) {
+          showResetConfirmStep2();
+        } else if (resetConfirmStep === 2) {
+          hideResetConfirmToast();
+          performResetAllAndReload();
+        }
+      });
+    }
+    document.addEventListener('click', function (e) {
+      if (!resetConfirmToast || !resetConfirmToast.classList.contains('show')) return;
+      if (resetConfirmToast.contains(e.target)) return;
+      hideResetConfirmToast();
+    });
+    var toastFitResizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(toastFitResizeTimer);
+      toastFitResizeTimer = setTimeout(function () {
+        if (undoToast && undoToast.classList.contains('show')) scheduleFitSingleLineToast(undoToast);
+        if (resetConfirmToast && resetConfirmToast.classList.contains('show')) scheduleFitSingleLineToast(resetConfirmToast);
+      }, 120);
+    });
+    document.getElementById('settingsFollowSystem').addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (isFollowSystem()) {
+        setFollowSystem(false);
+        updateFollowSystemMenuCheck();
+        var manualDark = getManualThemeIsDark();
+        if (document.body.classList.contains('night-mode') !== manualDark) {
+          runThemeTransition(manualDark, false);
+        } else {
+          updateThemeToggleLabels();
+        }
+      } else {
+        setFollowSystem(true);
+        updateFollowSystemMenuCheck();
+        var sysDark = systemPrefersDark();
+        if (document.body.classList.contains('night-mode') !== sysDark) {
+          runThemeTransition(sysDark, false);
+        } else {
+          updateThemeToggleLabels();
+        }
+      }
     });
     const searchHintWrap = document.getElementById('searchHintWrap');
     const searchInput = document.getElementById('searchInput');
@@ -1794,12 +2703,20 @@
       const engines = getEngines();
       const engine = engines.find(e => e.id === currentEngineId) || engines[0];
       const url = getSearchUrl(engine, q);
-      //window.open(url, '_blank');
       window.location.href = url;
     });
 
     renderEngineDropdown();
-    setLang(lang);
+    if (searchInputHint) searchInputHint.textContent = UI.searchHint;
+    var engineNameEl = document.getElementById('engineName');
+    var engineUrlEl = document.getElementById('engineUrl');
+    if (engineNameEl) engineNameEl.placeholder = UI.engineNamePlaceholder;
+    if (engineUrlEl) engineUrlEl.placeholder = UI.engineUrlPlaceholder;
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      requestAnimationFrame(function () {
+        searchInput.focus();
+      });
+    }
     const engineModal = document.getElementById('engineModal');
     const engineListWrap = document.getElementById('engineListWrap');
     const engineNameInput = document.getElementById('engineName');
@@ -1809,14 +2726,12 @@
     const engineEditUrl = document.getElementById('engineEditUrl');
     let editingEngineIndex = -1;
 
-    const t = (key) => (LANG[lang] && LANG[lang][key]) || key;
-
     function openEngineModal() {
       const engines = getEngines();
-      const defaultLabel = t('engineDefault');
-      const setDefaultText = t('engineSetDefault');
-      const editText = t('engineEdit');
-      const deleteText = t('engineDelete');
+      const defaultLabel = UI.engineDefault;
+      const setDefaultText = UI.engineSetDefault;
+      const editText = UI.engineEdit;
+      const deleteText = UI.engineDelete;
       const canDelete = engines.length > 1;
 
       engineListWrap.innerHTML = engines.map((e, i) => {
