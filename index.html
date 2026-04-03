@@ -1543,6 +1543,30 @@
         var(--tt-footer-muted-dark) calc(var(--theme-t) * 100%)
       );
     }
+
+    .footer-brand {
+      display: block;
+    }
+
+    .footer-visits {
+      display: block;
+      margin-top: 0.62rem;
+      font-size: 0.58rem;
+      letter-spacing: 0.04em;
+      color: color-mix(in srgb, var(--tt-footer-muted-light) 36%, transparent);
+    }
+
+    body.night-mode .footer-visits {
+      color: color-mix(in srgb, var(--tt-footer-muted-dark) 36%, transparent);
+    }
+
+    body.theme-transitioning .footer-visits {
+      color: color-mix(
+        in srgb,
+        color-mix(in srgb, var(--tt-footer-muted-light) 36%, transparent) calc((1 - var(--theme-t)) * 100%),
+        color-mix(in srgb, var(--tt-footer-muted-dark) 36%, transparent) calc(var(--theme-t) * 100%)
+      );
+    }
   </style>
 </head>
 <body>
@@ -1655,7 +1679,10 @@
     </div>
   </div>
 
-  <footer class="footer" id="footerEl">2026 © WEIMINAL</footer>
+  <footer class="footer" id="footerEl">
+    <span class="footer-brand">2026 © WEIMINAL</span>
+    <span class="footer-visits">累计访问 <span id="busuanzi_value_site_pv">Loading</span></span>
+  </footer>
 
   <script>
     const DEFAULT_ENGINES = [
@@ -2826,5 +2853,6 @@
       openEngineModal();
     });
   </script>
+  <script defer src="https://cn.vercount.one/js"></script>
 </body>
 </html>
