@@ -161,6 +161,45 @@
                 border-color: #1a1a1a;
                 background: #fff;
             }
+            .date-pill {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 8px 12px;
+                background: #fafafa;
+                border: 1px solid transparent;
+                border-radius: 8px;
+                transition: all 0.2s ease;
+            }
+            .date-pill:hover {
+                border-color: #e5e5e5;
+                background: #f5f5f5;
+            }
+            .date-pill:focus-within {
+                border-color: #1a1a1a;
+                background: #fff;
+            }
+            .date-pill input[type="date"] {
+                -webkit-appearance: none;
+                appearance: none;
+                border: none;
+                outline: none;
+                background: transparent;
+                font-size: 0.8125rem;
+                color: #1f2937;
+                min-width: 8.2rem;
+                padding-right: 0.2rem;
+            }
+            .date-pill input[type="date"]::-webkit-calendar-picker-indicator {
+                margin-left: 0.35rem;
+                opacity: 0.75;
+                cursor: pointer;
+            }
+            .date-label {
+                font-size: 0.75rem;
+                color: #6b7280;
+                white-space: nowrap;
+            }
             .custom-options {
                 position: fixed;
                 min-width: 0;
@@ -297,9 +336,15 @@
 </head>
 <body class="min-h-screen p-3 sm:p-4 md:p-6">
     <div class="max-w-7xl mx-auto w-full min-w-0">
-        <header class="mb-4 sm:mb-6">
-            <h1 class="text-2xl sm:text-3xl font-light tracking-tight mb-1">工资计算器</h1>
-            <p class="text-gray-500 text-sm" id="currentDate"></p>
+        <header class="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-light tracking-tight mb-1">工资计算器</h1>
+                <p class="text-gray-500 text-sm" id="currentDate"></p>
+            </div>
+            <label class="date-pill w-fit">
+                <span class="date-label">入职日期</span>
+                <input type="date" id="entryDate" class="number-display">
+            </label>
         </header>
 
         <div class="panel-wrap">
@@ -359,6 +404,10 @@
                             <div class="flex justify-between items-center">
                                 <span class="text-xs text-gray-500" title="应工作日+节假日天数-调休天数-请假天数">实际计薪天数</span>
                                 <span id="actualDays" class="text-sm font-semibold"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">预计发薪日</span>
+                                <span id="payDateHint" class="text-xs font-medium text-blue-600"></span>
                             </div>
                         </div>
                     </div>
@@ -436,7 +485,7 @@
                             <div>
                                 <div class="text-xs text-gray-500 mb-0.5">基本工资</div>
                                 <div class="text-xl font-light number-display" id="baseSalary">¥0.00</div>
-                                <div class="text-xs text-gray-400">基数÷21.75×实际计薪天数（扣事假病假）</div>
+                                <div class="text-xs text-gray-400">入职首月按在岗天数折算；整月按月基数</div>
                                 <div class="text-xs text-gray-500 mt-0.5 font-mono" id="baseSalaryFormula"></div>
                             </div>
                             <div>
@@ -471,9 +520,43 @@
                                 <div class="text-xs text-gray-400">根据基数计算</div>
                                 <div class="text-xs text-gray-500 mt-0.5 font-mono" id="insuranceTotalFormula"></div>
                             </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-0.5">个人所得税（累计预扣）</div>
+                                <div class="text-lg font-light number-display text-red-500" id="taxAmount">-¥0.00</div>
+                                <div class="text-xs text-gray-400">本月应预扣税额</div>
+                                <div class="text-xs text-gray-500 mt-0.5 font-mono" id="taxFormula"></div>
+                                <div class="text-xs text-gray-400 mt-1" id="taxCumulativeHint"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <details class="glass-card rounded-xl p-4 sm:p-5">
+                    <summary class="text-sm text-gray-500 cursor-pointer select-none">个税参数（高级，默认可不填）</summary>
+                    <h2 class="text-base font-medium mt-3 mb-3">个税参数</h2>
+                    <div class="flex items-center justify-between mb-3">
+                        <label for="autoTaxCumulative" class="text-xs text-gray-500">自动累计个税（推荐）</label>
+                        <input type="checkbox" id="autoTaxCumulative" checked>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 salary-base-grid">
+                        <div class="editable-field">
+                            <label class="section-title">起征点/月</label>
+                            <input type="number" id="taxThreshold" value="5000" min="0" class="input-minimal input-blue text-xl number-display" placeholder="5000">
+                        </div>
+                        <div class="editable-field">
+                            <label class="section-title">专项附加扣除/月</label>
+                            <input type="number" id="taxAdditionalDeduction" value="0" min="0" class="input-minimal input-blue text-xl number-display" placeholder="0">
+                        </div>
+                        <div class="editable-field">
+                            <label class="section-title">累计已预扣个税</label>
+                            <input type="number" id="taxWithheldBefore" value="0" min="0" class="input-minimal input-blue text-xl number-display" placeholder="0">
+                        </div>
+                        <div class="editable-field">
+                            <label class="section-title">累计应纳税所得额(前)</label>
+                            <input type="number" id="taxableIncomeBefore" value="0" class="input-minimal input-blue text-xl number-display" placeholder="可为负数">
+                        </div>
+                    </div>
+                </details>
 
                 <div class="detail-summary-row">
                     <div class="glass-card rounded-xl p-4 sm:p-5 bg-gradient-to-br from-gray-900 to-gray-800 text-white net-salary-card">
@@ -481,7 +564,7 @@
                             <div class="text-sm opacity-90">实发工资</div>
                             <div class="summary-right min-w-0 flex flex-col items-end">
                                 <div class="text-2xl sm:text-4xl font-light tracking-tight number-display truncate" id="netSalary">¥0.00</div>
-                                <div class="text-xs opacity-60 mt-1">已扣除个人社保公积金</div>
+                                <div class="text-xs opacity-60 mt-1">已扣除个人社保公积金与个税</div>
                             </div>
                         </div>
                     </div>
@@ -518,6 +601,9 @@
         const STORAGE_INSURANCE = 'payroll_insurance_bases';
         const STORAGE_SALARY = 'payroll_salary_bases';
         const STORAGE_RATES = 'payroll_rates';
+        const STORAGE_TAX = 'payroll_tax_settings';
+        const STORAGE_MISC = 'payroll_misc_settings';
+        const STORAGE_TAX_RECORDS = 'payroll_tax_records';
 
         const RATE_INPUT_IDS = {
             pension: ['ratePensionP', 'ratePensionC'],
@@ -603,6 +689,88 @@
         }
 
         const MONTHLY_PAY_DAYS = 21.75;
+        const IIT_BRACKETS = [
+            { upTo: 36000, rate: 0.03, quick: 0 },
+            { upTo: 144000, rate: 0.10, quick: 2520 },
+            { upTo: 300000, rate: 0.20, quick: 16920 },
+            { upTo: 420000, rate: 0.25, quick: 31920 },
+            { upTo: 660000, rate: 0.30, quick: 52920 },
+            { upTo: 960000, rate: 0.35, quick: 85920 },
+            { upTo: Infinity, rate: 0.45, quick: 181920 }
+        ];
+
+        function getDaysWorkedAfterEntry(year, month, entryDate) {
+            const holidays = getHolidays(year, month);
+            const workWeekends = getWorkWeekends(year, month);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const monthStart = new Date(year, month - 1, 1);
+            const startDate = entryDate && entryDate > monthStart ? entryDate : monthStart;
+            let payableDays = 0;
+            let workDays = 0;
+            for (let day = startDate.getDate(); day <= daysInMonth; day++) {
+                const date = new Date(year, month - 1, day);
+                const dayOfWeek = date.getDay();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                const isHoliday = holidays.includes(day);
+                const isWorkWeekend = workWeekends.includes(day);
+                const isWorkday = isWorkWeekend || (!isWeekend && !isHoliday);
+                const isPayable = (!isWeekend) || isHoliday;
+                if (isWorkday) workDays++;
+                if (isPayable) payableDays++;
+            }
+            return { payableDays, workDays };
+        }
+
+        function calcTaxFromCumulativeTaxable(cumulativeTaxable) {
+            const taxable = Math.max(0, cumulativeTaxable);
+            const bracket = IIT_BRACKETS.find(b => taxable <= b.upTo) || IIT_BRACKETS[IIT_BRACKETS.length - 1];
+            return taxable * bracket.rate - bracket.quick;
+        }
+
+        function getTaxRecords() {
+            try {
+                const s = localStorage.getItem(STORAGE_TAX_RECORDS);
+                return s ? JSON.parse(s) : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveTaxRecords(records) {
+            try { localStorage.setItem(STORAGE_TAX_RECORDS, JSON.stringify(records)); } catch (e) {}
+        }
+
+        function getMonthKey(year, month) {
+            return `${year}-${String(month).padStart(2, '0')}`;
+        }
+
+        function getCumulativeBeforeByRecords(year, month) {
+            const records = getTaxRecords();
+            let taxableIncomeBefore = 0;
+            let taxWithheldBefore = 0;
+            Object.keys(records).forEach(key => {
+                const m = key.match(/^(\d{4})-(\d{2})$/);
+                if (!m) return;
+                const y = parseInt(m[1], 10);
+                const mo = parseInt(m[2], 10);
+                if (y === year && mo < month) {
+                    taxableIncomeBefore += parseFloat(records[key].taxableIncome) || 0;
+                    taxWithheldBefore += parseFloat(records[key].taxAmount) || 0;
+                }
+            });
+            return { taxableIncomeBefore, taxWithheldBefore };
+        }
+
+        function updateTaxModeUI() {
+            const autoEl = document.getElementById('autoTaxCumulative');
+            const autoMode = !!(autoEl && autoEl.checked);
+            ['taxableIncomeBefore', 'taxWithheldBefore'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.disabled = autoMode;
+                el.classList.toggle('opacity-60', autoMode);
+            });
+        }
 
         function calculateSalary() {
             const leaveDays = parseFloat(document.getElementById('leaveDays').value) || 0;
@@ -610,14 +778,30 @@
             const salaryBase = parseFloat(document.getElementById('salaryBase').value) || 0;
             const salaryAllowance = parseFloat(document.getElementById('salaryAllowance').value) || 0;
             const salaryBonus = parseFloat(document.getElementById('salaryBonus').value) || 0;
+            const entryDateRaw = document.getElementById('entryDate').value;
+            const entryDate = entryDateRaw ? new Date(entryDateRaw) : null;
+            const taxThreshold = parseFloat(document.getElementById('taxThreshold').value) || 0;
+            const taxAdditionalDeduction = parseFloat(document.getElementById('taxAdditionalDeduction').value) || 0;
+            const autoTaxCumulative = !!document.getElementById('autoTaxCumulative')?.checked;
+            let taxableIncomeBefore = parseFloat(document.getElementById('taxableIncomeBefore').value) || 0;
+            let taxWithheldBefore = parseFloat(document.getElementById('taxWithheldBefore').value) || 0;
+            if (autoTaxCumulative) {
+                const cumulative = getCumulativeBeforeByRecords(currentYear, currentMonthNum);
+                taxableIncomeBefore = cumulative.taxableIncomeBefore;
+                taxWithheldBefore = cumulative.taxWithheldBefore;
+                document.getElementById('taxableIncomeBefore').value = taxableIncomeBefore.toFixed(2);
+                document.getElementById('taxWithheldBefore').value = taxWithheldBefore.toFixed(2);
+            }
 
             const holidays = getHolidays(currentYear, currentMonthNum);
             const holidayCount = holidays.length;
             const workWeekends = getWorkWeekends(currentYear, currentMonthNum);
             const workWeekendCount = workWeekends.length;
             const workDays = calculateWorkDays(currentYear, currentMonthNum);
-            const actualPayDays = Math.max(0, workDays + holidayCount - workWeekendCount - leaveDays - sickLeaveDays);
-            const effectivePayDaysForBase = Math.max(0, workDays + holidayCount - workWeekendCount - leaveDays - sickLeaveDays * 0.8);
+            const employedDays = getDaysWorkedAfterEntry(currentYear, currentMonthNum, entryDate);
+            const payableDays = employedDays.payableDays;
+            const employedWorkDays = employedDays.workDays;
+            const actualPayDays = Math.max(0, payableDays - leaveDays - sickLeaveDays);
 
             const monthLabel = `${currentYear}年${currentMonthNum}月`;
             document.getElementById('currentMonth').textContent = monthLabel;
@@ -628,17 +812,41 @@
             if (wwEl) wwEl.textContent = `${workWeekendCount}天`;
             document.getElementById('workDays').textContent = `${workDays}天`;
             document.getElementById('actualDays').textContent = `${actualPayDays}天`;
+            const payDate = new Date(currentYear, currentMonthNum, 15);
+            document.getElementById('payDateHint').textContent = `${payDate.getFullYear()}年${payDate.getMonth() + 1}月15日`;
 
-            const baseSalary = (salaryBase / MONTHLY_PAY_DAYS) * effectivePayDaysForBase;
-            const projectAllowance = (salaryAllowance / MONTHLY_PAY_DAYS) * workDays;
-            const projectBonus = (salaryBonus / MONTHLY_PAY_DAYS) * workDays;
             const attendanceDeduction = (salaryBase / MONTHLY_PAY_DAYS) * leaveDays;
             const sickLeaveDeduction = (salaryBase / MONTHLY_PAY_DAYS) * sickLeaveDays * 0.8;
+            const monthStart = new Date(currentYear, currentMonthNum - 1, 1);
+            const isPartialMonthByEntry = !!(entryDate && entryDate > monthStart);
+            const baseSalaryBeforeLeave = isPartialMonthByEntry
+                ? (salaryBase / MONTHLY_PAY_DAYS) * workDays
+                : salaryBase;
+            const baseSalary = Math.max(0, baseSalaryBeforeLeave);
+            const projectAllowance = isPartialMonthByEntry
+                ? (salaryAllowance / MONTHLY_PAY_DAYS) * employedWorkDays
+                : salaryAllowance;
+            const projectBonus = isPartialMonthByEntry
+                ? (salaryBonus / MONTHLY_PAY_DAYS) * employedWorkDays
+                : salaryBonus;
 
             const insurance = calculateInsurance();
-            const grossSalary = baseSalary + projectAllowance + projectBonus;
-            const netSalary = grossSalary - insurance.personalTotal;
+            const grossSalary = baseSalary + projectAllowance + projectBonus - attendanceDeduction - sickLeaveDeduction;
+            const currentTaxableIncome = grossSalary - insurance.personalTotal - taxThreshold - taxAdditionalDeduction;
+            const cumulativeTaxable = taxableIncomeBefore + currentTaxableIncome;
+            const cumulativeTaxShould = calcTaxFromCumulativeTaxable(cumulativeTaxable);
+            const taxAmount = Math.max(0, cumulativeTaxShould - taxWithheldBefore);
+            const netSalary = grossSalary - insurance.personalTotal - taxAmount;
             const companyCost = grossSalary + insurance.companyTotal;
+
+            if (autoTaxCumulative) {
+                const records = getTaxRecords();
+                records[getMonthKey(currentYear, currentMonthNum)] = {
+                    taxableIncome: currentTaxableIncome,
+                    taxAmount: taxAmount
+                };
+                saveTaxRecords(records);
+            }
 
             updateNumber('baseSalary', baseSalary);
             updateNumber('projectAllowance', projectAllowance);
@@ -646,17 +854,35 @@
             updateNumber('attendanceDeduction', attendanceDeduction, true);
             updateNumber('sickLeaveDeduction', sickLeaveDeduction, true);
             updateNumber('insuranceTotal', insurance.personalTotal, true);
+            updateNumber('taxAmount', taxAmount, true);
             updateNumber('netSalary', netSalary);
             updateNumber('companyCost', companyCost);
 
             const fmt = (n) => (typeof n === 'number' && !isNaN(n)) ? n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00';
             const setFormula = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-            setFormula('baseSalaryFormula', `${salaryBase}÷21.75×${effectivePayDaysForBase.toFixed(2)}=${fmt(baseSalary)}`);
-            setFormula('projectAllowanceFormula', `${salaryAllowance}÷21.75×${workDays}=${fmt(projectAllowance)}`);
-            setFormula('projectBonusFormula', `${salaryBonus}÷21.75×${workDays}=${fmt(projectBonus)}`);
+            setFormula(
+                'baseSalaryFormula',
+                isPartialMonthByEntry
+                    ? `${salaryBase}÷21.75×${workDays.toFixed(2)}=${fmt(baseSalary)}`
+                    : `${salaryBase}(整月基数)`
+            );
+            setFormula(
+                'projectAllowanceFormula',
+                isPartialMonthByEntry
+                    ? `${salaryAllowance}÷21.75×${employedWorkDays}=${fmt(projectAllowance)}`
+                    : `${salaryAllowance}(整月发放)`
+            );
+            setFormula(
+                'projectBonusFormula',
+                isPartialMonthByEntry
+                    ? `${salaryBonus}÷21.75×${employedWorkDays}=${fmt(projectBonus)}`
+                    : `${salaryBonus}(整月发放)`
+            );
             setFormula('attendanceDeductionFormula', `${salaryBase}÷21.75×${leaveDays}=${fmt(attendanceDeduction)}`);
             setFormula('sickLeaveDeductionFormula', `${salaryBase}÷21.75×${sickLeaveDays}×80%=${fmt(sickLeaveDeduction)}`);
             setFormula('insuranceTotalFormula', '各险种基数×比例之和=' + fmt(insurance.personalTotal));
+            setFormula('taxFormula', `累计应纳税所得额=${fmt(taxableIncomeBefore)}+${fmt(currentTaxableIncome)}，本月预扣=${fmt(cumulativeTaxShould)}-${fmt(taxWithheldBefore)}=${fmt(taxAmount)}`);
+            setFormula('taxCumulativeHint', `提示：上月累计(${fmt(taxableIncomeBefore)}) + 本月应纳税额(${fmt(currentTaxableIncome)}) = 本月累计(${fmt(cumulativeTaxable)})`);
         }
 
         function updateNumber(id, value, isNegative = false) {
@@ -677,6 +903,10 @@
                 option.addEventListener('click', function(e) {
                     e.stopPropagation();
                     currentMonthNum = parseInt(this.dataset.month);
+                    const leaveEl = document.getElementById('leaveDays');
+                    const sickEl = document.getElementById('sickLeaveDays');
+                    if (leaveEl) leaveEl.value = '0';
+                    if (sickEl) sickEl.value = '0';
                     document.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
                     this.classList.add('selected');
                     closeDropdown();
@@ -778,6 +1008,49 @@
             } catch (e) {}
         }
 
+        function saveTaxSettings() {
+            const o = {
+                taxThreshold: document.getElementById('taxThreshold').value,
+                taxAdditionalDeduction: document.getElementById('taxAdditionalDeduction').value,
+                taxableIncomeBefore: document.getElementById('taxableIncomeBefore').value,
+                taxWithheldBefore: document.getElementById('taxWithheldBefore').value,
+                autoTaxCumulative: document.getElementById('autoTaxCumulative')?.checked !== false
+            };
+            try { localStorage.setItem(STORAGE_TAX, JSON.stringify(o)); } catch (e) {}
+        }
+
+        function loadTaxSettings() {
+            try {
+                const s = localStorage.getItem(STORAGE_TAX);
+                if (s) {
+                    const o = JSON.parse(s);
+                    ['taxThreshold','taxAdditionalDeduction','taxableIncomeBefore','taxWithheldBefore'].forEach(id => {
+                        if (o[id] !== undefined) document.getElementById(id).value = o[id];
+                    });
+                    if (o.autoTaxCumulative !== undefined) {
+                        const autoEl = document.getElementById('autoTaxCumulative');
+                        if (autoEl) autoEl.checked = !!o.autoTaxCumulative;
+                    }
+                }
+            } catch (e) {}
+            updateTaxModeUI();
+        }
+
+        function saveMiscSettings() {
+            const o = { entryDate: document.getElementById('entryDate').value };
+            try { localStorage.setItem(STORAGE_MISC, JSON.stringify(o)); } catch (e) {}
+        }
+
+        function loadMiscSettings() {
+            try {
+                const s = localStorage.getItem(STORAGE_MISC);
+                if (s) {
+                    const o = JSON.parse(s);
+                    if (o.entryDate !== undefined) document.getElementById('entryDate').value = o.entryDate;
+                }
+            } catch (e) {}
+        }
+
         function setRatesToDefault() {
             RATE_KEYS.forEach(key => {
                 const [pid, cid] = RATE_INPUT_IDS[key];
@@ -839,6 +1112,8 @@
             loadInsuranceBases();
             loadSalaryBases();
             loadRates();
+            loadTaxSettings();
+            loadMiscSettings();
             updateRatesButtonText();
 
             initMonthSelect();
@@ -846,6 +1121,7 @@
 
             const insuranceIds = ['basePension','baseMedical','baseUnemployment','baseInjury','baseMaternity','baseFund'];
             const salaryIds = ['salaryBase','salaryAllowance','salaryBonus'];
+            const taxIds = ['taxThreshold','taxAdditionalDeduction','taxableIncomeBefore','taxWithheldBefore'];
             insuranceIds.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', function() { saveInsuranceBases(); calculateSalary(); });
@@ -854,8 +1130,25 @@
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', function() { saveSalaryBases(); calculateSalary(); });
             });
+            taxIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', function() { saveTaxSettings(); calculateSalary(); });
+            });
+            const autoTaxEl = document.getElementById('autoTaxCumulative');
+            if (autoTaxEl) {
+                autoTaxEl.addEventListener('change', function() {
+                    updateTaxModeUI();
+                    saveTaxSettings();
+                    calculateSalary();
+                });
+            }
             document.getElementById('leaveDays').addEventListener('input', calculateSalary);
             document.getElementById('sickLeaveDays').addEventListener('input', calculateSalary);
+            ['entryDate'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', function() { saveMiscSettings(); calculateSalary(); });
+                if (el) el.addEventListener('change', function() { saveMiscSettings(); calculateSalary(); });
+            });
 
             RATE_KEYS.forEach(key => {
                 const [pid, cid] = RATE_INPUT_IDS[key];
