@@ -22,8 +22,31 @@
     <!-- ============================================
          CDN依赖库引入
          ============================================ -->
-    <!-- Vue 3 - 核心框架 -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Vue 3 - 核心框架（主 CDN） -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <!-- Vue 3 CDN fallback：主 CDN 失败时动态加载备用源 -->
+    <script>
+        window.__vueReady = (function () {
+            if (window.Vue) {
+                return Promise.resolve();
+            }
+            return new Promise(function (resolve, reject) {
+                var script = document.createElement('script');
+                script.src = 'https://unpkg.com/vue@3/dist/vue.global.prod.js';
+                script.onload = function () {
+                    if (window.Vue) {
+                        resolve();
+                    } else {
+                        reject(new Error('Vue fallback loaded but window.Vue is missing'));
+                    }
+                };
+                script.onerror = function () {
+                    reject(new Error('Vue fallback CDN failed'));
+                };
+                document.head.appendChild(script);
+            });
+        })();
+    </script>
     <!-- Tailwind CSS - 样式系统 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- GSAP - 动画引擎 -->
@@ -93,6 +116,28 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        [v-cloak] {
+            display: none !important;
+        }
+
+        .vue-load-error {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .vue-load-error p {
+            font-size: 1.125rem;
+            color: #242329;
+        }
+
+        .dark .vue-load-error p {
+            color: #ffffff;
         }
         
         html {
@@ -442,7 +487,7 @@
     <!-- ============================================
          Vue 3 应用根节点
          ============================================ -->
-    <div id="app">
+    <div id="app" v-cloak>
         
         <!-- ============================================
              导航栏
@@ -1213,9 +1258,23 @@
         // ============================================
         // Vue 3 应用
         // ============================================
-        const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
+        function showVueFallback() {
+            var app = document.getElementById('app');
+            if (!app) return;
+            app.removeAttribute('v-cloak');
+            app.innerHTML = ''
+                + '<div class="vue-load-error">'
+                +   '<div>'
+                +     '<p>页面资源加载失败，请刷新页面重试。</p>'
+                +     '<p style="margin-top:0.5rem;font-size:0.875rem;opacity:0.7;">Failed to load page resources. Please refresh and try again.</p>'
+                +   '</div>'
+                + '</div>';
+        }
+
+        function initVueApp() {
+            const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
         
-        createApp({
+            createApp({
             setup() {
                 // ===== 响应式状态 =====
                 // 与 head 预置主题脚本保持初始一致，避免图标短暂错位
@@ -1418,7 +1477,20 @@
                     resetGlowPosition
                 };
             }
-        }).mount('#app');
+            }).mount('#app');
+        }
+
+        (window.__vueReady || Promise.resolve())
+            .then(function () {
+                if (window.Vue) {
+                    initVueApp();
+                } else {
+                    showVueFallback();
+                }
+            })
+            .catch(function () {
+                showVueFallback();
+            });
     </script>
 </body>
 </html>
