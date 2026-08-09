@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <title>WeiMinal's CV</title>
+
+    <!-- 主题初始化：避免 Dark Mode 首屏闪白 -->
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem('theme');
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
     
     <!-- ============================================
          CDN依赖库引入
@@ -162,40 +174,60 @@
             filter: drop-shadow(0 0 8px rgba(110, 87, 224, 0.8));
         }
         
-        /* ===== 联系我按钮 - 悬停展开效果（带层次感修饰） ===== */
+        /* ===== CTA 专用光晕（首页联系按钮 / Footer 邮箱） ===== */
+        .cta-glow {
+            position: relative;
+            isolation: isolate;
+            border-radius: 9999px;
+        }
+
+        .cta-glow::before {
+            content: '';
+            position: absolute;
+            inset: -18px;
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: 0;
+            z-index: -1;
+            background: radial-gradient(
+                circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                rgba(110, 87, 224, 0.48) 0%,
+                rgba(110, 87, 224, 0.22) 35%,
+                transparent 72%
+            );
+            filter: blur(28px);
+            transition: opacity 0.3s ease;
+        }
+
+        .cta-glow:hover::before {
+            opacity: 1;
+        }
+
+        .dark .cta-glow::before {
+            background: radial-gradient(
+                circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                rgba(139, 122, 240, 0.78) 0%,
+                rgba(110, 87, 224, 0.42) 32%,
+                rgba(110, 87, 224, 0.16) 55%,
+                transparent 76%
+            );
+            filter: blur(30px);
+        }
+
+        .cta-glow:hover {
+            color: white;
+            text-shadow: none;
+        }
+
+        .cta-glow:hover svg {
+            filter: none;
+        }
+
+        /* ===== 联系我按钮 - 悬停展开效果 ===== */
         .contact-btn-wrapper {
             position: relative;
             display: inline-flex;
-        }
-
-        .contact-btn-wrapper::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 32px;
-            background: linear-gradient(135deg, rgba(110, 87, 224, 0.3) 0%, rgba(139, 122, 240, 0.2) 50%, rgba(110, 87, 224, 0.1) 100%);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .contact-btn-wrapper:hover::before {
-            opacity: 1;
-        }
-
-        .contact-btn-wrapper::after {
-            content: '';
-            position: absolute;
-            inset: -8px;
-            border-radius: 36px;
-            background: linear-gradient(135deg, rgba(110, 87, 224, 0.15) 0%, rgba(139, 122, 240, 0.1) 50%, transparent 100%);
-            z-index: -2;
-            opacity: 0;
-            transition: opacity 0.4s ease 0.1s;
-        }
-
-        .contact-btn-wrapper:hover::after {
-            opacity: 1;
+            isolation: isolate;
         }
 
         .contact-btn {
@@ -212,14 +244,13 @@
             cursor: pointer;
             position: relative;
             z-index: 1;
-            border: none; /* 【修复】重置按钮默认边框，避免占位 */
-            padding: 0;   /* 【修复】强制重置内边距，无多余间距 */
+            border: none;
+            padding: 0;
         }
 
         .contact-btn:hover {
             width: 160px;
             padding: 0 24px;
-            box-shadow: 0 10px 30px rgba(110, 87, 224, 0.4);
         }
 
         .contact-btn .btn-icon {
@@ -228,33 +259,30 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* 【修复】核心：强制图标容器无默认间距，适配所有图标 */
             margin: 0;
             padding: 0;
-            /* 【删除】font-size: 20px; （对Lucide图标无效，干扰对齐） */
         }
-
 
         .contact-btn:hover .btn-icon {
             transform: scale(0.9);
         }
 
         .contact-btn .btn-text {
+            max-width: 0;
             opacity: 0;
-            transform: translateX(-10px);
-            white-space: nowrap;
-            /* 【20260131修改点：删除】margin-left: 8px; （核心！彻底消除隐性占位，不挤图标） */
-            font-weight: 500;
-            transition: all 0.3s ease 0.1s;
-            /* 【修复】关键：初始状态让文本完全不占位，彻底不挤图标 */
-            width: 0;
+            margin-left: 0;
             overflow: hidden;
+            white-space: nowrap;
+            font-weight: 500;
+            transform: translateX(-10px);
+            transition: all 0.3s ease 0.1s;
         }
 
         .contact-btn:hover .btn-text {
+            max-width: 100px;
             opacity: 1;
+            margin-left: 8px;
             transform: translateX(0);
-            width: auto; /* 【修复】hover时恢复文本宽度，正常显示 */
         }
         
         /* ===== 时间轴样式 - 统一左时间右内容 ===== */
@@ -262,20 +290,23 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .timeline-container:hover .timeline-item {
-            opacity: 0.4;
-            filter: blur(1px);
-        }
-        
-        .timeline-container:hover .timeline-item:hover {
-            opacity: 1;
-            filter: blur(0);
+        @media (hover: hover) and (pointer: fine) {
+            .timeline-container:hover .timeline-item {
+                opacity: 0.4;
+                filter: blur(1px);
+            }
+            
+            .timeline-container:hover .timeline-item:hover {
+                opacity: 1;
+                filter: blur(0);
+            }
         }
         
         /* ===== 跑马灯样式 ===== */
         .marquee-track {
             display: flex;
-            width: fit-content;
+            width: max-content;
+            will-change: transform;
         }
         
         .marquee-content {
@@ -283,6 +314,7 @@
             align-items: center;
             gap: 2rem;
             padding-right: 2rem;
+            flex-shrink: 0;
         }
         
         /* ===== 滚动条美化 ===== */
@@ -328,9 +360,11 @@
         }
         
         .dark .glass-card {
-            background: rgba(26, 26, 31, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            background: rgba(26, 26, 31, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.32),
+                inset 0 1px 0 rgba(255, 255, 255, 0.035);
         }
         
         /* ===== 导航栏玻璃效果 ===== */
@@ -364,10 +398,33 @@
         }
         
         /* ===== 自定义图标样式 ===== */
+        .github-icon {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .home-social-icons .github-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .footer-social-icons .github-icon {
+            width: 24px;
+            height: 24px;
+        }
+
         .weibo-icon {
             width: 20px;
             height: 20px;
             fill: currentColor;
+        }
+
+        .footer-social-icons .weibo-icon {
+            width: 24px;
+            height: 24px;
         }
         
         /* ===== 页脚样式 ===== */
@@ -466,7 +523,10 @@
                        class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:scale-110 transition-transform magnetic-glow"
                        @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
                         <!-- GitHub图标 -->
-                        <i v-if="social.icon === 'github'" :data-lucide="social.icon" class="w-5 h-5"></i>
+                        <svg v-if="social.icon === 'github'" class="github-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.28-.36 6.72-1.61 6.72-7.05A5.5 5.5 0 0 0 19.22 3.61 5.07 5.07 0 0 0 19.08 0S17.9-.36 15 1.48a13.38 13.38 0 0 0-7 0C5.1-.36 3.92 0 3.92 0a5.07 5.07 0 0 0-.14 3.61 5.5 5.5 0 0 0-1.5 3.85c0 5.42 3.44 6.67 6.72 7.05A4.8 4.8 0 0 0 8 18v4"/>
+                            <path d="M8 19c-3 .9-3-1.5-4-2"/>
+                        </svg>
                         <!-- 微博图标 -->
                         <svg v-else-if="social.name === '微博'" class="weibo-icon" viewBox="0 0 24 24">
                             <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.09-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.194.573zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.579-.18-.405-.649.381-1.017.421-1.896.002-2.521-.786-1.17-2.938-1.109-5.399-.031 0 0-.772.338-.575-.273.381-1.205.324-2.213-.27-2.8-1.347-1.327-4.928.047-8.001 3.07C1.019 10.729 0 13.347 0 15.565c0 4.247 5.443 6.832 10.766 6.832 6.976 0 11.613-4.053 11.613-7.272 0-1.943-1.64-3.043-3.32-3.476zM20.756 8.4c-.954-1.063-2.358-1.505-3.82-1.35-.399.043-.671.4-.629.8.043.4.4.672.8.629.991-.106 1.947.195 2.588.91.641.715.859 1.68.607 2.644-.105.399.132.809.531.914.399.105.809-.132.914-.531.372-1.401.061-2.853-.991-4.016zm-1.803 2.013c-.357-.398-.883-.563-1.433-.508-.2.021-.346.195-.325.395.021.2.195.346.395.325.32-.034.609.058.8.272.191.214.26.502.186.777-.053.198.064.401.262.454.198.053.401-.064.454-.262.133-.494.008-1.021-.379-1.453z"/>
@@ -492,19 +552,18 @@
                     {{ currentLang === 'zh' ? profileData.taglineZh : profileData.taglineEn }}
                 </p>
                 
-                <!-- CTA 按钮 - 联系我悬停展开（带层次感修饰） -->
+                <!-- CTA 按钮 - 联系我悬停展开 -->
                 <div class="flex items-center justify-center gap-4 home-cta">
-                    <!-- 20260130修改点 -->
-                    <div class="magnetic-glow" @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
-                        <a :href="profileData.contactEmail" class="contact-btn">
+                    <div class="contact-btn-wrapper cta-glow"
+                         @mousemove="updateGlowPosition"
+                         @mouseleave="resetGlowPosition">
+                        <a :href="profileData.contactEmail" class="contact-btn hover:shadow-lg hover:shadow-primary/30 hover:text-white">
                             <span class="btn-icon">
                                 <i data-lucide="mail" class="w-5 h-5"></i>
                             </span>
-                            <!-- 20260131最笨的方法加空格优化图标居中问题 -->
-                            <span class="btn-text">&nbsp;&nbsp;{{ currentLang === 'zh' ? '联系我' : 'Contact' }}</span>
+                            <span class="btn-text">{{ currentLang === 'zh' ? '联系我' : 'Contact' }}</span>
                         </a>
                     </div>
-
                 </div>
                 
                 <!-- 滚动提示 -->
@@ -562,6 +621,15 @@
                         </div>
                         
                         <div class="space-y-4">
+                            <!-- 年龄 - 自动计算 -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="calendar" class="w-4 h-4 text-text-secondary"></i>
+                                    <span class="text-sm text-text-secondary">{{ currentLang === 'zh' ? '当前年龄' : 'Age' }}</span>
+                                </div>
+                                <span class="font-semibold text-primary">{{ calculatedAge }} {{ currentLang === 'zh' ? '岁' : 'Years' }}</span>
+                            </div>
+
                             <!-- 工作经验 -->
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -570,14 +638,14 @@
                                 </div>
                                 <span class="font-semibold text-primary">{{ profileData.experienceYears }} {{ currentLang === 'zh' ? '年' : 'Years' }}</span>
                             </div>
-                            
-                            <!-- 年龄 - 自动计算 -->
+
+                            <!-- 当前方向 -->
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <i data-lucide="calendar" class="w-4 h-4 text-text-secondary"></i>
-                                    <span class="text-sm text-text-secondary">{{ currentLang === 'zh' ? '当前年龄' : 'Age' }}</span>
+                                    <i data-lucide="target" class="w-4 h-4 text-text-secondary"></i>
+                                    <span class="text-sm text-text-secondary">{{ currentLang === 'zh' ? '当前方向' : 'Focus' }}</span>
                                 </div>
-                                <span class="font-semibold text-primary">{{ calculatedAge }} {{ currentLang === 'zh' ? '岁' : 'Years' }}</span>
+                                <span class="font-semibold text-primary">{{ currentLang === 'zh' ? profileData.directionZh : profileData.directionEn }}</span>
                             </div>
                             
                             <!-- 所在城市 -->
@@ -617,28 +685,28 @@
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '拿 AI 做点自己的东西' : 'Building things with AI' }}</span>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
+                                <i data-lucide="code-2" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '做网页，也折腾 APP' : 'Building websites and tinkering with apps' }}</span>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
+                                <i data-lucide="server" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '折腾 NAS、Docker 和智能家居' : 'Tinkering with NAS, Docker, and smart home setups' }}</span>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
                                 <i data-lucide="smartphone" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
-                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '安卓苹果刷机折腾' : 'Android / Apple Tinkering' }}</span>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '手机、系统和数码产品都爱折腾' : 'Phones, operating systems, and gadgets' }}</span>
                             </div>
                             <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
-                                <i data-lucide="hard-drive" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
-                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '飞牛NAS / AppleTV' : 'FnOS / AppleTV' }}</span>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
-                                <i data-lucide="home" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
-                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '智能家居联动' : 'Smart Home Automation' }}</span>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
-                                <i data-lucide="camera" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
-                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '摄影 / 电影 / 音乐' : 'Photography / Movies / Music' }}</span>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5">
-                                <i data-lucide="gamepad-2" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
-                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '仙剑奇侠传' : 'Chinese Paladin' }}</span>
+                                <i data-lucide="music-2" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '摄影、电影，最近在学钢琴' : 'Photography, movies, and learning piano' }}</span>
                             </div>
                             <div class="flex items-start gap-3 p-3 rounded-xl bg-primary/5"><!-- 大屏时占两列 sm:col-span-2 -->
                                 <i data-lucide="gamepad-2" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
-                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '黑神话：悟空' : 'Black Myth: Wukong' }}</span>
+                                <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '喜欢游戏：《仙剑奇侠传四》《黑神话：悟空》《漫威蜘蛛侠》' : "Gaming: Chinese Paladin IV, Black Myth: Wukong, Marvel's Spider-Man" }}</span>
                             </div>
                         </div>
                     </div>
@@ -653,8 +721,8 @@
             <div class="w-full px-6 lg:px-12">
                 <!-- 标题 -->
                 <div class="mb-16 reveal-element">
-                    <p class="text-primary font-medium mb-2">{{ currentLang === 'zh' ? '工作经历' : 'Experience' }}</p>
-                    <h2 class="text-4xl md:text-5xl font-bold">{{ currentLang === 'zh' ? '职业历程' : 'Career Journey' }}</h2>
+                    <p class="text-primary font-medium mb-2">{{ currentLang === 'zh' ? '个人经历' : 'Experience' }}</p>
+                    <h2 class="text-4xl md:text-5xl font-bold">{{ currentLang === 'zh' ? '成长轨迹' : 'My Journey' }}</h2>
                 </div>
                 
                 <!-- 时间轴 - 统一左边时间、右边内容 -->
@@ -682,9 +750,9 @@
                             <!-- 内容 - 右边 -->
                             <div class="flex-1">
                                 <div class="glass-card rounded-2xl p-6 hover:shadow-xl transition-shadow">
-                                    <h3 class="text-xl font-semibold mb-1">{{ exp.company }}</h3>
+                                    <h3 class="text-xl font-semibold mb-1">{{ exp.company || exp.project }}</h3>
                                     <p class="text-primary font-medium mb-2">{{ exp.position }}</p>
-                                    <p v-if="exp.project" class="text-text-secondary dark:text-gray-400 text-sm mb-4">{{ exp.project }}</p>
+                                    <p v-if="exp.company && exp.project" class="text-text-secondary dark:text-gray-400 text-sm mb-4">{{ exp.project }}</p>
                                     
                                     <!-- 工具标签 -->
                                     <div v-if="exp.tools && exp.tools.length > 0" class="flex flex-wrap gap-2 mb-4">
@@ -729,8 +797,8 @@
                     <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-bg-light dark:from-bg-dark to-transparent z-10"></div>
                     <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-bg-light dark:from-bg-dark to-transparent z-10"></div>
                     
-                    <div class="animate-marquee">
-                        <div class="marquee-track">
+                    <div>
+                        <div class="marquee-track animate-marquee">
                             <div class="marquee-content">
                                 <span v-for="skill in profileData.skillsRow1" :key="skill"
                                       class="px-6 py-3 rounded-full glass-card text-lg font-medium whitespace-nowrap hover:bg-primary hover:text-white transition-colors cursor-default">
@@ -752,8 +820,8 @@
                     <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-bg-light dark:from-bg-dark to-transparent z-10"></div>
                     <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-bg-light dark:from-bg-dark to-transparent z-10"></div>
                     
-                    <div class="animate-marquee-reverse">
-                        <div class="marquee-track">
+                    <div>
+                        <div class="marquee-track animate-marquee-reverse">
                             <div class="marquee-content">
                                 <span v-for="skill in currentLang === 'zh' ? profileData.skillsRow2Zh : profileData.skillsRow2En" :key="skill"
                                       class="px-6 py-3 rounded-full glass-card text-lg font-medium whitespace-nowrap hover:bg-primary hover:text-white transition-colors cursor-default">
@@ -778,7 +846,7 @@
                         <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
                             <i data-lucide="trophy" class="w-6 h-6 text-primary"></i>
                         </div>
-                        <h3 class="text-xl font-semibold">{{ currentLang === 'zh' ? '获奖经历' : 'Awards' }}</h3>
+                        <h3 class="text-xl font-semibold">{{ currentLang === 'zh' ? '荣誉与成长' : 'Honors & Growth' }}</h3>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div v-for="(award, index) in currentLang === 'zh'?profileData.awardsZh : profileData.awardsEn" :key="index"
@@ -806,27 +874,26 @@
                     <div class="reveal-element">
                         <p class="text-primary font-medium mb-4">{{ currentLang === 'zh' ? '联系方式' : 'Get in Touch' }}</p>
                         <h2 class="text-5xl md:text-7xl lg:text-8xl font-bold mb-8">
-                            {{ currentLang === 'zh' ? '一起学习吧' : "Let's Learn" }}
-                            <span class="block text-primary">{{ currentLang === 'zh' ? '' : 'Together' }}</span>
+                            {{ currentLang === 'zh' ? '聊聊吧' : "Let's Talk" }}
+                            <span class="block text-primary">{{ currentLang === 'zh' ? '' : '' }}</span>
                         </h2>
                         <p class="text-xl text-text-secondary dark:text-gray-400 mb-12 max-w-2xl mx-auto">
-                            {{ currentLang === 'zh' ? '如果您有任何创意和想法想交流，欢迎随时联系我。' : 'Feel free to reach out if you have any creative ideas to share.' }}
+                            {{ currentLang === 'zh' ? '如果你对技术、产品，或者任何有趣的想法想交流，欢迎联系我。' : "If you'd like to chat about technology, products, or any interesting ideas, feel free to reach out." }}
                         </p>
                     </div>
                     
                     <!-- 邮箱按钮 -->
                     <div class="reveal-element mb-16">
                         <a :href="profileData.contactEmail" 
-                           class="inline-flex items-center gap-4 px-10 py-6 rounded-full bg-primary text-white hover:text-white text-xl font-medium magnetic-glow hover:shadow-lg hover:shadow-primary/30 transition-all"
+                           class="inline-flex items-center gap-4 px-10 py-6 rounded-full bg-primary text-white hover:text-white text-xl font-medium cta-glow hover:shadow-lg hover:shadow-primary/30 transition-all"
                            @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
-                           <!-- 20260201修改点：添加hover:text-white强制鼠标悬停时文字依然为白色 -->
                             <i data-lucide="mail" class="w-6 h-6"></i>
                             {{ profileData.email }}
                         </a>
                     </div>
                     
                     <!-- 社交链接 -->
-                    <div class="reveal-element flex items-center justify-center gap-6 mb-16">
+                    <div class="reveal-element flex items-center justify-center gap-6 mb-16 footer-social-icons">
                         <a v-for="social in profileData.socialLinks" :key="social.name"
                            :href="social.url"
                            target="_blank"
@@ -834,7 +901,10 @@
                            class="w-14 h-14 rounded-full glass-card flex items-center justify-center text-text-secondary dark:text-gray-400 hover:text-primary hover:scale-110 transition-all magnetic-glow"
                            @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
                             <!-- GitHub图标 -->
-                            <i v-if="social.icon === 'github'" :data-lucide="social.icon" class="w-6 h-6"></i>
+                            <svg v-if="social.icon === 'github'" class="github-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.28-.36 6.72-1.61 6.72-7.05A5.5 5.5 0 0 0 19.22 3.61 5.07 5.07 0 0 0 19.08 0S17.9-.36 15 1.48a13.38 13.38 0 0 0-7 0C5.1-.36 3.92 0 3.92 0a5.07 5.07 0 0 0-.14 3.61 5.5 5.5 0 0 0-1.5 3.85c0 5.42 3.44 6.67 6.72 7.05A4.8 4.8 0 0 0 8 18v4"/>
+                                <path d="M8 19c-3 .9-3-1.5-4-2"/>
+                            </svg>
                             <!-- 微博图标 -->
                             <svg v-else-if="social.name === '微博'" class="weibo-icon" viewBox="0 0 24 24">
                                 <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.09-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.194.573zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.579-.18-.405-.649.381-1.017.421-1.896.002-2.521-.786-1.17-2.938-1.109-5.399-.031 0 0-.772.338-.575-.273.381-1.205.324-2.213-.27-2.8-1.347-1.327-4.928.047-8.001 3.07C1.019 10.729 0 13.347 0 15.565c0 4.247 5.443 6.832 10.766 6.832 6.976 0 11.613-4.053 11.613-7.272 0-1.943-1.64-3.043-3.32-3.476zM20.756 8.4c-.954-1.063-2.358-1.505-3.82-1.35-.399.043-.671.4-.629.8.043.4.4.672.8.629.991-.106 1.947.195 2.588.91.641.715.859 1.68.607 2.644-.105.399.132.809.531.914.399.105.809-.132.914-.531.372-1.401.061-2.853-.991-4.016zm-1.803 2.013c-.357-.398-.883-.563-1.433-.508-.2.021-.346.195-.325.395.021.2.195.346.395.325.32-.034.609.058.8.272.191.214.26.502.186.777-.053.198.064.401.262.454.198.053.401-.064.454-.262.133-.494.008-1.021-.379-1.453z"/>
@@ -847,7 +917,7 @@
             <!-- 页脚底部 -->
             <div class="text-center py-4">
                 <p class="text-sm text-text-secondary dark:text-gray-500">
-                            2023 - 2026 © WEIMINAL 
+                            2023 - {{ currentYear }} © WEIMINAL
                 </p>
                         
             </div>
@@ -865,7 +935,9 @@
         const profileData = {
             // 基本信息
             name: '李伟民',
-            experienceYears: 2,
+            experienceYears: '2+',
+            directionZh: '具身智能',
+            directionEn: 'Embodied Intelligence',
             
             // 出生日期 - 用于自动计算年龄
             birthDate: '2000-04-30',
@@ -875,7 +947,7 @@
             titleEn: 'Test Engineer',
 
             // 身份信息
-            titleBZh: '学者',
+            titleBZh: '终身学习者',
             titleBEn: 'A Lifelong Learner',
             
             // 问候语
@@ -887,12 +959,26 @@
             taglineEn: 'Not an artist, but living artistically.',
             
             // 个人简介
-            bioZh: '热衷于学习与折腾，具备2年测试经验。能快速理解需求文档、能快速上手测试工具、积极搭建标准化作业流程、擅长跨部门协作、进度风险管控。热衷于用用户导向思维决策、结果导向思维执行，确保数据内容高质量交付。',
-            bioEn: 'With 2 years of experience in software testing, I am passionate about continuous learning and hands-on exploration. I excel at quickly understanding requirements, mastering testing tools efficiently, and establishing standardized workflows. I thrive in cross-functional collaboration and am skilled in managing project progress and mitigating risks. Guided by a user-centric approach in decision-making and a results-driven mindset in execution, I am committed to ensuring the delivery of high-quality data and content.',
+            bioZh: '拥有2年以上测试相关工作经验，目前聚焦具身智能测试方向。职业经历从AI软件测试逐步拓展至软硬件结合的产品测试，现阶段主要参与测试方案设计、测试用例编写、测试执行与问题闭环。工作中注重从实际场景出发理解产品与测试需求，持续完善测试方法、标准化流程和设备使用规范。保持对新技术和新工具的学习兴趣，也喜欢通过实际动手和解决工程问题不断扩展自己的能力边界。',
+            bioEn: 'With over 2 years of testing experience, I am currently focused on embodied intelligence testing. My professional experience has gradually expanded from AI software testing to software-hardware integrated product testing, with current work covering test plan design, test case development, test execution, and issue closure. I focus on understanding products and testing requirements from practical scenarios while continuously improving testing methods, standardized workflows, and equipment operating procedures. I also maintain a strong interest in new technologies and tools, and enjoy expanding my capabilities through hands-on practice and solving real engineering problems.',
             
             // 标签
-            tagsZh: ['快速理解上手', '标准化作业', '跨部门协作', '进度风险管控', '用户导向', '结果导向'],
-            tagsEn: ['Quick Understanding', 'Standardized Workflow', 'Cross-Department Collaboration', 'Progress Risk Control', 'User-Centric', 'Results-Driven'],
+            tagsZh: [
+                '具身智能',
+                '硬件测试',
+                '测试设计',
+                '标准化',
+                '工程实践',
+                '问题闭环'
+            ],
+            tagsEn: [
+                'Embodied Intelligence',
+                'Hardware Testing',
+                'Test Design',
+                'Standardization',
+                'Engineering Practice',
+                'Issue Resolution'
+            ],
             
             // 联系方式
             email: 'weiminal@126.com',
@@ -917,149 +1003,204 @@
             // 工作经历
             experiencesZh: [
                 {
-                    company: '软通动力信息技术（集团）有限公司',
-                    position: '道通具身机器人测试工程师',
-                    period: '2026.02 - ',
+                    project: '具身智能项目',
+                    position: '具身智能测试工程师',
+                    period: '2026.02 - 至今',
+                    tools: ['示波器', '万用表', 'ChatGPT', 'Cursor', 'Linux', 'Jira'],
                     achievements: [
-                        '学习中...'
+                        '参与具身智能产品测试与质量保障，覆盖需求理解、测试设计、测试执行及问题闭环等环节',
+                        '持续完善测试方案、测试用例与测试方法，推动测试工作规范化和标准化',
+                        '逐步拓展软硬件结合场景下的测试能力，持续积累具身智能领域的工程实践经验',
+                        '协同研发及相关团队推进问题定位、风险跟踪和版本质量闭环'
                     ]
                 },
                 {
-                    company: '元时空智能科技（重庆）有限公司',
+                    project: 'OPPO 小布记忆项目',
                     position: 'AI软件测试 / 数据交付PM',
-                    project: 'OPPO小布记忆项目',
                     period: '2024.06 - 2026.01',
-                    tools: ['Python', 'SQLite', 'Xmind', '石墨文档'],
+                    tools: ['ADB', 'ROM刷写', 'Python', 'SQLite', 'XMind', '石墨文档'],
                     achievements: [
-                        '面试组建小组推进项目执行，统筹内外部协作',
-                        '主导多个小布记忆子项目数据交付启动，应对紧急需求变更',
-                        '主动解决任务过程中的关键问题',
-                        '建立规则答疑表流程标准，以减少数据返工概率',
-                        '确保关键节点准时达成，输出详细的测试报告'
+                        '参与AI记忆类产品测试，覆盖终端环境准备、功能验证与问题闭环',
+                        '承担部分项目推进与交付协调，跟进需求变化、任务进度与关键节点',
+                        '参与测试规则、验收口径与作业流程梳理，持续提升执行一致性并减少返工',
+                        '使用Python、SQLite等工具进行数据处理、检查与问题定位，辅助提升测试与交付效率'
                     ]
                 },
                 {
-                    company: '备考研究生公务员事业单位',
-                    position: '',
-                    project: '',
-                    period: '2022.06 - 2024.06',
-                    tools: ['848计算机基础综合','数学一','英语一','公基','行测','申论'],
+                    project: '职业探索与备考',
+                    position: '个人发展阶段',
+                    period: '2023.06 - 2024.06',
+                    tools: ['计算机基础', '数学', '英语', '公职考试'],
                     achievements: [
-                        '2022年12月参与1次计算机考研',
-                        '国考参加1次，广东省考参加2次',
-                        '事业编考试20+次'
+                        '围绕计算机基础、数学、英语及公共科目进行系统学习与备考',
+                        '在持续学习和职业探索过程中重新明确发展方向，并于2024年进入AI软件测试领域'
                     ]
                 },
                 {
                     company: '广东理工学院',
-                    position: '软件工程 / 校报记者站摄影记者',
+                    position: '本科软件工程 / 校园媒体实践',
                     project: '校园新闻宣传工作',
                     period: '2018.09 - 2023.06',
-                    tools: ['Java','Android Studio','PR', 'PS'],
+                    tools: [
+                        'Android Studio',
+                        'Java',
+                        'HTML',
+                        'CSS',
+                        'JavaScript',
+                        'Premiere Pro',
+                        'Photoshop'
+                    ],
                     achievements: [
-                        '负责参与校内外大小型活动的新闻拍摄工作',
-                        '图片后期调色加工，整理规范图片视频文档',
-                        '配合新闻报纸出版公众号发文等宣传工作',
-                        '多次获得校级优秀奖学金及宣传工作先进个人奖'
+                        '本科就读软件工程专业，以Android应用开发为主要学习方向，同时学习Web前端等软件开发基础',
+                        '参与校内外活动新闻摄影、图片后期及影像内容制作，长期参与校园媒体宣传工作',
+                        '在技术学习之外持续培养摄影与视觉表达能力，并将其延续至个人兴趣与项目实践',
+                        '多次获得校级优秀奖学金及校园宣传相关荣誉'
                     ]
                 },
                 {
                     company: '信宜中学',
-                    position: '理科生',
+                    position: '高中阶段 / 影像兴趣启蒙',
                     project: '',
                     period: '2015.09 - 2018.06',
-                    tools: ['Canon EOS600D'],
+                    tools: [
+                        'Canon EOS 600D',
+                        '摄影',
+                        '视频拍摄'
+                    ],
                     achievements: [
-                        '参与拍摄制作无厘头短片《喋血双熊》',
-                        '参与拍摄校园心理社团微电影《校园失窃案》'
+                        '高中阶段开始接触摄影与视频创作，逐步形成持续至今的影像兴趣',
+                        '参与拍摄制作无厘头搞笑短片《喋血双熊》，并参与校园心理社团微电影《校园失窃案》的拍摄制作'
                     ]
                 }
             ],
 
             experiencesEn: [
                 {
-                    company: 'iSoftStone Information Technology (Group) Co., Ltd.',
-                    position: 'Autel Physical Robots Test Engineer',
-                    period: '2026.02 - ',
+                    project: 'Embodied Intelligence Project',
+                    position: 'Embodied Intelligence Test Engineer',
+                    period: '2026.02 - Present',
+                    tools: ['Oscilloscope', 'Multimeter', 'ChatGPT', 'Cursor', 'Linux', 'Jira'],
                     achievements: [
-                        'Learning...'
+                        'Participate in testing and quality assurance for embodied intelligence products, covering requirement understanding, test design, test execution, and issue closure',
+                        'Continuously improve test plans, test cases, and testing methods to promote standardized and structured testing practices',
+                        'Expand testing capabilities across software-hardware integrated scenarios while building practical engineering experience in embodied intelligence',
+                        'Collaborate with R&D and related teams on issue investigation, risk tracking, and product quality closure'
                     ]
                 },
                 {
-                    company: 'Meta-Spacetime Intelligent Technology (Chongqing) Co., Ltd.',
+                    project: 'OPPO Xiaobu Memory Project',
                     position: 'AI Software Testing / Data Delivery PM',
-                    project: 'OPPO AI Memory Project',
                     period: '2024.06 - 2026.01',
-                    tools: ['Python', 'SQLite', 'Xmind', 'Shimo Docs'],
+                    tools: ['ADB', 'ROM Flashing', 'Python', 'SQLite', 'XMind', 'Shimo Docs'],
                     achievements: [
-                        'Interviewed and formed a team to promote project execution, coordinating internal and external collaboration',
-                        'Led the initiation of data delivery for multiple OPPO AI Memory sub-projects, responding to urgent requirement changes',
-                        'Proactively solved key problems during task execution',
-                        'Established a rule-based Q&A table process standard to reduce data rework probability',
-                        'Ensured timely achievement of key milestones and delivered detailed test reports'
+                        'Participated in AI memory product testing, covering terminal environment setup, functional validation, and issue closure.',
+                        'Took responsibility for part of the project coordination and delivery process, following up on requirement changes, task progress, and key milestones',
+                        'Contributed to refining testing rules, acceptance criteria, and operating workflows to improve execution consistency and reduce rework',
+                        'Used Python and SQLite for data processing, validation, and issue investigation to improve testing and delivery efficiency'
                     ]
                 },
                 {
-                    company: 'Preparing for Postgraduate Entrance Exam, Civil Service and Public Institution Exams',
-                    position: '',
-                    project: '',
-                    period: '2022.06 - 2024.06',
-                    tools: ['848 Computer Basic Comprehensive', 'Mathematics I', 'English I', 'Public Basic Knowledge', 'Administrative Professional Ability Test', 'Essay'],
+                    project: 'Career Exploration & Exam Preparation',
+                    position: 'Personal Development Period',
+                    period: '2023.06 - 2024.06',
+                    tools: ['Computer Fundamentals', 'Mathematics', 'English', 'Public Sector Exams'],
                     achievements: [
-                        'Took 1 computer postgraduate entrance exam in December 2022',
-                        'Participated in 1 national civil service exam and 2 Guangdong provincial civil service exams',
-                        'Took over 20 public institution exams'
+                        'Focused on systematic study and exam preparation across computer fundamentals, mathematics, English, and public subjects',
+                        'Gradually clarified my career direction through continuous learning and exploration, entering the AI software testing field in 2024'
                     ]
                 },
                 {
                     company: 'Guangdong Technology College',
-                    position: 'Major in Software Engineering / Photojournalist at University Newspaper Press',
+                    position: 'Software Engineering Undergraduate / Campus Media Practice',
                     project: 'Campus News and Publicity Work',
                     period: '2018.09 - 2023.06',
-                    tools: ['Java', 'Android Studio', 'PR', 'PS'],
+                    tools: [
+                        'Android Studio',
+                        'Java',
+                        'HTML',
+                        'CSS',
+                        'JavaScript',
+                        'Premiere Pro',
+                        'Photoshop'
+                    ],
                     achievements: [
-                        'Responsible for news photography of various on-campus and off-campus activities',
-                        'Conducted post-processing color correction of images, organized and standardized image and video documents',
-                        'Cooperated with publicity work such as newspaper publication and official account article release',
-                        'Received multiple university-level excellent scholarships and Advanced Individual in Publicity Work awards'
+                        'Studied Software Engineering with a primary focus on Android application development, while also learning web frontend and other software development fundamentals',
+                        'Participated in news photography, image post-processing, and video content production for on-campus and off-campus activities',
+                        'Continued developing photography and visual communication skills alongside technical studies, carrying them into personal interests and projects',
+                        'Received multiple university-level scholarships and honors related to campus publicity work'
                     ]
                 },
                 {
                     company: 'Xinyi Middle School',
-                    position: 'High School Science Student',
+                    position: 'High School / Early Interest in Visual Media',
                     project: '',
                     period: '2015.09 - 2018.06',
-                    tools: ['Canon EOS600D'],
+                    tools: [
+                        'Canon EOS 600D',
+                        'Photography',
+                        'Video Shooting'
+                    ],
                     achievements: [
-                        'Participated in shooting and producing the nonsensical short film "Bloody Two Bears"',
-                        'Participated in shooting the campus psychology club microfilm "Campus Theft Case"'
+                        'Began exploring photography and video creation during high school, developing a long-term interest in visual media',
+                        'Participated in producing the comedy short film "Bloody Two Bears" and the campus psychology club microfilm "Campus Theft Case"'
                     ]
                 }
             ],
             
             // 技能栈 - 第一行
-            skillsRow1: ['Java','Python', 'HTML', 'SQLite', 'ADB', 'Linux', 'Xmind', 'Excel', 'Android Studio','Visual Studio Code'],
-            
+            skillsRow1: [
+                'ChatGPT',
+                'Cursor',
+                'HTML',
+                'CSS',
+                'JavaScript',
+                'Docker',
+                'Linux',
+                'ADB',
+                'Android Studio',
+                'Java',
+                'Python',
+                'SQLite'
+            ],
+
             // 技能栈 - 第二行
-            skillsRow2Zh: ['需求分析', '进度管控', '风险管理', '团队协作', '质量管控', '标准化作业流程', '测试报告'],
-            skillsRow2En: ['Requirements Analysis', 'Schedule Management', 'Risk Management', 'Team Collaboration', 'Quality Control', 'Standardized Operating Procedures (SOP)', 'Test Reports'],
+            skillsRow2Zh: [
+                '需求分析',
+                '测试设计',
+                '软件测试',
+                '硬件测试',
+                '整机测试',
+                '问题闭环',
+                '标准化',
+                '跨团队协作'
+            ],
+            skillsRow2En: [
+                'Requirements Analysis',
+                'Test Design',
+                'Software Testing',
+                'Hardware Testing',
+                'System Testing',
+                'Issue Resolution',
+                'Standardization',
+                'Cross-functional Collaboration'
+            ],
 
             // 获奖经历
             awardsZh: [
-                '元时空青云计划四期（领导力发展培训）',
-                '元时空2025年第二季度进取之星',
-                '校级优秀奖学金（2022 / 2020 / 2019）',
-                '广东高校校报好新闻图片类二等奖（2019）',
-                '党委宣传部优秀新闻工作者（2020）',
-                '党委宣传部宣传先进个人奖（2019）'
+                '月度之星（2026年4–5月）',
+                '团队协作奖（2026年2–3月）',
+                '进取之星（2025年第二季度）',
+                '青云计划四期（领导力发展培训）',
+                '校级优秀奖学金（2019 / 2020 / 2022）',
+                '广东高校校报好新闻图片类二等奖（2019）'
             ],
             awardsEn: [
-                'Meta-SpaceTime Qingyunjihua 4th Session (Leadership Development Training)',
-                'Meta-SpaceTime Q2 2025 Progressive Star',
-                'University-level Excellent Scholarship (2022 / 2020 / 2019)',
-                'Guangdong University Newspapers Good News Competition, Second Prize in Photography Category (2019)',
-                'Party Committee Publicity Department, Outstanding Journalist (2020)',
-                'Party Committee Publicity Department, Advanced Individual in Publicity (2019)'
+                'Monthly Star (Apr–May 2026)',
+                'Team Collaboration Award (Feb–Mar 2026)',
+                'Progressive Star (Q2 2025)',
+                'Qingyun Program, Cohort IV (Leadership Development)',
+                'University Merit Scholarships (2019 / 2020 / 2022)',
+                'Second Prize, Guangdong University Newspaper Photography Award (2019)'
             ],
             
             // 社交链接 - 只保留GitHub和微博，GitHub在前
@@ -1072,15 +1213,17 @@
         // ============================================
         // Vue 3 应用
         // ============================================
-        const { createApp, ref, onMounted, computed, watch } = Vue;
+        const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
         
         createApp({
             setup() {
                 // ===== 响应式状态 =====
-                const isDarkMode = ref(false);          // 深色模式状态
+                // 与 head 预置主题脚本保持初始一致，避免图标短暂错位
+                const isDarkMode = ref(document.documentElement.classList.contains('dark'));
                 const currentLang = ref('zh');          // 当前语言
                 const isScrolled = ref(false);          // 是否已滚动
                 const isMobileMenuOpen = ref(false);    // 移动端菜单状态
+                const currentYear = new Date().getFullYear();
                 
                 // ===== 导航项配置 =====
                 const navItems = [
@@ -1107,6 +1250,18 @@
                 });
                 
                 // ===== 方法 =====
+
+                // 统一刷新 Lucide 图标（等待 DOM 更新）
+                const refreshLucideIcons = () => {
+                    nextTick(() => {
+                        lucide.createIcons();
+                    });
+                };
+
+                // 同步 html lang
+                const syncDocumentLang = (lang) => {
+                    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+                };
                 
                 // 切换深色/浅色模式
                 const toggleDarkMode = () => {
@@ -1202,28 +1357,37 @@
                 
                 // ===== 生命周期钩子 =====
                 onMounted(() => {
-                    // 初始化Lucide图标
-                    lucide.createIcons();
-                    
-                    // 从localStorage读取主题设置
-                    const savedTheme = localStorage.getItem('theme');
-                    if (savedTheme === 'dark') {
-                        isDarkMode.value = true;
-                        document.documentElement.classList.add('dark');
-                    } else if (savedTheme === 'light') {
-                        isDarkMode.value = false;
-                        document.documentElement.classList.remove('dark');
-                    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                        // 检测系统偏好
-                        isDarkMode.value = true;
-                        document.documentElement.classList.add('dark');
+                    // 从localStorage读取主题设置（与 head 预置脚本同步 Vue 状态）
+                    try {
+                        const savedTheme = localStorage.getItem('theme');
+                        if (savedTheme === 'dark') {
+                            isDarkMode.value = true;
+                            document.documentElement.classList.add('dark');
+                        } else if (savedTheme === 'light') {
+                            isDarkMode.value = false;
+                            document.documentElement.classList.remove('dark');
+                        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                            isDarkMode.value = true;
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            isDarkMode.value = document.documentElement.classList.contains('dark');
+                        }
+                    } catch (e) {
+                        isDarkMode.value = document.documentElement.classList.contains('dark');
                     }
                     
                     // 从localStorage读取语言设置
-                    const savedLang = localStorage.getItem('lang');
-                    if (savedLang) {
-                        currentLang.value = savedLang;
-                    }
+                    try {
+                        const savedLang = localStorage.getItem('lang');
+                        if (savedLang) {
+                            currentLang.value = savedLang;
+                        }
+                    } catch (e) {}
+
+                    syncDocumentLang(currentLang.value);
+                    
+                    // 主题、语言就绪后再初始化图标
+                    refreshLucideIcons();
                     
                     // 绑定滚动事件
                     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -1232,12 +1396,10 @@
                     initAnimations();
                 });
                 
-                // ===== 监听语言变化，重新初始化图标 =====
-                watch(currentLang, () => {
-                    // 使用setTimeout确保DOM更新后再初始化图标
-                    setTimeout(() => {
-                        lucide.createIcons();
-                    }, 0);
+                // ===== 监听语言 / 主题 / 菜单变化，刷新图标并同步 lang =====
+                watch([currentLang, isDarkMode, isMobileMenuOpen], ([lang]) => {
+                    syncDocumentLang(lang);
+                    refreshLucideIcons();
                 });
                 
                 // ===== 返回值 =====
@@ -1247,6 +1409,7 @@
                     currentLang,
                     isScrolled,
                     isMobileMenuOpen,
+                    currentYear,
                     navItems,
                     calculatedAge,
                     toggleDarkMode,
