@@ -3,7 +3,8 @@
 <head>
     <!-- 基础元数据设置 -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#fafafa">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <title>WeiMinal's CV</title>
 
@@ -12,8 +13,13 @@
         (function () {
             try {
                 var theme = localStorage.getItem('theme');
-                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                var isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) {
                     document.documentElement.classList.add('dark');
+                }
+                var meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) {
+                    meta.setAttribute('content', isDark ? '#0f0f12' : '#fafafa');
                 }
             } catch (e) {}
         })();
@@ -141,7 +147,16 @@
         }
         
         html {
-            scroll-behavior: smooth;
+            scroll-behavior: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
         }
         
         body {
@@ -362,22 +377,342 @@
             flex-shrink: 0;
         }
         
-        /* ===== 滚动条美化 ===== */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
+        /* ===== 滚动条隐藏（保留滚动能力） ===== */
         
-        ::-webkit-scrollbar-track {
+        /* ===== 沉浸式章节体系 3.4.0 ===== */
+        .viewport-section {
+            min-height: 100vh;
+            min-height: 100dvh;
+            min-height: 100svh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: clamp(4.75rem, 12vh, 6.5rem);
+            padding-bottom: clamp(1.25rem, 4vh, 3rem);
+        }
+
+        .viewport-section > .section-inner {
+            width: 100%;
+            padding-inline: clamp(1.25rem, 4vw, 3rem);
+        }
+
+        #contact.viewport-section {
+            justify-content: stretch;
+            padding-bottom: 0;
+        }
+
+        #contact .contact-ending {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-bottom: clamp(1rem, 3vh, 2rem);
+        }
+
+        #contact .contact-copyright {
+            padding-top: 0.75rem;
+            padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+        }
+
+        /* 顶部导航 Safe Area */
+        .nav-safe-top {
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+
+        .nav-content-row {
+            transition: padding 0.4s ease;
+        }
+
+        .nav-link-item {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .nav-link-item.is-active {
+            color: #6e57e0 !important;
+        }
+
+        /* 右侧章节导航：距离分级圆点 + Experience 胶囊 */
+        .section-nav {
+            position: fixed;
+            right: calc(env(safe-area-inset-right, 0px) + 12px);
+            top: 54%;
+            transform: translateY(-50%);
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 10px 0;
+            transition: opacity 0.35s ease;
+            opacity: 0.58;
+        }
+
+        .section-nav.is-awake,
+        .section-nav.is-hovered {
+            opacity: 1;
+        }
+
+        .section-nav-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: 44px;
+            height: 44px;
+            margin: -10px 0;
+            margin-right: -16px;
+            padding-right: 16px;
             background: transparent;
+            border: none;
+            cursor: pointer;
+            box-sizing: border-box;
         }
-        
-        ::-webkit-scrollbar-thumb {
-            background: rgba(110, 87, 224, 0.3);
-            border-radius: 4px;
+
+        .section-nav-dot {
+            display: block;
+            width: 3.5px;
+            height: 3.5px;
+            border-radius: 9999px;
+            background: rgba(107, 114, 128, 0.55);
+            opacity: 0.28;
+            transition:
+                width 0.3s ease,
+                height 0.3s ease,
+                opacity 0.3s ease,
+                background 0.3s ease;
         }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(110, 87, 224, 0.5);
+
+        .dark .section-nav-dot {
+            background: rgba(156, 163, 175, 0.7);
+        }
+
+        .section-nav-item.dist-2 .section-nav-dot {
+            width: 3.5px;
+            height: 3.5px;
+            opacity: 0.22;
+        }
+
+        .section-nav-item.dist-1 .section-nav-dot {
+            width: 5px;
+            height: 5px;
+            opacity: 0.5;
+        }
+
+        .section-nav-item.dist-0 .section-nav-dot {
+            width: 8px;
+            height: 8px;
+            opacity: 0.92;
+            background: #6e57e0;
+        }
+
+        .dark .section-nav-item.dist-0 .section-nav-dot {
+            background: #8b7af0;
+        }
+
+        .experience-capsule {
+            position: relative;
+            width: 11px;
+            height: 32px;
+            border-radius: 9999px;
+            background: rgba(107, 114, 128, 0.18);
+            border: 1px solid rgba(107, 114, 128, 0.16);
+            box-sizing: border-box;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .dark .experience-capsule {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .experience-progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            border-radius: inherit;
+            background: #6e57e0;
+            min-height: 8%;
+            transition: height 0.18s linear;
+        }
+
+        .dark .experience-progress-fill {
+            background: #8b7af0;
+        }
+
+        .section-nav-label {
+            position: absolute;
+            right: calc(100% - 8px);
+            white-space: nowrap;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.82);
+            color: #242329;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            opacity: 0;
+            transform: translateX(6px);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .dark .section-nav-label {
+            background: rgba(26, 26, 31, 0.88);
+            color: #f3f4f6;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .section-nav-item:hover .section-nav-label {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 767px) {
+            .section-nav {
+                right: calc(env(safe-area-inset-right, 0px) + 8px);
+                gap: 10px;
+                opacity: 0.32;
+            }
+
+            .section-nav.is-awake {
+                opacity: 0.92;
+            }
+
+            .section-nav-item {
+                width: 40px;
+                height: 40px;
+                margin: -8px 0;
+                margin-right: -14px;
+                padding-right: 14px;
+            }
+
+            .section-nav-item.dist-2 .section-nav-dot {
+                width: 3px;
+                height: 3px;
+            }
+
+            .section-nav-item.dist-1 .section-nav-dot {
+                width: 4px;
+                height: 4px;
+            }
+
+            .section-nav-item.dist-0 .section-nav-dot {
+                width: 7px;
+                height: 7px;
+            }
+
+            .experience-capsule {
+                width: 8.5px;
+                height: 26px;
+            }
+
+            .section-nav-label {
+                display: none;
+            }
+        }
+
+        /* Mobile About Peek Cards */
+        .about-carousel {
+            display: flex;
+            gap: 0.75rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            overscroll-behavior-x: contain;
+            padding-bottom: 0.25rem;
+            margin-inline: calc(clamp(1.25rem, 4vw, 3rem) * -1);
+            padding-inline: clamp(1.25rem, 4vw, 3rem);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .about-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .about-peek-card {
+            flex: 0 0 88%;
+            scroll-snap-align: start;
+            max-height: min(70svh, 640px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .about-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .about-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 9999px;
+            border: none;
+            padding: 0;
+            background: rgba(107, 114, 128, 0.35);
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+
+        .about-dot.is-active {
+            background: #6e57e0;
+            transform: scale(1.15);
+        }
+
+        /* 高度响应：压缩留白，保留可读性 */
+        @media (max-height: 800px) {
+            .viewport-section {
+                padding-top: clamp(4rem, 9vh, 5.5rem);
+                padding-bottom: clamp(1rem, 3vh, 2rem);
+            }
+
+            .section-heading {
+                margin-bottom: 1.25rem !important;
+            }
+
+            #skills .awards-wrap {
+                margin-top: 1.5rem !important;
+            }
+
+            #skills .space-y-6 {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-height: 680px) {
+            .viewport-section {
+                min-height: auto;
+                padding-top: 4.5rem;
+                padding-bottom: 1rem;
+                justify-content: flex-start;
+            }
+
+            .home-scroll-hint {
+                display: none;
+            }
+
+            #home .home-social-icons {
+                margin-bottom: 1.25rem !important;
+            }
+
+            #home .home-title {
+                margin-bottom: 1rem !important;
+            }
+
+            #home h1 {
+                font-size: clamp(2.5rem, 10vw, 4rem) !important;
+            }
         }
         
         /* ===== 渐变背景 ===== */
@@ -418,6 +753,8 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding-left: env(safe-area-inset-left, 0px);
+            padding-right: env(safe-area-inset-right, 0px);
         }
         
         .dark .nav-glass {
@@ -492,73 +829,105 @@
         <!-- ============================================
              导航栏
              ============================================ -->
-        <nav class="fixed top-0 left-0 right-0 z-50 nav-glass transition-all duration-500" 
-             :class="{ 'py-4': !isScrolled, 'py-2': isScrolled }">
-            <div class="w-full px-6 lg:px-12 flex items-center justify-between">
-                <!-- Logo -->
-                <a href="#home" class="text-xl font-bold tracking-tight magnetic-glow px-3 py-2"
-                   @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
-                    <span class="text-primary">W</span>EIMINAL
-                </a>
+        <nav class="fixed top-0 left-0 right-0 z-50 nav-glass transition-all duration-500">
+            <div class="nav-safe-top">
+                <div class="nav-content-row w-full px-6 lg:px-12 flex items-center justify-between"
+                     :class="{ 'py-4': !isScrolled, 'py-2': isScrolled }">
+                    <!-- Logo -->
+                    <a href="#home" class="text-xl font-bold tracking-tight magnetic-glow px-3 py-2"
+                       @click.prevent="navigateToSection('home')"
+                       @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                        <span class="text-primary">W</span>EIMINAL
+                    </a>
+                    
+                    <!-- 导航链接 -->
+                    <div class="hidden md:flex items-center gap-8">
+                        <a v-for="item in navItems" :key="item.id" 
+                           :href="item.href"
+                           class="nav-link-item text-sm font-medium text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors magnetic-glow px-3 py-2"
+                           :class="{ 'is-active': activeSection === item.id }"
+                           @click.prevent="navigateToSection(item.id)"
+                           @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                            {{ currentLang === 'zh' ? item.labelZh : item.labelEn }}
+                        </a>
+                    </div>
+                    
+                    <!-- 右侧控制按钮 -->
+                    <div class="flex items-center gap-3">
+                        <!-- 语言切换 -->
+                        <button @click="toggleLang" 
+                                class="w-10 h-10 flex items-center justify-center text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-all magnetic-glow"
+                                @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition"
+                                :title="currentLang === 'zh' ? 'Switch to English' : '切换到中文'">
+                            <i data-lucide="languages" class="w-5 h-5"></i>
+                        </button>
+                        
+                        <!-- 深色模式切换 -->
+                        <button @click="toggleDarkMode" 
+                                class="w-10 h-10 flex items-center justify-center text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-all magnetic-glow"
+                                @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                            <i v-if="isDarkMode" data-lucide="sun" class="w-5 h-5"></i>
+                            <i v-else data-lucide="moon" class="w-5 h-5"></i>
+                        </button>
+                        
+                        <!-- 移动端菜单按钮 -->
+                        <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
+                                class="md:hidden w-10 h-10 flex items-center justify-center magnetic-glow"
+                                @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                            <i v-if="!isMobileMenuOpen" data-lucide="menu" class="w-5 h-5"></i>
+                            <i v-else data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
                 
-                <!-- 导航链接 -->
-                <div class="hidden md:flex items-center gap-8">
+                <!-- 移动端菜单 -->
+                <div v-if="isMobileMenuOpen" class="md:hidden px-6 py-4 border-t border-gray-200 dark:border-gray-800">
                     <a v-for="item in navItems" :key="item.id" 
                        :href="item.href"
-                       class="text-sm font-medium text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors magnetic-glow px-3 py-2"
-                       @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
+                       @click.prevent="navigateToSection(item.id); isMobileMenuOpen = false"
+                       class="block py-3 text-sm font-medium transition-colors"
+                       :class="activeSection === item.id ? 'text-primary' : 'text-text-secondary dark:text-gray-400 hover:text-primary'">
                         {{ currentLang === 'zh' ? item.labelZh : item.labelEn }}
                     </a>
                 </div>
-                
-                <!-- 右侧控制按钮 -->
-                <div class="flex items-center gap-3">
-                    <!-- 语言切换 -->
-                    <button @click="toggleLang" 
-                            class="w-10 h-10 flex items-center justify-center text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-all magnetic-glow"
-                            @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition"
-                            :title="currentLang === 'zh' ? 'Switch to English' : '切换到中文'">
-                        <i data-lucide="languages" class="w-5 h-5"></i>
-                    </button>
-                    
-                    <!-- 深色模式切换 -->
-                    <button @click="toggleDarkMode" 
-                            class="w-10 h-10 flex items-center justify-center text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-all magnetic-glow"
-                            @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
-                        <i v-if="isDarkMode" data-lucide="sun" class="w-5 h-5"></i>
-                        <i v-else data-lucide="moon" class="w-5 h-5"></i>
-                    </button>
-                    
-                    <!-- 移动端菜单按钮 -->
-                    <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
-                            class="md:hidden w-10 h-10 flex items-center justify-center magnetic-glow"
-                            @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
-                        <i v-if="!isMobileMenuOpen" data-lucide="menu" class="w-5 h-5"></i>
-                        <i v-else data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                </div>
             </div>
-            
-            <!-- 移动端菜单 -->
-            <div v-if="isMobileMenuOpen" class="md:hidden px-6 py-4 border-t border-gray-200 dark:border-gray-800">
-                <a v-for="item in navItems" :key="item.id" 
-                   :href="item.href"
-                   @click="isMobileMenuOpen = false"
-                   class="block py-3 text-sm font-medium text-text-secondary dark:text-gray-400 hover:text-primary transition-colors">
-                    {{ currentLang === 'zh' ? item.labelZh : item.labelEn }}
-                </a>
-            </div>
+        </nav>
+
+        <!-- 右侧章节导航 -->
+        <nav class="section-nav"
+             :class="{ 'is-awake': isSectionNavAwake, 'is-hovered': isSectionNavHovered }"
+             aria-label="Section navigation"
+             @mouseenter="isSectionNavHovered = true"
+             @mouseleave="isSectionNavHovered = false">
+            <button v-for="(item, index) in navItems" :key="'dot-' + item.id"
+                    type="button"
+                    class="section-nav-item"
+                    :class="[
+                        'dist-' + getSectionNavDistance(index),
+                        { 'is-experience-capsule': activeSection === 'experience' && item.id === 'experience' }
+                    ]"
+                    :aria-label="currentLang === 'zh' ? item.labelZh : item.labelEn"
+                    @click="navigateToSection(item.id)">
+                <span class="section-nav-label">{{ currentLang === 'zh' ? item.labelZh : item.labelEn }}</span>
+                <span v-if="activeSection === 'experience' && item.id === 'experience'"
+                      class="experience-capsule"
+                      aria-hidden="true">
+                    <span class="experience-progress-fill"
+                          :style="{ height: experienceProgressVisual + '%' }"></span>
+                </span>
+                <span v-else class="section-nav-dot"></span>
+            </button>
         </nav>
         
         <!-- ============================================
              页面首屏
              ============================================ -->
-        <section id="home" class="min-h-screen w-full flex items-center justify-center relative overflow-hidden gradient-bg noise-texture">
+        <section id="home" class="viewport-section w-full relative overflow-hidden gradient-bg noise-texture">
             <!-- 装饰性背景元素 -->
             <div class="absolute top-20 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-slow"></div>
             <div class="absolute bottom-20 right-1/4 w-64 h-64 bg-primary-light/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
             
-            <div class="w-full px-6 lg:px-12 pt-24 pb-12 flex flex-col items-center justify-center text-center">
+            <div class="section-inner flex flex-col items-center justify-center text-center">
                 <!-- 社交图标 -->
                 <div class="flex items-center justify-center gap-4 mb-10 home-social-icons">
                     <a v-for="social in profileData.socialLinks" :key="social.name"
@@ -612,25 +981,25 @@
                 </div>
                 
                 <!-- 滚动提示 -->
-                <div class="mt-20 flex items-center justify-center home-scroll-hint">
+                <div class="mt-12 md:mt-20 flex items-center justify-center home-scroll-hint">
                     <i data-lucide="arrow-down" class="w-5 h-5 text-text-secondary dark:text-gray-500 animate-bounce"></i>
                 </div>
             </div>
         </section>
         
         <!-- ============================================
-             About 关于板块 (Bento Grid)
+             About 关于板块 (Bento Grid + Mobile Peek Cards)
              ============================================ -->
-        <section id="about" class="w-full py-24 lg:py-32 relative noise-texture">
-            <div class="w-full px-6 lg:px-12">
+        <section id="about" class="viewport-section w-full relative noise-texture">
+            <div class="section-inner">
                 <!-- 标题 -->
-                <div class="mb-16 reveal-element">
+                <div class="section-heading mb-8 lg:mb-10 reveal-element">
                     <p class="text-primary font-medium mb-2">{{ currentLang === 'zh' ? '关于我' : 'About Me' }}</p>
-                    <h2 class="text-4xl md:text-5xl font-bold">{{ currentLang === 'zh' ? '认识一下' : 'Get to Know Me' }}</h2>
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold">{{ currentLang === 'zh' ? '认识一下' : 'Get to Know Me' }}</h2>
                 </div>
                 
-                <!-- Bento Grid 布局 -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Desktop Bento -->
+                <div class="hidden lg:grid grid-cols-3 gap-5 xl:gap-6">
                     <!-- 个人简介卡片 (大) -->
                     <div class="lg:col-span-2 glass-card rounded-3xl p-8 reveal-element">
                         <div class="flex items-start gap-4 mb-6">
@@ -756,18 +1125,130 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Mobile Peek Cards -->
+                <div class="lg:hidden">
+                    <div ref="aboutCarouselEl" class="about-carousel" @scroll.passive="onAboutCarouselScroll">
+                        <!-- Card 1: 个人简介 -->
+                        <div class="about-peek-card glass-card rounded-3xl p-5">
+                            <div class="flex items-start gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="user" class="w-5 h-5 text-primary"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-0.5">{{ currentLang === 'zh' ? '个人简介' : 'Profile' }}</h3>
+                                    <p class="text-text-secondary dark:text-gray-400 text-sm">
+                                        {{ currentLang === 'zh' ? profileData.titleBZh : profileData.titleBEn }}
+                                    </p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-text-secondary dark:text-gray-300 leading-relaxed">
+                                {{ currentLang === 'zh' ? profileData.bioZh : profileData.bioEn }}
+                            </p>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <span v-for="tag in currentLang === 'zh' ? profileData.tagsZh : profileData.tagsEn" :key="'m-' + tag"
+                                      class="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                                    {{ tag }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: 基本信息 + 教育 -->
+                        <div class="about-peek-card glass-card rounded-3xl p-5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                    <i data-lucide="info" class="w-5 h-5 text-primary"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">{{ currentLang === 'zh' ? '基本信息' : 'Basic Info' }}</h3>
+                            </div>
+                            <div class="space-y-3 mb-5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-text-secondary">{{ currentLang === 'zh' ? '当前年龄' : 'Age' }}</span>
+                                    <span class="font-semibold text-primary text-sm">{{ calculatedAge }} {{ currentLang === 'zh' ? '岁' : 'Years' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-text-secondary">{{ currentLang === 'zh' ? '工作经验' : 'Experience' }}</span>
+                                    <span class="font-semibold text-primary text-sm">{{ profileData.experienceYears }} {{ currentLang === 'zh' ? '年' : 'Years' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-text-secondary">{{ currentLang === 'zh' ? '当前方向' : 'Focus' }}</span>
+                                    <span class="font-semibold text-primary text-sm">{{ currentLang === 'zh' ? profileData.directionZh : profileData.directionEn }}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-text-secondary">{{ currentLang === 'zh' ? '所在城市' : 'Location' }}</span>
+                                    <span class="font-semibold text-primary text-sm">{{ currentLang === 'zh' ? profileData.locationZh : profileData.locationEn }}</span>
+                                </div>
+                            </div>
+                            <div class="border-t border-black/5 dark:border-white/10 pt-4">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                                        <i data-lucide="graduation-cap" class="w-4 h-4 text-primary"></i>
+                                    </div>
+                                    <h3 class="text-base font-semibold">{{ currentLang === 'zh' ? '教育背景' : 'Education' }}</h3>
+                                </div>
+                                <p class="font-semibold text-primary mb-1 text-sm">{{ currentLang === 'zh' ? profileData.education.schoolZh : profileData.education.schoolEn }}</p>
+                                <p class="text-text-secondary dark:text-gray-400 text-sm">
+                                    {{ currentLang === 'zh' ? profileData.education.degreeZh : profileData.education.degreeEn }} · {{ currentLang === 'zh' ? profileData.education.majorZh : profileData.education.majorEn }}
+                                </p>
+                                <p class="text-text-secondary dark:text-gray-500 text-xs mt-2">{{ currentLang === 'zh' ? profileData.education.yearZh : profileData.education.yearEn }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: 兴趣爱好 -->
+                        <div class="about-peek-card glass-card rounded-3xl p-5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                    <i data-lucide="heart" class="w-5 h-5 text-primary"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">{{ currentLang === 'zh' ? '兴趣爱好' : 'Hobbies' }}</h3>
+                            </div>
+                            <div class="space-y-2.5">
+                                <div class="flex items-start gap-3 p-2.5 rounded-xl bg-primary/5">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '拿 AI 做点自己的东西' : 'Building things with AI' }}</span>
+                                </div>
+                                <div class="flex items-start gap-3 p-2.5 rounded-xl bg-primary/5">
+                                    <i data-lucide="code-2" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '做网页，也折腾 APP' : 'Building websites and tinkering with apps' }}</span>
+                                </div>
+                                <div class="flex items-start gap-3 p-2.5 rounded-xl bg-primary/5">
+                                    <i data-lucide="server" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '折腾 NAS、Docker 和智能家居' : 'Tinkering with NAS, Docker, and smart home setups' }}</span>
+                                </div>
+                                <div class="flex items-start gap-3 p-2.5 rounded-xl bg-primary/5">
+                                    <i data-lucide="smartphone" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '手机、系统和数码产品都爱折腾' : 'Phones, operating systems, and gadgets' }}</span>
+                                </div>
+                                <div class="flex items-start gap-3 p-2.5 rounded-xl bg-primary/5">
+                                    <i data-lucide="music-2" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '摄影、电影，最近在学钢琴' : 'Photography, movies, and learning piano' }}</span>
+                                </div>
+                                <div class="flex items-start gap-3 p-2.5 rounded-xl bg-primary/5">
+                                    <i data-lucide="gamepad-2" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-text-secondary dark:text-gray-300">{{ currentLang === 'zh' ? '喜欢游戏：《仙剑奇侠传四》《黑神话：悟空》《漫威蜘蛛侠》' : "Gaming: Chinese Paladin IV, Black Myth: Wukong, Marvel's Spider-Man" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-dots" role="tablist" aria-label="About cards">
+                        <button v-for="i in 3" :key="'dot-about-' + i" type="button" class="about-dot"
+                                :class="{ 'is-active': aboutSlideIndex === i - 1 }"
+                                :aria-label="'Card ' + i"
+                                @click="goAboutSlide(i - 1)"></button>
+                    </div>
+                </div>
             </div>
         </section>
         
         <!-- ============================================
              Experience 经历板块 (时间轴) - 统一左时间右内容
              ============================================ -->
-        <section id="experience" class="w-full py-24 lg:py-32 relative gradient-bg noise-texture">
+        <section id="experience" class="w-full py-20 lg:py-28 relative gradient-bg noise-texture">
             <div class="w-full px-6 lg:px-12">
                 <!-- 标题 -->
-                <div class="mb-16 reveal-element">
+                <div class="section-heading mb-12 lg:mb-16 reveal-element">
                     <p class="text-primary font-medium mb-2">{{ currentLang === 'zh' ? '个人经历' : 'Experience' }}</p>
-                    <h2 class="text-4xl md:text-5xl font-bold">{{ currentLang === 'zh' ? '成长轨迹' : 'My Journey' }}</h2>
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold">{{ currentLang === 'zh' ? '成长轨迹' : 'My Journey' }}</h2>
                 </div>
                 
                 <!-- 时间轴 - 统一左边时间、右边内容 -->
@@ -826,17 +1307,17 @@
         <!-- ============================================
              Skills 技能板块 (跑马灯)
              ============================================ -->
-        <section id="skills" class="w-full py-24 lg:py-32 relative overflow-hidden noise-texture">
-            <div class="w-full px-6 lg:px-12 mb-12">
+        <section id="skills" class="viewport-section w-full relative overflow-hidden noise-texture">
+            <div class="section-inner mb-6 md:mb-8">
                 <!-- 标题 -->
-                <div class="text-center reveal-element">
+                <div class="section-heading text-center reveal-element">
                     <p class="text-primary font-medium mb-2">{{ currentLang === 'zh' ? '技能栈' : 'Skills' }}</p>
-                    <h2 class="text-4xl md:text-5xl font-bold">{{ currentLang === 'zh' ? '技术能力' : 'Technical Skills' }}</h2>
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold">{{ currentLang === 'zh' ? '技术能力' : 'Technical Skills' }}</h2>
                 </div>
             </div>
             
             <!-- 跑马灯区域 -->
-            <div class="space-y-6">
+            <div class="space-y-5 md:space-y-6">
                 <!-- 第一行 - 向左滚动 -->
                 <div class="relative">
                     <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-bg-light dark:from-bg-dark to-transparent z-10"></div>
@@ -885,17 +1366,17 @@
             </div>
             
             <!-- 获奖经历 -->
-            <div class="w-full px-6 lg:px-12 mt-16">
-                <div class="glass-card rounded-3xl p-8 max-w-4xl mx-auto reveal-element">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                            <i data-lucide="trophy" class="w-6 h-6 text-primary"></i>
+            <div class="section-inner awards-wrap mt-8 md:mt-12">
+                <div class="glass-card rounded-3xl p-5 md:p-8 max-w-4xl mx-auto reveal-element">
+                    <div class="flex items-center gap-4 mb-4 md:mb-6">
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                            <i data-lucide="trophy" class="w-5 h-5 md:w-6 md:h-6 text-primary"></i>
                         </div>
-                        <h3 class="text-xl font-semibold">{{ currentLang === 'zh' ? '荣誉与成长' : 'Honors & Growth' }}</h3>
+                        <h3 class="text-lg md:text-xl font-semibold">{{ currentLang === 'zh' ? '荣誉与成长' : 'Honors & Growth' }}</h3>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                         <div v-for="(award, index) in currentLang === 'zh'?profileData.awardsZh : profileData.awardsEn" :key="index"
-                             class="flex items-start gap-3 p-4 rounded-xl bg-primary/5">
+                             class="flex items-start gap-3 p-3 md:p-4 rounded-xl bg-primary/5">
                             <i data-lucide="award" class="w-5 h-5 text-primary mt-0.5 flex-shrink-0"></i>
                             <span class="text-sm text-text-secondary dark:text-gray-300">{{ award }}</span>
                         </div>
@@ -905,32 +1386,32 @@
         </section>
         
         <!-- ============================================
-             Footer 联系区域
+             Footer 联系区域 - Ending Screen
              ============================================ -->
-        <footer id="contact" class="w-full min-h-[60vh] flex flex-col justify-center relative gradient-bg noise-texture">
+        <footer id="contact" class="viewport-section w-full relative gradient-bg noise-texture">
             <!-- 装饰背景 -->
             <div class="absolute inset-0 overflow-hidden">
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl"></div>
             </div>
             
-            <div class="w-full px-6 lg:px-12 py-24 relative z-10 flex-1 flex flex-col justify-center">
+            <div class="section-inner contact-ending relative z-10">
                 <div class="max-w-4xl mx-auto text-center">
                     <!-- 大标题 -->
                     <div class="reveal-element">
-                        <p class="text-primary font-medium mb-4">{{ currentLang === 'zh' ? '联系方式' : 'Get in Touch' }}</p>
-                        <h2 class="text-5xl md:text-7xl lg:text-8xl font-bold mb-8">
+                        <p class="text-primary font-medium mb-3 md:mb-4">{{ currentLang === 'zh' ? '联系方式' : 'Get in Touch' }}</p>
+                        <h2 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-5 md:mb-8">
                             {{ currentLang === 'zh' ? '聊聊吧' : "Let's Talk" }}
                             <span class="block text-primary">{{ currentLang === 'zh' ? '' : '' }}</span>
                         </h2>
-                        <p class="text-xl text-text-secondary dark:text-gray-400 mb-12 max-w-2xl mx-auto">
+                        <p class="text-base md:text-xl text-text-secondary dark:text-gray-400 mb-8 md:mb-12 max-w-2xl mx-auto">
                             {{ currentLang === 'zh' ? '如果你对技术、产品，或者任何有趣的想法想交流，欢迎联系我。' : "If you'd like to chat about technology, products, or any interesting ideas, feel free to reach out." }}
                         </p>
                     </div>
                     
                     <!-- 邮箱按钮 -->
-                    <div class="reveal-element mb-16">
+                    <div class="reveal-element mb-10 md:mb-14">
                         <a :href="profileData.contactEmail" 
-                           class="inline-flex items-center gap-4 px-10 py-6 rounded-full bg-primary text-white hover:text-white text-xl font-medium cta-glow hover:shadow-lg hover:shadow-primary/30 transition-all"
+                           class="inline-flex items-center gap-4 px-8 md:px-10 py-5 md:py-6 rounded-full bg-primary text-white hover:text-white text-lg md:text-xl font-medium cta-glow hover:shadow-lg hover:shadow-primary/30 transition-all"
                            @mousemove="updateGlowPosition" @mouseleave="resetGlowPosition">
                             <i data-lucide="mail" class="w-6 h-6"></i>
                             {{ profileData.email }}
@@ -938,7 +1419,7 @@
                     </div>
                     
                     <!-- 社交链接 -->
-                    <div class="reveal-element flex items-center justify-center gap-6 mb-16 footer-social-icons">
+                    <div class="reveal-element flex items-center justify-center gap-6 footer-social-icons">
                         <a v-for="social in profileData.socialLinks" :key="social.name"
                            :href="social.url"
                            target="_blank"
@@ -960,11 +1441,10 @@
             </div>
             
             <!-- 页脚底部 -->
-            <div class="text-center py-4">
+            <div class="contact-copyright text-center relative z-10">
                 <p class="text-sm text-text-secondary dark:text-gray-500">
-                            2023 - {{ currentYear }} © WEIMINAL
+                    2023 - {{ currentYear }} © WEIMINAL
                 </p>
-                        
             </div>
         </footer>
         
@@ -1272,7 +1752,7 @@
         }
 
         function initVueApp() {
-            const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
+            const { createApp, ref, onMounted, onUnmounted, computed, watch, nextTick } = Vue;
         
             createApp({
             setup() {
@@ -1283,6 +1763,12 @@
                 const isScrolled = ref(false);          // 是否已滚动
                 const isMobileMenuOpen = ref(false);    // 移动端菜单状态
                 const currentYear = new Date().getFullYear();
+                const activeSection = ref('home');
+                const aboutSlideIndex = ref(0);
+                const isSectionNavAwake = ref(true);
+                const isSectionNavHovered = ref(false);
+                const aboutCarouselEl = ref(null);
+                const experienceProgress = ref(0);
                 
                 // ===== 导航项配置 =====
                 const navItems = [
@@ -1292,6 +1778,20 @@
                     { id: 'skills', labelZh: '技能', labelEn: 'Skills', href: '#skills' },
                     { id: 'contact', labelZh: '联系方式', labelEn: 'Contact', href: '#contact' }
                 ];
+
+                const SECTION_IDS = navItems.map((item) => item.id);
+
+                const MAGNET_ZONE_RATIO = 0.28;
+                const SCROLL_END_MS = 170;
+                const MIN_SETTLE_DISTANCE = 10;
+
+                let sectionNavFadeTimer = null;
+                let resizeRefreshTimer = null;
+                let scrollEndTimer = null;
+                let settleRaf = null;
+                let isMagneticSettling = false;
+                let lastScrollY = 0;
+                let lastScrollDirection = 0;
                 
                 // ===== 计算属性 - 自动计算年龄 =====
                 const calculatedAge = computed(() => {
@@ -1307,6 +1807,10 @@
                     
                     return age;
                 });
+
+                const experienceProgressVisual = computed(() => {
+                    return Math.max(experienceProgress.value * 100, 8);
+                });
                 
                 // ===== 方法 =====
 
@@ -1321,6 +1825,239 @@
                 const syncDocumentLang = (lang) => {
                     document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
                 };
+
+                // Android / 浏览器主题色与当前模式同步
+                const syncThemeColor = () => {
+                    let meta = document.querySelector('meta[name="theme-color"]');
+                    if (!meta) {
+                        meta = document.createElement('meta');
+                        meta.setAttribute('name', 'theme-color');
+                        document.head.appendChild(meta);
+                    }
+                    meta.setAttribute('content', isDarkMode.value ? '#0f0f12' : '#fafafa');
+                };
+
+                const prefersReducedMotion = () => {
+                    try {
+                        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    } catch (e) {
+                        return false;
+                    }
+                };
+
+                const getScrollY = () => window.scrollY || document.documentElement.scrollTop || 0;
+
+                const getSectionMetrics = (id) => {
+                    const el = document.getElementById(id);
+                    if (!el) return null;
+                    const top = el.getBoundingClientRect().top + getScrollY();
+                    const height = el.offsetHeight;
+                    return { el, top, height, bottom: top + height };
+                };
+
+                // activeSection 唯一来源：Viewport 45% Focus Line
+                const updateActiveSectionFromViewport = () => {
+                    const focusY = window.innerHeight * 0.45;
+                    for (let i = 0; i < SECTION_IDS.length; i++) {
+                        const id = SECTION_IDS[i];
+                        const el = document.getElementById(id);
+                        if (!el) continue;
+                        const rect = el.getBoundingClientRect();
+                        if (rect.top <= focusY && rect.bottom > focusY) {
+                            if (activeSection.value !== id) {
+                                activeSection.value = id;
+                            }
+                            return;
+                        }
+                    }
+                };
+
+                const getSectionNavDistance = (index) => {
+                    const activeIndex = SECTION_IDS.indexOf(activeSection.value);
+                    if (activeIndex < 0) return 2;
+                    return Math.min(Math.abs(index - activeIndex), 2);
+                };
+
+                const updateExperienceProgress = () => {
+                    const m = getSectionMetrics('experience');
+                    if (!m) {
+                        experienceProgress.value = 0;
+                        return;
+                    }
+                    const vh = window.innerHeight;
+                    const y = getScrollY();
+                    const scrollEnd = Math.max(m.top, m.bottom - vh);
+                    const span = Math.max(1, scrollEnd - m.top);
+                    experienceProgress.value = Math.min(1, Math.max(0, (y - m.top) / span));
+                };
+
+                const wakeSectionNav = () => {
+                    isSectionNavAwake.value = true;
+                    if (sectionNavFadeTimer) clearTimeout(sectionNavFadeTimer);
+                    sectionNavFadeTimer = setTimeout(() => {
+                        isSectionNavAwake.value = false;
+                    }, 1500);
+                };
+
+                const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+                const isDesktopMagnetEnabled = () => {
+                    return window.innerWidth >= 768 && window.innerHeight > 680;
+                };
+
+                const cancelMagneticSettle = () => {
+                    if (settleRaf) {
+                        cancelAnimationFrame(settleRaf);
+                        settleRaf = null;
+                    }
+                    isMagneticSettling = false;
+                };
+
+                const animateMagneticSettle = (targetY) => {
+                    cancelMagneticSettle();
+
+                    const startY = getScrollY();
+                    const distance = Math.abs(targetY - startY);
+                    if (distance < MIN_SETTLE_DISTANCE) return;
+
+                    if (prefersReducedMotion()) {
+                        window.scrollTo(0, targetY);
+                        updateActiveSectionFromViewport();
+                        updateExperienceProgress();
+                        return;
+                    }
+
+                    const magnetZone = Math.max(1, window.innerHeight * MAGNET_ZONE_RATIO);
+                    const normalized = Math.min(1, distance / magnetZone);
+                    const duration = 300 + normalized * 200;
+
+                    isMagneticSettling = true;
+                    const t0 = performance.now();
+                    const delta = targetY - startY;
+
+                    const step = (now) => {
+                        if (!isMagneticSettling) return;
+                        const t = Math.min(1, (now - t0) / duration);
+                        window.scrollTo(0, startY + delta * easeOutCubic(t));
+                        updateActiveSectionFromViewport();
+                        updateExperienceProgress();
+                        isScrolled.value = getScrollY() > 50;
+
+                        if (t < 1) {
+                            settleRaf = requestAnimationFrame(step);
+                        } else {
+                            window.scrollTo(0, targetY);
+                            updateActiveSectionFromViewport();
+                            updateExperienceProgress();
+                            lastScrollY = getScrollY();
+                            isMagneticSettling = false;
+                            settleRaf = null;
+                        }
+                    };
+
+                    settleRaf = requestAnimationFrame(step);
+                };
+
+                const findDirectionalMagnetTop = (y, direction) => {
+                    let best = null;
+
+                    for (let i = 0; i < SECTION_IDS.length; i++) {
+                        const m = getSectionMetrics(SECTION_IDS[i]);
+                        if (!m) continue;
+
+                        if (direction > 0) {
+                            // 下方最近的 section top
+                            if (m.top > y + 1) {
+                                if (best === null || m.top < best) best = m.top;
+                            }
+                        } else if (direction < 0) {
+                            // 上方最近的 section top
+                            if (m.top < y - 1) {
+                                if (best === null || m.top > best) best = m.top;
+                            }
+                        }
+                    }
+
+                    return best;
+                };
+
+                const tryMagneticSettle = () => {
+                    if (!isDesktopMagnetEnabled()) return;
+                    if (isMagneticSettling) return;
+                    if (prefersReducedMotion()) return;
+                    if (lastScrollDirection === 0) return;
+
+                    const y = getScrollY();
+                    const targetTop = findDirectionalMagnetTop(y, lastScrollDirection);
+                    if (targetTop == null) return;
+
+                    const distance = Math.abs(targetTop - y);
+                    const magnetZone = window.innerHeight * MAGNET_ZONE_RATIO;
+
+                    if (distance > magnetZone) return;
+                    if (distance < MIN_SETTLE_DISTANCE) return;
+
+                    animateMagneticSettle(targetTop);
+                };
+
+                const onUserInterruptSettle = () => {
+                    cancelMagneticSettle();
+                    if (scrollEndTimer) {
+                        clearTimeout(scrollEndTimer);
+                        scrollEndTimer = null;
+                    }
+                };
+
+                const handleSettleKeydown = (e) => {
+                    const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '];
+                    if (keys.includes(e.key)) onUserInterruptSettle();
+                };
+
+                const navigateToSection = (id) => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+
+                    cancelMagneticSettle();
+                    if (scrollEndTimer) {
+                        clearTimeout(scrollEndTimer);
+                        scrollEndTimer = null;
+                    }
+
+                    el.scrollIntoView({
+                        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+                        block: 'start'
+                    });
+
+                    wakeSectionNav();
+                };
+
+                const onAboutCarouselScroll = () => {
+                    const el = aboutCarouselEl.value;
+                    if (!el) return;
+                    const cards = el.querySelectorAll('.about-peek-card');
+                    if (!cards.length) return;
+                    const scrollLeft = el.scrollLeft;
+                    let nearest = 0;
+                    let nearestDist = Infinity;
+                    cards.forEach((card, index) => {
+                        const dist = Math.abs(card.offsetLeft - scrollLeft);
+                        if (dist < nearestDist) {
+                            nearestDist = dist;
+                            nearest = index;
+                        }
+                    });
+                    aboutSlideIndex.value = nearest;
+                };
+
+                const goAboutSlide = (index) => {
+                    const el = aboutCarouselEl.value;
+                    if (!el) return;
+                    const cards = el.querySelectorAll('.about-peek-card');
+                    const card = cards[index];
+                    if (!card) return;
+                    el.scrollTo({ left: card.offsetLeft, behavior: 'smooth' });
+                    aboutSlideIndex.value = index;
+                };
                 
                 // 切换深色/浅色模式
                 const toggleDarkMode = () => {
@@ -1332,6 +2069,7 @@
                         document.documentElement.classList.remove('dark');
                         localStorage.setItem('theme', 'light');
                     }
+                    syncThemeColor();
                 };
                 
                 // 切换语言
@@ -1357,17 +2095,44 @@
                     target.style.setProperty('--mouse-y', '50%');
                 };
                 
-                // 处理滚动事件
-                const handleScroll = () => {
-                    isScrolled.value = window.scrollY > 50;
+                const handleUserScroll = () => {
+                    updateActiveSectionFromViewport();
+                    updateExperienceProgress();
+                    isScrolled.value = getScrollY() > 50;
+                    wakeSectionNav();
+
+                    if (isMagneticSettling) return;
+
+                    const y = getScrollY();
+                    if (y > lastScrollY) {
+                        lastScrollDirection = 1;
+                    } else if (y < lastScrollY) {
+                        lastScrollDirection = -1;
+                    }
+                    lastScrollY = y;
+
+                    if (!isDesktopMagnetEnabled()) return;
+
+                    if (scrollEndTimer) clearTimeout(scrollEndTimer);
+                    scrollEndTimer = setTimeout(tryMagneticSettle, SCROLL_END_MS);
+                };
+
+                const handleResize = () => {
+                    if (resizeRefreshTimer) clearTimeout(resizeRefreshTimer);
+                    resizeRefreshTimer = setTimeout(() => {
+                        if (window.ScrollTrigger) {
+                            ScrollTrigger.refresh();
+                        }
+                        onAboutCarouselScroll();
+                        updateExperienceProgress();
+                        updateActiveSectionFromViewport();
+                    }, 200);
                 };
                 
                 // 初始化GSAP动画
                 const initAnimations = () => {
-                    // 注册ScrollTrigger
                     gsap.registerPlugin(ScrollTrigger);
                     
-                    // ===== 首屏入场动画 =====
                     const homeTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
                     
                     homeTl
@@ -1393,17 +2158,16 @@
                             duration: 0.5
                         }, '-=0.3');
                     
-                    // ===== 滚动触发动画 =====
                     const revealElements = document.querySelectorAll('.reveal-element');
                     
                     revealElements.forEach((el) => {
                         gsap.fromTo(el, 
-                            { y: 30, opacity: 0 },
+                            { y: 18, opacity: 0 },
                             {
                                 y: 0,
                                 opacity: 1,
-                                duration: 0.6,
-                                ease: 'power2.out',
+                                duration: 0.5,
+                                ease: 'power3.out',
                                 scrollTrigger: {
                                     trigger: el,
                                     start: 'top 85%',
@@ -1416,7 +2180,6 @@
                 
                 // ===== 生命周期钩子 =====
                 onMounted(() => {
-                    // 从localStorage读取主题设置（与 head 预置脚本同步 Vue 状态）
                     try {
                         const savedTheme = localStorage.getItem('theme');
                         if (savedTheme === 'dark') {
@@ -1435,7 +2198,6 @@
                         isDarkMode.value = document.documentElement.classList.contains('dark');
                     }
                     
-                    // 从localStorage读取语言设置
                     try {
                         const savedLang = localStorage.getItem('lang');
                         if (savedLang) {
@@ -1444,24 +2206,49 @@
                     } catch (e) {}
 
                     syncDocumentLang(currentLang.value);
+                    syncThemeColor();
                     
-                    // 主题、语言就绪后再初始化图标
                     refreshLucideIcons();
                     
-                    // 绑定滚动事件
-                    window.addEventListener('scroll', handleScroll, { passive: true });
+                    window.addEventListener('scroll', handleUserScroll, { passive: true });
+                    window.addEventListener('resize', handleResize, { passive: true });
+                    window.addEventListener('orientationchange', handleResize, { passive: true });
+                    window.addEventListener('wheel', onUserInterruptSettle, { passive: true });
+                    window.addEventListener('touchstart', onUserInterruptSettle, { passive: true });
+                    window.addEventListener('pointerdown', onUserInterruptSettle, { passive: true });
+                    window.addEventListener('keydown', handleSettleKeydown, { passive: true });
                     
-                    // 初始化动画
                     initAnimations();
+                    lastScrollY = getScrollY();
+                    updateActiveSectionFromViewport();
+                    updateExperienceProgress();
+                    wakeSectionNav();
+                    nextTick(() => {
+                        onAboutCarouselScroll();
+                        refreshLucideIcons();
+                        updateActiveSectionFromViewport();
+                    });
+                });
+
+                onUnmounted(() => {
+                    window.removeEventListener('scroll', handleUserScroll);
+                    window.removeEventListener('resize', handleResize);
+                    window.removeEventListener('orientationchange', handleResize);
+                    window.removeEventListener('wheel', onUserInterruptSettle);
+                    window.removeEventListener('touchstart', onUserInterruptSettle);
+                    window.removeEventListener('pointerdown', onUserInterruptSettle);
+                    window.removeEventListener('keydown', handleSettleKeydown);
+                    if (sectionNavFadeTimer) clearTimeout(sectionNavFadeTimer);
+                    if (resizeRefreshTimer) clearTimeout(resizeRefreshTimer);
+                    if (scrollEndTimer) clearTimeout(scrollEndTimer);
+                    cancelMagneticSettle();
                 });
                 
-                // ===== 监听语言 / 主题 / 菜单变化，刷新图标并同步 lang =====
                 watch([currentLang, isDarkMode, isMobileMenuOpen], ([lang]) => {
                     syncDocumentLang(lang);
                     refreshLucideIcons();
                 });
                 
-                // ===== 返回值 =====
                 return {
                     profileData,
                     isDarkMode,
@@ -1469,10 +2256,21 @@
                     isScrolled,
                     isMobileMenuOpen,
                     currentYear,
+                    activeSection,
+                    aboutSlideIndex,
+                    isSectionNavAwake,
+                    isSectionNavHovered,
+                    aboutCarouselEl,
+                    experienceProgress,
+                    experienceProgressVisual,
                     navItems,
                     calculatedAge,
+                    getSectionNavDistance,
                     toggleDarkMode,
                     toggleLang,
+                    navigateToSection,
+                    onAboutCarouselScroll,
+                    goAboutSlide,
                     updateGlowPosition,
                     resetGlowPosition
                 };
