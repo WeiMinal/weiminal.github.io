@@ -197,7 +197,7 @@
       }
 
       .search-input,
-      .modal input {
+      .modal input:not([type="radio"]):not([type="checkbox"]) {
         -webkit-user-select: text;
         user-select: text;
         -moz-user-select: text;
@@ -382,15 +382,102 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.6rem 0.85rem;
-      margin-bottom: 0.25rem;
+      padding: 0.55rem 0.75rem;
+      margin-bottom: 0.2rem;
       border-radius: 0.5rem;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       color: var(--text);
       transition: background 0.15s, box-shadow 0.15s;
       position: relative;
       isolation: isolate;
+    }
+
+    .engine-option-icon-wrap {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .engine-option-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      object-fit: contain;
+      display: none;
+    }
+
+    .engine-option-icon.show {
+      display: block;
+    }
+
+    .engine-option-icon-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--text-muted);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+
+    .engine-option-name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .engine-option-check {
+      flex-shrink: 0;
+      font-size: 0.82rem;
+      opacity: 0.42;
+      visibility: hidden;
+      line-height: 1;
+    }
+
+    .engine-option.active .engine-option-check {
+      visibility: visible;
+    }
+
+    .engine-dropdown-divider {
+      height: 1px;
+      margin: 0.35rem 0.4rem;
+      background: color-mix(in srgb, var(--glass-border) 70%, var(--text) 30%);
+      opacity: 0.5;
+    }
+
+    .engine-dropdown-manage {
+      display: flex;
+      align-items: center;
+      padding: 0.55rem 0.75rem;
+      margin-top: 0.1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      transition: background 0.15s, color 0.15s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .engine-dropdown-manage:hover {
+      background: rgba(255, 255, 255, 0.35);
+      color: var(--text);
+    }
+
+    body.night-mode .engine-dropdown-manage:hover {
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .engine-option:last-child {
@@ -558,21 +645,42 @@
 
     .link-item .btn-delete {
       position: absolute;
-      top: -6px;
-      right: -6px;
+      top: -4px;
+      left: -4px;
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      border: none;
-      background: rgba(220, 60, 60, 0.9);
-      color: #fff;
-      font-size: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.38);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: rgba(60, 60, 70, 0.75);
+      font-size: 14px;
+      font-weight: 500;
       line-height: 1;
       cursor: pointer;
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 2;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    }
+
+    .link-item .btn-delete:hover {
+      background: rgba(255, 255, 255, 0.52);
+      transform: scale(1.06);
+    }
+
+    body.night-mode .link-item .btn-delete {
+      background: rgba(80, 82, 92, 0.55);
+      border-color: rgba(255, 255, 255, 0.22);
+      color: rgba(255, 255, 255, 0.78);
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    body.night-mode .link-item .btn-delete:hover {
+      background: rgba(95, 98, 108, 0.68);
     }
 
     .quick-links-wrap.edit-mode .link-item .btn-delete {
@@ -712,7 +820,7 @@
       margin-bottom: 0.3rem;
     }
 
-    .modal input {
+    .modal input:not([type="radio"]):not([type="checkbox"]) {
       width: 100%;
       padding: 0.5rem 0.75rem;
       border: 1px solid rgba(255, 255, 255, 0.52);
@@ -731,14 +839,14 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .modal input:focus {
+    .modal input:not([type="radio"]):not([type="checkbox"]):focus {
       border-color: rgba(255, 255, 255, 0.68);
       box-shadow:
         inset 0 1px 0 0 rgba(255, 255, 255, 0.88),
         0 0 0 1px rgba(255, 255, 255, 0.22);
     }
 
-    body.night-mode .modal input {
+    body.night-mode .modal input:not([type="radio"]):not([type="checkbox"]) {
       background: rgba(255, 255, 255, 0.12);
       border-color: rgba(255, 255, 255, 0.26);
       box-shadow:
@@ -746,14 +854,14 @@
         0 1px 4px rgba(0, 0, 0, 0.18);
     }
 
-    body.night-mode .modal input:focus {
+    body.night-mode .modal input:not([type="radio"]):not([type="checkbox"]):focus {
       border-color: rgba(255, 255, 255, 0.38);
       box-shadow:
         inset 0 1px 0 0 rgba(255, 255, 255, 0.32),
         0 0 0 1px rgba(255, 255, 255, 0.12);
     }
 
-    body:not(.night-mode) .modal input {
+    body:not(.night-mode) .modal input:not([type="radio"]):not([type="checkbox"]) {
       background: rgba(255, 255, 255, 0.45);
       border-color: rgba(200, 214, 232, 0.75);
       box-shadow:
@@ -761,7 +869,7 @@
         0 1px 3px rgba(80, 100, 130, 0.04);
     }
 
-    body:not(.night-mode) .modal input:focus {
+    body:not(.night-mode) .modal input:not([type="radio"]):not([type="checkbox"]):focus {
       border-color: rgba(175, 198, 228, 0.9);
       box-shadow:
         inset 0 1px 0 0 rgba(255, 255, 255, 0.85),
@@ -892,7 +1000,9 @@
     }
 
     #undoToast,
-    #resetConfirmToast {
+    #resetConfirmToast,
+    #infoToast,
+    #importErrorToast {
       max-width: min(580px, calc(100vw - 2rem));
       width: max-content;
       flex-wrap: nowrap;
@@ -1567,6 +1677,295 @@
         color-mix(in srgb, var(--tt-footer-muted-dark) 36%, transparent) calc(var(--theme-t) * 100%)
       );
     }
+
+    .setup-hint {
+      display: none;
+    }
+
+    .spotlight-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: max(1rem, env(safe-area-inset-top, 0px)) max(1rem, env(safe-area-inset-right, 0px)) max(1rem, env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
+    }
+
+    .spotlight-overlay.show {
+      display: flex;
+    }
+
+    .spotlight-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(20, 24, 32, 0.28);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+    }
+
+    body.night-mode .spotlight-backdrop {
+      background: rgba(0, 0, 0, 0.42);
+    }
+
+    .spotlight-card {
+      position: relative;
+      z-index: 1;
+      width: min(340px, calc(100vw - 2.5rem));
+      padding: 1.35rem 1.35rem 1.15rem;
+      text-align: center;
+      animation: spotlight-in 0.45s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+    }
+
+    @keyframes spotlight-in {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .spotlight-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 0.55rem;
+      line-height: 1.35;
+    }
+
+    .spotlight-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin: 0 0 1.1rem;
+      line-height: 1.45;
+    }
+
+    .spotlight-btn {
+      padding: 0.45rem 1.1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.52);
+      background: rgba(255, 255, 255, 0.42);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      backdrop-filter: blur(22px) saturate(200%);
+      -webkit-backdrop-filter: blur(22px) saturate(200%);
+      transition: background 0.2s ease;
+    }
+
+    .spotlight-btn:hover {
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    body.night-mode .spotlight-btn {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.24);
+    }
+
+    body.night-mode .spotlight-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .engine-candidates {
+      display: none;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin: -0.35rem 0 0.75rem;
+    }
+
+    .engine-candidates.show {
+      display: flex;
+    }
+
+    .engine-candidate-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.5rem 0.65rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.14);
+      cursor: pointer;
+      font-size: 0.82rem;
+      color: var(--text);
+      text-align: left;
+      transition: background 0.15s;
+    }
+
+    .engine-candidate-item:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    body.night-mode .engine-candidate-item {
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    body.night-mode .engine-candidate-item:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .engine-candidate-item small {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .import-modal .import-stats {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0 0 1rem;
+      white-space: pre-line;
+    }
+
+    .import-mode-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .import-mode-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.55rem 0.65rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      font-size: 0.82rem;
+      color: var(--text);
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .import-mode-option:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .import-mode-option.selected {
+      border-color: color-mix(in srgb, var(--glass-border) 50%, var(--text) 50%);
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    body.night-mode .import-mode-option {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .import-mode-option input {
+      margin-top: 0.15rem;
+      flex-shrink: 0;
+    }
+
+    .import-mode-option-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .import-mode-option-text strong {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.15rem;
+    }
+
+    .import-mode-option-text span {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .import-overwrite-hint {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin: 0.15rem 0 0 1.65rem;
+      display: none;
+      line-height: 1.35;
+    }
+
+    .import-overwrite-hint.show {
+      display: block;
+    }
+
+    .import-mode-option input[type="radio"] {
+      width: auto;
+      min-width: auto;
+      margin: 0.12rem 0 0;
+      padding: 0;
+      flex-shrink: 0;
+      align-self: flex-start;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      margin-bottom: 0;
+      accent-color: color-mix(in srgb, var(--text) 65%, #5b8def 35%);
+      cursor: pointer;
+    }
+
+    .reset-confirm-toast .undo-toast-msg {
+      white-space: normal;
+      line-height: 1.4;
+    }
+
+    #infoToast .undo-toast-msg {
+      white-space: nowrap;
+    }
+
+    #linkModalError.show,
+    #engineAddError.show,
+    #engineEditError.show {
+      display: block;
+    }
+
+    .modal-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin: 0 0 0.65rem;
+    }
+
+    .modal-hint-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      opacity: 0.85;
+      margin: -0.35rem 0 0.75rem;
+    }
+
+    .modal-error {
+      font-size: 0.8rem;
+      color: rgba(180, 70, 70, 0.88);
+      margin: 0 0 0.65rem;
+      display: none;
+    }
+
+    body.night-mode .modal-error {
+      color: rgba(255, 140, 145, 0.92);
+    }
+
+    .modal-error.show {
+      display: block;
+    }
+
+    #engineAddStep2,
+    #engineEditStep2 {
+      display: none;
+    }
+
+    #engineAddStep2.show,
+    #engineEditStep2.show {
+      display: block;
+    }
+
+    #importSettingsInput {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -1582,13 +1981,17 @@
     <button type="button" class="settings-item" id="settingsRefresh">刷新</button>
     <button type="button" class="settings-item" id="settingsManageLinks">管理快捷链接</button>
     <button type="button" class="settings-item" id="settingsManageEngines">管理搜索引擎</button>
-    <button type="button" class="settings-item" id="settingsResetAll">恢复默认设置</button>
+    <div class="settings-menu-divider" role="separator" aria-hidden="true"></div>
+    <button type="button" class="settings-item" id="settingsExport">导出设置</button>
+    <button type="button" class="settings-item" id="settingsImport">导入设置</button>
     <div class="settings-menu-divider" role="separator" aria-hidden="true"></div>
     <button type="button" class="settings-item settings-item-row" id="settingsFollowSystem">
       <span class="settings-item-label">主题色跟随系统</span>
       <span class="settings-item-check" id="settingsFollowSystemCheck" aria-hidden="true"></span>
     </button>
+    <button type="button" class="settings-item" id="settingsResetAll">恢复默认设置</button>
   </div>
+  <input type="file" id="importSettingsInput" accept="application/json,.json" tabindex="-1" aria-hidden="true" />
 
   <main class="main-center">
   <div class="main-center-stack">
@@ -1626,10 +2029,11 @@
   <div class="modal-overlay" id="linkModal">
     <div class="modal">
       <h3 id="modalTitle">添加快捷链接</h3>
-      <label for="linkName">名称</label>
+      <label for="linkName">名称（选填）</label>
       <input type="text" id="linkName" placeholder="例如：GitHub" />
       <label for="linkUrl">网址</label>
       <input type="text" id="linkUrl" placeholder="github.com 或 https://..." autocomplete="url" />
+      <p class="modal-error" id="linkModalError"></p>
       <div class="modal-actions">
         <button type="button" id="modalCancel">取消</button>
         <button type="button" class="primary" id="modalSave">保存</button>
@@ -1641,10 +2045,18 @@
     <div class="modal">
       <h3>管理搜索引擎</h3>
       <div id="engineListWrap" class="engine-list"></div>
-      <label>名称</label>
-      <input type="text" id="engineName" />
-      <label>主页链接或域名</label>
-      <input type="text" id="engineUrl" />
+      <div id="engineAddStep1">
+        <label for="engineUrl">搜索引擎名称或网址</label>
+        <input type="text" id="engineUrl" placeholder="例如：秘塔、metaso.cn" autocomplete="off" />
+        <div id="engineCandidates" class="engine-candidates"></div>
+      </div>
+      <div id="engineAddStep2">
+        <p class="modal-hint">暂未识别，请先在该网站搜索任意内容，再粘贴搜索结果页网址</p>
+        <p class="modal-hint-sub">请在该网站搜索：weiminal</p>
+        <label for="engineResultUrl">搜索结果页网址</label>
+        <input type="text" id="engineResultUrl" placeholder="粘贴搜索结果页完整网址" autocomplete="off" />
+      </div>
+      <p class="modal-error" id="engineAddError">暂不支持该搜索引擎</p>
       <div class="modal-actions">
         <button type="button" id="engineModalCancel">取消</button>
         <button type="button" class="primary" id="engineModalAdd">添加</button>
@@ -1654,11 +2066,16 @@
 
   <div class="modal-overlay" id="engineEditModal">
     <div class="modal">
-      <h3>修改搜索引擎</h3>
-      <label>名称</label>
-      <input type="text" id="engineEditName" />
-      <label>搜索 URL（含 {q}）</label>
-      <input type="text" id="engineEditUrl" />
+      <h3>重新配置搜索引擎</h3>
+      <label for="engineEditUrl">搜索引擎名称或网址</label>
+      <input type="text" id="engineEditUrl" placeholder="例如：秘塔、metaso.cn" autocomplete="off" />
+      <div id="engineEditStep2">
+        <p class="modal-hint">暂未识别，请先在该网站搜索任意内容，再粘贴搜索结果页网址</p>
+        <p class="modal-hint-sub">请在该网站搜索：weiminal</p>
+        <label for="engineEditResultUrl">搜索结果页网址</label>
+        <input type="text" id="engineEditResultUrl" placeholder="粘贴搜索结果页完整网址" autocomplete="off" />
+      </div>
+      <p class="modal-error" id="engineEditError">暂不支持该搜索引擎</p>
       <div class="modal-actions">
         <button type="button" id="engineEditCancel">取消</button>
         <button type="button" class="primary" id="engineEditSave">保存</button>
@@ -1675,14 +2092,59 @@
     <span class="undo-toast-msg" id="resetConfirmMsg"></span>
     <div class="undo-toast-row-actions">
       <button type="button" class="undo-toast-btn" id="resetConfirmCancel">取消</button>
-      <button type="button" class="undo-toast-btn undo-toast-btn-danger" id="resetConfirmPrimary">继续</button>
+      <button type="button" class="undo-toast-btn undo-toast-btn-danger" id="resetConfirmPrimary">恢复默认</button>
     </div>
+  </div>
+
+  <div class="modal-overlay" id="importModal">
+    <div class="modal import-modal">
+      <h3>检测到备份</h3>
+      <p class="import-stats" id="importStats"></p>
+      <div class="import-mode-options">
+        <label class="import-mode-option selected" id="importModeMergeLabel">
+          <input type="radio" name="importMode" id="importModeMerge" value="merge" checked />
+          <span class="import-mode-option-text">
+            <strong>合并（推荐）</strong>
+            <span>保留当前内容，并添加备份中的新内容</span>
+          </span>
+        </label>
+        <label class="import-mode-option" id="importModeOverwriteLabel">
+          <input type="radio" name="importMode" id="importModeOverwrite" value="overwrite" />
+          <span class="import-mode-option-text">
+            <strong>覆盖</strong>
+            <span>使用备份完全替换当前设置</span>
+          </span>
+        </label>
+      </div>
+      <p class="import-overwrite-hint" id="importOverwriteHint">当前设置将被备份替换</p>
+      <div class="modal-actions">
+        <button type="button" id="importModalCancel">取消</button>
+        <button type="button" class="primary" id="importModalConfirm">恢复</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="undo-toast" id="importErrorToast" aria-live="polite">
+    <span class="undo-toast-msg" id="importErrorMsg">无法识别此配置文件</span>
+  </div>
+
+  <div class="undo-toast" id="infoToast" aria-live="polite">
+    <span class="undo-toast-msg" id="infoToastMsg"></span>
   </div>
 
   <footer class="footer" id="footerEl">
     <span class="footer-brand">2026 © WEIMINAL</span>
-    <span class="footer-visits">累计访问 <span id="busuanzi_value_site_pv">Loading</span></span>
+    <span class="footer-visits">累计访问 <span id="vercount_value_page_pv">—</span></span>
   </footer>
+
+  <div class="spotlight-overlay" id="spotlightOverlay" aria-hidden="true">
+    <div class="spotlight-backdrop" id="spotlightBackdrop"></div>
+    <div class="spotlight-card glass">
+      <p class="spotlight-title" id="spotlightTitle">右键空白处管理页面</p>
+      <p class="spotlight-desc">快捷链接、搜索引擎和页面设置都在这里</p>
+      <button type="button" class="spotlight-btn" id="spotlightDismiss">知道了</button>
+    </div>
+  </div>
 
   <script>
     const DEFAULT_ENGINES = [
@@ -1695,18 +2157,296 @@
     const STORAGE_ENGINE_CURRENT = 'navSearchEngineCurrent';
     const STORAGE_NIGHT = 'navNightMode';
     const STORAGE_FOLLOW_SYSTEM = 'navThemeFollowSystem';
+    const STORAGE_SETUP_HINT = 'navSetupHintShown';
+    const EXPORT_FILENAME = '拖入网页或从设置中导入即可恢复.json';
+    const LEARN_KEYWORD = 'weiminal';
+    const DEBUG_PV = false;
 
     const UI = {
       searchHint: '请输入搜索内容',
       modalAddLink: '添加快捷链接',
       modalEditLink: '编辑链接',
-      engineNamePlaceholder: '如：Bing 必应',
-      engineUrlPlaceholder: '如：bing.com 或 https://www.bing.com/',
+      engineUrlPlaceholder: '例如：秘塔、metaso.cn',
       engineSetDefault: '设为默认',
       engineDelete: '删除',
       engineDefault: '(默认)',
-      engineEdit: '修改'
+      engineEdit: '重新配置',
+      engineManage: '管理搜索引擎',
+      engineUnsupported: '暂不支持该搜索引擎',
+      engineSiteMismatch: '搜索结果网址与所选网站不一致',
+      engineDuplicateSwitched: '该搜索引擎已存在，已切换',
+      linkUrlRequired: '请输入网址',
+      linkUrlInvalid: '请输入有效网址',
+      linkDuplicate: '该快捷链接已存在'
     };
+
+    var SEARCH_ENGINE_REGISTRY = [
+      { name: 'Bing 必应', searchUrl: 'https://www.bing.com/search?q={q}', domains: ['bing.com', 'cn.bing.com'], aliases: ['bing', '必应', 'bing必应', 'bng', '微软必应'] },
+      { name: 'Google 谷歌', searchUrl: 'https://www.google.com/search?q={q}', domains: ['google.com', 'google.com.hk'], urlByDomain: { 'google.com.hk': 'https://www.google.com.hk/search?q={q}' }, aliases: ['google', '谷歌', 'google谷歌', 'gogle', 'goog'] },
+      { name: 'Baidu 百度', searchUrl: 'https://www.baidu.com/s?wd={q}', domains: ['baidu.com'], aliases: ['baidu', '百度', 'bd'] },
+      { name: '搜狗搜索', searchUrl: 'https://www.sogou.com/web?query={q}', domains: ['sogou.com'], aliases: ['sogou', '搜狗'] },
+      { name: '360 搜索', searchUrl: 'https://www.so.com/s?q={q}', domains: ['so.com'], aliases: ['360', '360搜索', 'so'] },
+      { name: 'DuckDuckGo', searchUrl: 'https://duckduckgo.com/?q={q}', domains: ['duckduckgo.com'], aliases: ['duckduckgo', 'duck', 'ddg'] },
+      { name: 'Yahoo', searchUrl: 'https://search.yahoo.com/search?p={q}', domains: ['yahoo.com', 'search.yahoo.com'], aliases: ['yahoo', '雅虎'] },
+      { name: 'Yandex', searchUrl: 'https://yandex.com/search/?text={q}', domains: ['yandex.com', 'yandex.ru'], urlByDomain: { 'yandex.ru': 'https://yandex.ru/search/?text={q}' }, aliases: ['yandex'] },
+      { name: 'Ecosia', searchUrl: 'https://www.ecosia.org/search?q={q}', domains: ['ecosia.org'], aliases: ['ecosia'] },
+      { name: '秘塔 AI', searchUrl: 'https://metaso.cn/?q={q}', domains: ['metaso.cn'], aliases: ['秘塔', '秘塔ai', '秘塔AI', '秘塔 AI', 'mita', 'metaso', 'metso', 'meta so', 'metasoai'] },
+      { name: 'Brave Search', searchUrl: 'https://search.brave.com/search?q={q}', domains: ['search.brave.com', 'brave.com'], aliases: ['brave', 'bravesearch', 'brave search'] }
+    ];
+
+    var SITE_NAME_MAP = {
+      'github.com': 'GitHub',
+      'youtube.com': 'YouTube',
+      'bilibili.com': 'Bilibili',
+      'chatgpt.com': 'ChatGPT',
+      'openai.com': 'OpenAI',
+      'apple.com': 'Apple',
+      'google.com': 'Google',
+      'bing.com': 'Bing',
+      'baidu.com': '百度',
+      'twitter.com': 'Twitter',
+      'x.com': 'X',
+      'weibo.com': '微博',
+      'zhihu.com': '知乎',
+      'notion.so': 'Notion',
+      'figma.com': 'Figma'
+    };
+
+    var SEARCH_ENGINE_TEMPLATE_MAP = {};
+    (function buildEngineTemplateMap() {
+      SEARCH_ENGINE_REGISTRY.forEach(function (entry) {
+        entry.domains.forEach(function (d) {
+          var key = normalizeHostKey(d);
+          if (!key) return;
+          var searchUrl = (entry.urlByDomain && entry.urlByDomain[key]) || entry.searchUrl;
+          SEARCH_ENGINE_TEMPLATE_MAP[key] = { name: entry.name, searchUrl: searchUrl, faviconDomain: key };
+        });
+        if (entry.urlByDomain) {
+          Object.keys(entry.urlByDomain).forEach(function (d) {
+            var key = normalizeHostKey(d);
+            if (key && !SEARCH_ENGINE_TEMPLATE_MAP[key]) {
+              SEARCH_ENGINE_TEMPLATE_MAP[key] = { name: entry.name, searchUrl: entry.urlByDomain[d], faviconDomain: key };
+            }
+          });
+        }
+      });
+    })();
+
+    function normalizeFuzzyText(str) {
+      return (str || '').toLowerCase().replace(/[\s\-_.·/\\@#]+/g, '').trim();
+    }
+
+    function levenshteinDistance(a, b) {
+      if (a === b) return 0;
+      if (!a.length) return b.length;
+      if (!b.length) return a.length;
+      var row = [];
+      for (var j = 0; j <= b.length; j++) row[j] = j;
+      for (var i = 1; i <= a.length; i++) {
+        var prev = i;
+        for (var k = 1; k <= b.length; k++) {
+          var val = a[i - 1] === b[k - 1] ? row[k - 1] : Math.min(row[k - 1], prev, row[k]) + 1;
+          row[k - 1] = prev;
+          prev = val;
+        }
+        row[b.length] = prev;
+      }
+      return row[b.length];
+    }
+
+    function hasCJK(str) {
+      return /[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]/.test(str || '');
+    }
+
+    function fuzzyMatchEngines(input) {
+      var raw = (input || '').trim();
+      if (!raw) return [];
+      var parsed = parseEngineSiteInput(raw);
+      if (parsed && parsed.hostname) {
+        var domainTpl = resolveKnownEngineTemplate(parsed);
+        if (domainTpl) {
+          return [{ name: domainTpl.name, searchUrl: domainTpl.searchUrl, faviconDomain: domainTpl.faviconDomain, score: 100, hint: parsed.hostname }];
+        }
+      }
+      var norm = normalizeFuzzyText(raw);
+      if (!norm && !raw) return [];
+      var results = [];
+      var seen = Object.create(null);
+      SEARCH_ENGINE_REGISTRY.forEach(function (entry) {
+        var tokens = [entry.name].concat(entry.aliases || []).concat(entry.domains || []);
+        var bestScore = 0;
+        var bestHint = entry.domains[0] || '';
+        if (hasCJK(raw) && entry.name.indexOf(raw) !== -1) {
+          bestScore = 88;
+        }
+        tokens.forEach(function (token) {
+          var tn = normalizeFuzzyText(token);
+          if (!tn) return;
+          var score = 0;
+          var rawToken = String(token || '');
+          if (tn === norm) score = 98;
+          else if (hasCJK(raw) && rawToken.indexOf(raw) !== -1) score = Math.max(score, 86);
+          else if (tn.indexOf(norm) !== -1 || norm.indexOf(tn) !== -1) {
+            if (hasCJK(norm) && norm.length >= 1) score = Math.max(score, 82);
+            else if (norm.length >= 2) score = Math.max(score, 82);
+          } else if (norm.length >= 3 && tn.length >= 3) {
+            var dist = levenshteinDistance(norm, tn);
+            if (dist <= 2) score = Math.max(score, 76 - dist * 7);
+          }
+          if (score > bestScore) {
+            bestScore = score;
+            bestHint = entry.domains.indexOf(token) !== -1 ? token : (entry.domains[0] || token);
+          }
+        });
+        if (bestScore >= 68 && !seen[entry.name]) {
+          seen[entry.name] = true;
+          results.push({ name: entry.name, searchUrl: entry.searchUrl, faviconDomain: entry.domains[0], score: bestScore, hint: bestHint });
+        }
+      });
+      results.sort(function (a, b) { return b.score - a.score; });
+      return results;
+    }
+
+    function getRegistrableDomain(host) {
+      host = normalizeHostKey(host);
+      if (!host) return '';
+      var parts = host.split('.');
+      if (parts.length <= 2) return host;
+      return parts.slice(-2).join('.');
+    }
+
+    function domainsCompatible(siteHost, resultHost) {
+      siteHost = normalizeHostKey(siteHost);
+      resultHost = normalizeHostKey(resultHost);
+      if (!siteHost || !resultHost) return false;
+      if (siteHost === resultHost) return true;
+      if (resultHost.endsWith('.' + siteHost) || siteHost.endsWith('.' + resultHost)) return true;
+      return false;
+    }
+
+    function normalizeHostKey(host) {
+      return (host || '').toLowerCase().replace(/^www\./, '').trim();
+    }
+
+    function parseEngineSiteInput(input) {
+      var raw = (input || '').trim();
+      if (!raw) return null;
+      var hostname = '';
+      var origin = '';
+      try {
+        var u = new URL(/^https?:\/\//i.test(raw) ? raw : 'https://' + raw.replace(/^\/+/, ''));
+        hostname = normalizeHostKey(u.hostname);
+        origin = u.origin;
+      } catch (e) {
+        hostname = normalizeHostKey(raw.replace(/^https?:\/\//, '').replace(/\/.*$/, ''));
+        if (!hostname) return null;
+        origin = 'https://' + hostname;
+      }
+      return { hostname: hostname, origin: origin, raw: raw };
+    }
+
+    function resolveKnownEngineTemplate(siteInput) {
+      var parsed = typeof siteInput === 'string' ? parseEngineSiteInput(siteInput) : siteInput;
+      if (!parsed || !parsed.hostname) return null;
+      var host = parsed.hostname;
+      var tpl = SEARCH_ENGINE_TEMPLATE_MAP[host];
+      if (tpl) return { name: tpl.name, searchUrl: tpl.searchUrl, faviconDomain: tpl.faviconDomain || host };
+      var parts = host.split('.');
+      if (parts.length > 2) {
+        var base = parts.slice(-2).join('.');
+        tpl = SEARCH_ENGINE_TEMPLATE_MAP[base];
+        if (tpl) return { name: tpl.name, searchUrl: tpl.searchUrl, faviconDomain: tpl.faviconDomain || base };
+      }
+      return null;
+    }
+
+    function nameFromDomain(domain) {
+      return normalizeHostKey(domain) || '';
+    }
+
+    function learnSearchTemplateFromResultUrl(resultUrl, siteHost) {
+      var keyword = LEARN_KEYWORD;
+      var raw = (resultUrl || '').trim();
+      if (!raw) return null;
+      if (!/^https?:\/\//i.test(raw)) raw = 'https://' + raw.replace(/^\/+/, '');
+      try {
+        var u = new URL(raw);
+        if (siteHost) {
+          if (!domainsCompatible(siteHost, u.hostname)) return { error: 'site_mismatch' };
+        }
+        var params = new URLSearchParams(u.search);
+        var keys = Array.from(params.keys());
+        for (var k = 0; k < keys.length; k++) {
+          var key = keys[k];
+          if (/^(utm_|ref|referer|source|from|campaign)/i.test(key)) continue;
+          var val = params.get(key);
+          if (!val) continue;
+          var decoded = val;
+          try { decoded = decodeURIComponent(val.replace(/\+/g, ' ')); } catch (err) {}
+          if (val === keyword || decoded === keyword || val === encodeURIComponent(keyword)) {
+            params.set(key, '{q}');
+            u.search = params.toString();
+            return u.href;
+          }
+        }
+        if (u.hash) {
+          var hashCandidates = [keyword, encodeURIComponent(keyword), encodeURI(keyword)];
+          for (var j = 0; j < hashCandidates.length; j++) {
+            var hc = hashCandidates[j];
+            if (hc && u.hash.indexOf(hc) !== -1) {
+              var hashTpl = u.origin + u.pathname + u.search + u.hash.split(hc).join('{q}');
+              if (hashTpl.indexOf('{q}') !== -1) return hashTpl;
+            }
+          }
+        }
+        var pathSegments = u.pathname.split('/');
+        for (var p = 0; p < pathSegments.length; p++) {
+          var seg = pathSegments[p];
+          if (seg === keyword || decodeURIComponent(seg) === keyword) {
+            pathSegments[p] = '{q}';
+            u.pathname = pathSegments.join('/');
+            return u.href;
+          }
+        }
+        if (u.pathname.indexOf(keyword) !== -1) {
+          var pathTpl = u.origin + u.pathname.split(keyword).join('{q}') + u.search + u.hash;
+          if (pathTpl.indexOf('{q}') !== -1) return pathTpl;
+        }
+        var href = u.href;
+        var candidates = [keyword, encodeURIComponent(keyword), encodeURI(keyword)];
+        for (var i = 0; i < candidates.length; i++) {
+          var c = candidates[i];
+          if (c && href.indexOf(c) !== -1) {
+            var tpl = href.split(c).join('{q}');
+            if (tpl.indexOf('{q}') !== -1) return tpl;
+          }
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function engineDomainFromUrl(url) {
+      return getEngineDomain(url);
+    }
+
+    function engineIdentityKey(searchUrl) {
+      var domain = engineDomainFromUrl(searchUrl);
+      return domain ? domain + '|' + searchUrl : searchUrl;
+    }
+
+    function findDuplicateEngine(engines, searchUrl, excludeIndex) {
+      var domain = engineDomainFromUrl(searchUrl);
+      if (!domain) return null;
+      for (var i = 0; i < engines.length; i++) {
+        if (excludeIndex != null && i === excludeIndex) continue;
+        if (engineDomainFromUrl(engines[i].url) === domain) return engines[i];
+      }
+      return null;
+    }
+
+    function isDuplicateEngine(engines, searchUrl, excludeIndex) {
+      return !!findDuplicateEngine(engines, searchUrl, excludeIndex);
+    }
 
     function getEngines() {
       try {
@@ -1721,59 +2461,6 @@
 
     function saveEngines(engines) {
       localStorage.setItem(STORAGE_ENGINES, JSON.stringify(engines));
-    }
-
-    var SEARCH_ENGINE_TEMPLATES = {
-      'baidu.com': { name: '百度', searchUrl: 'https://www.baidu.com/s?wd={q}' },
-      'www.baidu.com': { name: '百度', searchUrl: 'https://www.baidu.com/s?wd={q}' },
-      'google.com': { name: 'Google 谷歌', searchUrl: 'https://www.google.com/search?q={q}' },
-      'www.google.com': { name: 'Google 谷歌', searchUrl: 'https://www.google.com/search?q={q}' },
-      'google.com.hk': { name: 'Google 谷歌', searchUrl: 'https://www.google.com.hk/search?q={q}' },
-      'bing.com': { name: 'Bing 必应', searchUrl: 'https://www.bing.com/search?q={q}' },
-      'www.bing.com': { name: 'Bing 必应', searchUrl: 'https://www.bing.com/search?q={q}' },
-      'sogou.com': { name: '搜狗搜索', searchUrl: 'https://www.sogou.com/web?query={q}' },
-      'www.sogou.com': { name: '搜狗搜索', searchUrl: 'https://www.sogou.com/web?query={q}' },
-      'so.com': { name: '360 搜索', searchUrl: 'https://www.so.com/s?q={q}' },
-      'www.so.com': { name: '360 搜索', searchUrl: 'https://www.so.com/s?q={q}' },
-      'duckduckgo.com': { name: 'DuckDuckGo', searchUrl: 'https://duckduckgo.com/?q={q}' },
-      'www.duckduckgo.com': { name: 'DuckDuckGo', searchUrl: 'https://duckduckgo.com/?q={q}' },
-      'yahoo.com': { name: 'Yahoo', searchUrl: 'https://search.yahoo.com/search?p={q}' },
-      'search.yahoo.com': { name: 'Yahoo', searchUrl: 'https://search.yahoo.com/search?p={q}' },
-      'yandex.com': { name: 'Yandex', searchUrl: 'https://yandex.com/search/?text={q}' },
-      'yandex.ru': { name: 'Yandex', searchUrl: 'https://yandex.ru/search/?text={q}' },
-      'www.yandex.ru': { name: 'Yandex', searchUrl: 'https://yandex.ru/search/?text={q}' },
-      'ecosia.org': { name: 'Ecosia', searchUrl: 'https://www.ecosia.org/search?q={q}' },
-      'www.ecosia.org': { name: 'Ecosia', searchUrl: 'https://www.ecosia.org/search?q={q}' },
-      'metaso.cn': { name: '秘塔 AI', searchUrl: 'https://metaso.cn/search?q={q}' },
-      'www.metaso.cn': { name: '秘塔 AI', searchUrl: 'https://metaso.cn/search?q={q}' }
-    };
-
-    function normalizeEngineInput(inputUrl, inputName) {
-      var raw = (inputUrl || '').trim().toLowerCase();
-      if (!raw) return null;
-      var domain = '';
-      if (/^https?:\/\//i.test(raw)) {
-        try {
-          var u = new URL(raw);
-          domain = u.hostname.replace(/^www\./, '');
-        } catch (e) {
-          domain = raw.replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace(/^www\./, '');
-        }
-      } else {
-        domain = raw.replace(/\/.*$/, '').replace(/^www\./, '');
-      }
-      if (!domain) return null;
-      var withWww = 'www.' + domain;
-      var template = SEARCH_ENGINE_TEMPLATES[domain] || SEARCH_ENGINE_TEMPLATES[withWww];
-      if (template) {
-        return { name: inputName && inputName.trim() ? inputName.trim() : template.name, searchUrl: template.searchUrl };
-      }
-      if (raw.includes('{q}')) {
-        var u = inputUrl.trim();
-        return { name: inputName && inputName.trim() ? inputName.trim() : domain, searchUrl: /^https?:\/\//i.test(u) ? u : 'https://' + u.replace(/^\/+/, '') };
-      }
-      var host = domain.includes('.') ? domain : 'www.' + domain;
-      return { name: inputName && inputName.trim() ? inputName.trim() : domain, searchUrl: 'https://' + host + '/search?q={q}' };
     }
 
     function getSearchUrl(engine, q) {
@@ -1795,10 +2482,102 @@
       }
     }
 
+    function getFaviconApiUrl(domain) {
+      var d = normalizeHostKey(domain);
+      if (!d) return '';
+      return 'https://api.xinac.net/icon/?url=' + encodeURIComponent('https://' + d);
+    }
+
+    function getFaviconIcoUrl(domain) {
+      var d = normalizeHostKey(domain);
+      if (!d) return '';
+      return 'https://' + d + '/favicon.ico';
+    }
+
+    function showFaviconFallback(fallbackEl, letter) {
+      if (!fallbackEl) return;
+      if (letter) fallbackEl.textContent = letter;
+      if (fallbackEl.classList.contains('engine-icon-fallback')) {
+        fallbackEl.classList.add('show');
+      }
+      fallbackEl.style.display = 'flex';
+    }
+
+    function hideFaviconFallback(fallbackEl) {
+      if (!fallbackEl) return;
+      if (fallbackEl.classList.contains('engine-icon-fallback')) {
+        fallbackEl.classList.remove('show');
+      }
+      fallbackEl.style.display = 'none';
+    }
+
+    function applyFaviconImg(img, domain, fallbackEl, letter) {
+      if (!img) return;
+      var useClassShow = img.classList.contains('engine-option-icon');
+      img.classList.remove('show');
+      img.style.display = 'none';
+      img.removeAttribute('src');
+      img.onerror = null;
+      img.onload = null;
+      showFaviconFallback(fallbackEl, letter);
+      var d = normalizeHostKey(domain);
+      if (!d) return;
+
+      var apiUrl = getFaviconApiUrl(d);
+      var icoUrl = getFaviconIcoUrl(d);
+      var stage = 0;
+
+      function showImg() {
+        if (useClassShow) {
+          img.classList.add('show');
+          img.style.display = 'block';
+        } else {
+          img.style.display = 'block';
+        }
+        hideFaviconFallback(fallbackEl);
+      }
+
+      function tryLoad(url, onFail) {
+        img.onload = function () {
+          img.onerror = null;
+          showImg();
+        };
+        img.onerror = function () {
+          img.onload = null;
+          img.onerror = null;
+          img.classList.remove('show');
+          img.style.display = 'none';
+          img.removeAttribute('src');
+          onFail();
+        };
+        img.src = url;
+      }
+
+      function nextStage() {
+        stage += 1;
+        if (stage === 1) {
+          tryLoad(apiUrl, nextStage);
+        } else if (stage === 2) {
+          tryLoad(icoUrl, function () {
+            showFaviconFallback(fallbackEl, letter);
+          });
+        } else {
+          showFaviconFallback(fallbackEl, letter);
+        }
+      }
+
+      nextStage();
+    }
+
+    function getEngineFaviconDomain(engine) {
+      if (!engine) return '';
+      var fromUrl = getEngineDomain(engine.url);
+      if (fromUrl) return fromUrl;
+      return '';
+    }
+
     function getEngineFaviconUrl(engine) {
-      var domain = getEngineDomain(engine && engine.url);
-      if (!domain) return '';
-      return 'https://api.xinac.net/icon/?url=https://' + encodeURIComponent(domain);
+      return getFaviconApiUrl(getEngineFaviconDomain(engine));
     }
 
     const DEFAULT_LINKS = [];
@@ -1823,9 +2602,158 @@
       }
     }
 
-    function faviconUrl(url) {
-      const domain = getDomain(url);
-      return domain ? 'https://api.xinac.net/icon/?url=https://' + domain : '';
+    function normalizeLinkUrlForCompare(str) {
+      var n = normalizeLinkUrl(str);
+      if (!n) return '';
+      try {
+        var u = new URL(n);
+        var path = u.pathname.replace(/\/+$/, '') || '';
+        return u.origin + path + u.search + u.hash;
+      } catch (e) {
+        return n.toLowerCase();
+      }
+    }
+
+    function isValidLinkUrl(str) {
+      var n = normalizeLinkUrl(str);
+      if (!n) return false;
+      try {
+        var u = new URL(n);
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') return false;
+        if (!u.hostname || !u.hostname.includes('.')) return false;
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function autoLinkNameFromUrl(url) {
+      var domain = getDomain(url);
+      if (!domain) return '';
+      if (SITE_NAME_MAP[domain]) return SITE_NAME_MAP[domain];
+      var base = getRegistrableDomain(domain);
+      if (SITE_NAME_MAP[base]) return SITE_NAME_MAP[base];
+      if (domain.split('.').length > 2) {
+        return domain;
+      }
+      var label = domain.split('.')[0] || domain;
+      if (label && label !== domain) {
+        return label.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+      }
+      return domain;
+    }
+
+    function findDuplicateLink(links, url, excludeIndex) {
+      var key = normalizeLinkUrlForCompare(url);
+      if (!key) return null;
+      for (var i = 0; i < links.length; i++) {
+        if (excludeIndex != null && i === excludeIndex) continue;
+        if (normalizeLinkUrlForCompare(links[i].url) === key) return links[i];
+      }
+      return null;
+    }
+
+    var lastFocusBeforeOverlay = null;
+    var infoToastTimer = null;
+
+    function showInfoToast(msg) {
+      var toast = document.getElementById('infoToast');
+      var msgEl = document.getElementById('infoToastMsg');
+      if (!toast || !msgEl) return;
+      if (infoToastTimer) clearTimeout(infoToastTimer);
+      msgEl.textContent = msg;
+      toast.classList.add('show');
+      scheduleFitSingleLineToast(toast);
+      infoToastTimer = setTimeout(function () {
+        toast.classList.remove('show');
+        infoToastTimer = null;
+      }, 3200);
+    }
+
+    function showModalError(el, msg) {
+      if (!el) return;
+      el.textContent = msg || '';
+      if (msg) el.classList.add('show');
+      else el.classList.remove('show');
+    }
+
+    function openOverlayWithFocus(overlay, focusEl) {
+      lastFocusBeforeOverlay = document.activeElement;
+      overlay.classList.add('show');
+      if (focusEl) {
+        setTimeout(function () { focusEl.focus(); }, 40);
+      }
+    }
+
+    function closeOverlayRestoreFocus(overlay) {
+      overlay.classList.remove('show');
+      if (lastFocusBeforeOverlay && typeof lastFocusBeforeOverlay.focus === 'function') {
+        try { lastFocusBeforeOverlay.focus(); } catch (e) {}
+      }
+      lastFocusBeforeOverlay = null;
+    }
+
+    function createLinkAddButton() {
+      var addItem = document.createElement('div');
+      addItem.className = 'link-item link-add-btn';
+      var addInner = document.createElement('button');
+      addInner.type = 'button';
+      addInner.className = 'link-add-inner';
+      addInner.setAttribute('aria-label', '添加');
+      addInner.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>';
+      addItem.appendChild(addInner);
+      bindLinkAddInnerClick(addInner);
+      return addItem;
+    }
+
+    function createDeleteButton(index) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn-delete';
+      btn.dataset.index = String(index);
+      btn.setAttribute('aria-label', '删除');
+      btn.textContent = '−';
+      btn.addEventListener('click', handleLinkDeleteClick);
+      return btn;
+    }
+
+    function createLinkCard(link, index, isEditMode) {
+      var item = document.createElement('div');
+      item.className = 'link-item';
+      var resolvedUrl = normalizeLinkUrl(link.url);
+      var domain = getDomain(resolvedUrl);
+      var letter = (link.name && link.name.charAt(0)) || '?';
+
+      var card = document.createElement('a');
+      card.className = 'link-card';
+      card.draggable = false;
+      card.href = resolvedUrl;
+      card.target = '_blank';
+      card.rel = 'noopener';
+      card.title = link.name || '';
+
+      var iconWrap = document.createElement('span');
+      iconWrap.className = 'link-icon';
+      iconWrap.textContent = letter;
+      iconWrap.style.display = 'flex';
+
+      var img = document.createElement('img');
+      img.className = 'link-favicon';
+      img.draggable = false;
+      img.alt = '';
+      img.style.display = 'none';
+      card.appendChild(img);
+      card.appendChild(iconWrap);
+      item.appendChild(card);
+
+      if (domain) {
+        applyFaviconImg(img, domain, iconWrap, letter);
+      }
+
+      if (isEditMode) {
+        item.appendChild(createDeleteButton(index));
+      }
+      return item;
     }
 
     function getLinks() {
@@ -1869,6 +2797,7 @@
       if (el.closest('.search-hint-wrap') || el.classList.contains('search-input')) return false;
       if (el.closest('.search-btn')) return false;
       if (el.closest('.undo-toast')) return false;
+      if (el.closest('.spotlight-overlay')) return false;
       return true;
     }
 
@@ -1953,6 +2882,7 @@
     const modalTitle = document.getElementById('modalTitle');
     const linkNameInput = document.getElementById('linkName');
     const linkUrlInput = document.getElementById('linkUrl');
+    const linkModalError = document.getElementById('linkModalError');
     const modalCancel = document.getElementById('modalCancel');
     const modalSave = document.getElementById('modalSave');
     const undoToast = document.getElementById('undoToast');
@@ -2056,7 +2986,8 @@
         modalTitle.textContent = UI.modalAddLink;
         linkNameInput.value = '';
         linkUrlInput.value = '';
-        linkModal.classList.add('show');
+        showModalError(linkModalError, '');
+        openOverlayWithFocus(linkModal, linkUrlInput);
       });
     }
 
@@ -2085,23 +3016,11 @@
 
       items.forEach(function (item, index) {
         if (item.querySelector('.btn-delete')) return;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'btn-delete';
-        btn.dataset.index = String(index);
-        btn.setAttribute('aria-label', '删除');
-        btn.textContent = '×';
-        btn.addEventListener('click', handleLinkDeleteClick);
-        item.appendChild(btn);
+        item.appendChild(createDeleteButton(index));
       });
 
       if (!linksGrid.querySelector('.link-item.link-add-btn')) {
-        const addItem = document.createElement('div');
-        addItem.className = 'link-item link-add-btn';
-        addItem.innerHTML =
-          '<button type="button" class="link-add-inner" aria-label="添加"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>';
-        bindLinkAddInnerClick(addItem.querySelector('.link-add-inner'));
-        linksGrid.appendChild(addItem);
+        linksGrid.appendChild(createLinkAddButton());
       }
 
       linksGrid.querySelectorAll('.link-item:not(.link-add-btn)').forEach(function (item) {
@@ -2121,31 +3040,11 @@
       const isEditMode = quickLinksWrap.classList.contains('edit-mode');
       quickLinksWrap.classList.toggle('links-empty', links.length === 0);
       linksGrid.innerHTML = '';
-      links.forEach((link, index) => {
-        const item = document.createElement('div');
-        item.className = 'link-item';
-        var resolvedUrl = normalizeLinkUrl(link.url);
-        const favicon = faviconUrl(resolvedUrl);
-        item.innerHTML =
-          '<a class="link-card" draggable="false" href="' + resolvedUrl + '" target="_blank" rel="noopener" title="' + link.name + '">' +
-          (favicon
-            ? '<img class="link-favicon" draggable="false" src="' + favicon + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">' +
-              '<span class="link-icon" style="display:none">' + (link.name.charAt(0) || '?') + '</span>'
-            : '<span class="link-icon">' + (link.name.charAt(0) || '?') + '</span>') +
-          '</a>' +
-          (isEditMode ? '<button type="button" class="btn-delete" data-index="' + index + '" aria-label="删除">×</button>' : '');
-        linksGrid.appendChild(item);
+      links.forEach(function (link, index) {
+        linksGrid.appendChild(createLinkCard(link, index, isEditMode));
       });
       if (isEditMode) {
-        linksGrid.querySelectorAll('.btn-delete').forEach(function (btn) {
-          btn.addEventListener('click', handleLinkDeleteClick);
-        });
-        const addItem = document.createElement('div');
-        addItem.className = 'link-item link-add-btn';
-        addItem.innerHTML =
-          '<button type="button" class="link-add-inner" aria-label="添加"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>';
-        bindLinkAddInnerClick(addItem.querySelector('.link-add-inner'));
-        linksGrid.appendChild(addItem);
+        linksGrid.appendChild(createLinkAddButton());
         linksGrid.querySelectorAll('.link-card').forEach(function (card) {
           const item = card.closest('.link-item');
           if (!item || item.classList.contains('link-add-btn')) return;
@@ -2397,26 +3296,62 @@
       modalTitle.textContent = UI.modalEditLink;
       linkNameInput.value = link.name;
       linkUrlInput.value = link.url;
-      linkModal.classList.add('show');
+      showModalError(linkModalError, '');
+      openOverlayWithFocus(linkModal, linkUrlInput);
     }
 
-    modalCancel.addEventListener('click', () => linkModal.classList.remove('show'));
-    linkModal.addEventListener('click', (e) => {
-      if (e.target === linkModal) linkModal.classList.remove('show');
-    });
-    modalSave.addEventListener('click', () => {
-      const name = linkNameInput.value.trim();
-      const url = normalizeLinkUrl(linkUrlInput.value);
-      if (!name || !url) return;
+    function saveLinkFromModal() {
+      var rawUrl = linkUrlInput.value.trim();
+      if (!rawUrl) {
+        showModalError(linkModalError, UI.linkUrlRequired);
+        return;
+      }
+      if (!isValidLinkUrl(rawUrl)) {
+        showModalError(linkModalError, UI.linkUrlInvalid);
+        return;
+      }
+      const url = normalizeLinkUrl(rawUrl);
+      let name = linkNameInput.value.trim();
+      if (!name) name = autoLinkNameFromUrl(url);
       let links = getLinks();
+      var dup = findDuplicateLink(links, url, editingIndex >= 0 ? editingIndex : null);
+      if (dup) {
+        showModalError(linkModalError, UI.linkDuplicate);
+        return;
+      }
       if (editingIndex >= 0) {
-        links[editingIndex] = { name, url };
+        links[editingIndex] = { name: name, url: url };
       } else {
-        links.push({ name, url });
+        links.push({ name: name, url: url });
       }
       saveLinks(links);
       renderLinks();
-      linkModal.classList.remove('show');
+      closeOverlayRestoreFocus(linkModal);
+      showModalError(linkModalError, '');
+    }
+
+    modalCancel.addEventListener('click', () => {
+      closeOverlayRestoreFocus(linkModal);
+      showModalError(linkModalError, '');
+    });
+    linkModal.addEventListener('click', (e) => {
+      if (e.target === linkModal) {
+        closeOverlayRestoreFocus(linkModal);
+        showModalError(linkModalError, '');
+      }
+    });
+    modalSave.addEventListener('click', saveLinkFromModal);
+    linkUrlInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveLinkFromModal();
+      }
+    });
+    linkNameInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveLinkFromModal();
+      }
     });
 
     renderLinks();
@@ -2497,6 +3432,13 @@
           document.body.style.removeProperty('--theme-t');
           updateThemeToggleLabels();
           updateFollowSystemMenuCheck();
+          if (isFollowSystem()) {
+            var expectedNight = systemPrefersDark();
+            if (document.body.classList.contains('night-mode') !== expectedNight) {
+              document.body.classList.toggle('night-mode', expectedNight);
+              updateThemeToggleLabels();
+            }
+          }
         }
       }
       requestAnimationFrame(tick);
@@ -2534,32 +3476,43 @@
       settingsDropdown.classList.remove('show');
       openEngineModal();
     });
+    document.getElementById('settingsExport').addEventListener('click', function (e) {
+      e.stopPropagation();
+      settingsDropdown.classList.remove('show');
+      exportSettings();
+    });
+    document.getElementById('settingsImport').addEventListener('click', function (e) {
+      e.stopPropagation();
+      settingsDropdown.classList.remove('show');
+      var input = document.getElementById('importSettingsInput');
+      if (input) {
+        input.value = '';
+        input.click();
+      }
+    });
     document.getElementById('settingsRefresh').addEventListener('click', function (e) {
       e.stopPropagation();
       settingsDropdown.classList.remove('show');
       location.reload();
     });
-    var resetConfirmStep = 0;
     var resetConfirmToast = document.getElementById('resetConfirmToast');
     var resetConfirmMsg = document.getElementById('resetConfirmMsg');
     var resetConfirmCancel = document.getElementById('resetConfirmCancel');
     var resetConfirmPrimary = document.getElementById('resetConfirmPrimary');
 
     function hideResetConfirmToast() {
-      resetConfirmStep = 0;
       if (resetConfirmToast) {
         resetConfirmToast.classList.remove('show');
         clearToastInlineFontSizes(resetConfirmToast);
       }
     }
 
-    function showResetConfirmStep1() {
-      resetConfirmStep = 1;
+    function showResetConfirm() {
       if (resetConfirmMsg) {
-        resetConfirmMsg.textContent = '确认所有设置恢复默认吗';
+        resetConfirmMsg.textContent = '恢复默认设置？快捷链接、自定义搜索引擎和页面偏好将被清除';
       }
       if (resetConfirmPrimary) {
-        resetConfirmPrimary.textContent = '继续';
+        resetConfirmPrimary.textContent = '恢复默认';
         resetConfirmPrimary.classList.add('undo-toast-btn-danger');
       }
       if (resetConfirmToast) {
@@ -2568,20 +3521,8 @@
       }
     }
 
-    function showResetConfirmStep2() {
-      resetConfirmStep = 2;
-      if (resetConfirmMsg) {
-        resetConfirmMsg.textContent = '所有个性化设置即将清除';
-      }
-      if (resetConfirmPrimary) {
-        resetConfirmPrimary.textContent = '重置';
-        resetConfirmPrimary.classList.add('undo-toast-btn-danger');
-      }
-      if (resetConfirmToast) scheduleFitSingleLineToast(resetConfirmToast);
-    }
-
     function performResetAllAndReload() {
-      [STORAGE_KEY, STORAGE_ENGINES, STORAGE_ENGINE_CURRENT, STORAGE_NIGHT, STORAGE_FOLLOW_SYSTEM, 'navLang'].forEach(function (key) {
+      [STORAGE_KEY, STORAGE_ENGINES, STORAGE_ENGINE_CURRENT, STORAGE_NIGHT, STORAGE_FOLLOW_SYSTEM, STORAGE_SETUP_HINT, 'navLang'].forEach(function (key) {
         try {
           localStorage.removeItem(key);
         } catch (err) {}
@@ -2592,7 +3533,7 @@
     document.getElementById('settingsResetAll').addEventListener('click', function (e) {
       e.stopPropagation();
       settingsDropdown.classList.remove('show');
-      showResetConfirmStep1();
+      showResetConfirm();
     });
     if (resetConfirmCancel) {
       resetConfirmCancel.addEventListener('click', function () {
@@ -2601,12 +3542,8 @@
     }
     if (resetConfirmPrimary) {
       resetConfirmPrimary.addEventListener('click', function () {
-        if (resetConfirmStep === 1) {
-          showResetConfirmStep2();
-        } else if (resetConfirmStep === 2) {
-          hideResetConfirmToast();
-          performResetAllAndReload();
-        }
+        hideResetConfirmToast();
+        performResetAllAndReload();
       });
     }
     document.addEventListener('click', function (e) {
@@ -2620,19 +3557,18 @@
       toastFitResizeTimer = setTimeout(function () {
         if (undoToast && undoToast.classList.contains('show')) scheduleFitSingleLineToast(undoToast);
         if (resetConfirmToast && resetConfirmToast.classList.contains('show')) scheduleFitSingleLineToast(resetConfirmToast);
+        var infoToastEl = document.getElementById('infoToast');
+        if (infoToastEl && infoToastEl.classList.contains('show')) scheduleFitSingleLineToast(infoToastEl);
       }, 120);
     });
     document.getElementById('settingsFollowSystem').addEventListener('click', function (e) {
       e.stopPropagation();
       if (isFollowSystem()) {
+        var currentlyDark = document.body.classList.contains('night-mode');
+        localStorage.setItem(STORAGE_NIGHT, currentlyDark ? 'on' : 'off');
         setFollowSystem(false);
         updateFollowSystemMenuCheck();
-        var manualDark = getManualThemeIsDark();
-        if (document.body.classList.contains('night-mode') !== manualDark) {
-          runThemeTransition(manualDark, false);
-        } else {
-          updateThemeToggleLabels();
-        }
+        updateThemeToggleLabels();
       } else {
         setFollowSystem(true);
         updateFollowSystemMenuCheck();
@@ -2665,28 +3601,14 @@
       localStorage.setItem(STORAGE_ENGINE_CURRENT, currentEngineId);
       engineLabel.textContent = engine.name;
       engineBtn.setAttribute('title', engine.name);
-      var faviconUrl = getEngineFaviconUrl(engine);
+      var domain = getEngineFaviconDomain(engine);
+      var letter = (engine.name && engine.name.charAt(0)) ? engine.name.charAt(0).toUpperCase() : '?';
       if (engineIconFallback) {
-        engineIconFallback.textContent = (engine.name && engine.name.charAt(0)) ? engine.name.charAt(0).toUpperCase() : '?';
+        engineIconFallback.textContent = letter;
+        engineIconFallback.classList.add('show');
       }
       if (engineIcon) {
-        if (faviconUrl) {
-          engineIconFallback.classList.add('show');
-          engineIcon.style.display = 'none';
-          engineIcon.onerror = function() {
-            engineIcon.style.display = 'none';
-            if (engineIconFallback) engineIconFallback.classList.add('show');
-          };
-          engineIcon.onload = function() {
-            engineIcon.style.display = 'block';
-            if (engineIconFallback) engineIconFallback.classList.remove('show');
-          };
-          engineIcon.src = faviconUrl;
-        } else {
-          engineIcon.src = '';
-          engineIcon.style.display = 'none';
-          if (engineIconFallback) engineIconFallback.classList.add('show');
-        }
+        applyFaviconImg(engineIcon, domain, engineIconFallback, letter);
       }
       document.querySelectorAll('.engine-option').forEach(el => {
         el.classList.toggle('active', el.dataset.engineId === currentEngineId);
@@ -2695,14 +3617,65 @@
       engineBtn.setAttribute('aria-expanded', 'false');
     }
 
+    function createEngineOption(engine, isActive) {
+      var opt = document.createElement('div');
+      opt.className = 'engine-option' + (isActive ? ' active' : '');
+      opt.dataset.engineId = engine.id;
+      opt.setAttribute('role', 'option');
+
+      var iconWrap = document.createElement('span');
+      iconWrap.className = 'engine-option-icon-wrap';
+
+      var img = document.createElement('img');
+      img.className = 'engine-option-icon';
+      img.alt = '';
+
+      var fallback = document.createElement('span');
+      fallback.className = 'engine-option-icon-fallback';
+      var letter = (engine.name && engine.name.charAt(0)) ? engine.name.charAt(0).toUpperCase() : '?';
+      fallback.textContent = letter;
+
+      iconWrap.appendChild(img);
+      iconWrap.appendChild(fallback);
+
+      var nameEl = document.createElement('span');
+      nameEl.className = 'engine-option-name';
+      nameEl.textContent = engine.name || '';
+
+      var checkEl = document.createElement('span');
+      checkEl.className = 'engine-option-check';
+      checkEl.textContent = '✓';
+
+      opt.appendChild(iconWrap);
+      opt.appendChild(nameEl);
+      opt.appendChild(checkEl);
+
+      applyFaviconImg(img, getEngineFaviconDomain(engine), fallback, letter);
+      opt.addEventListener('click', function () { setEngineById(engine.id); });
+      return opt;
+    }
+
     function renderEngineDropdown() {
       const engines = getEngines();
-      engineDropdown.innerHTML = engines.map(e =>
-        '<div class="engine-option" data-engine-id="' + e.id + '" role="option">' + e.name + '</div>'
-      ).join('');
-      engineDropdown.querySelectorAll('.engine-option').forEach(opt => {
-        opt.addEventListener('click', () => setEngineById(opt.dataset.engineId));
+      engineDropdown.innerHTML = '';
+      engines.forEach(function (e) {
+        engineDropdown.appendChild(createEngineOption(e, e.id === currentEngineId));
       });
+      var divider = document.createElement('div');
+      divider.className = 'engine-dropdown-divider';
+      divider.setAttribute('role', 'separator');
+      engineDropdown.appendChild(divider);
+      var manageBtn = document.createElement('button');
+      manageBtn.type = 'button';
+      manageBtn.className = 'engine-dropdown-manage';
+      manageBtn.textContent = UI.engineManage;
+      manageBtn.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        engineDropdown.classList.remove('show');
+        engineBtn.setAttribute('aria-expanded', 'false');
+        openEngineModal();
+      });
+      engineDropdown.appendChild(manageBtn);
       setEngineById(currentEngineId);
     }
 
@@ -2735,9 +3708,7 @@
 
     renderEngineDropdown();
     if (searchInputHint) searchInputHint.textContent = UI.searchHint;
-    var engineNameEl = document.getElementById('engineName');
     var engineUrlEl = document.getElementById('engineUrl');
-    if (engineNameEl) engineNameEl.placeholder = UI.engineNamePlaceholder;
     if (engineUrlEl) engineUrlEl.placeholder = UI.engineUrlPlaceholder;
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
       requestAnimationFrame(function () {
@@ -2746,42 +3717,280 @@
     }
     const engineModal = document.getElementById('engineModal');
     const engineListWrap = document.getElementById('engineListWrap');
-    const engineNameInput = document.getElementById('engineName');
     const engineUrlInput = document.getElementById('engineUrl');
+    const engineResultUrlInput = document.getElementById('engineResultUrl');
+    const engineAddStep1 = document.getElementById('engineAddStep1');
+    const engineAddStep2 = document.getElementById('engineAddStep2');
+    const engineAddError = document.getElementById('engineAddError');
     const engineEditModal = document.getElementById('engineEditModal');
-    const engineEditName = document.getElementById('engineEditName');
     const engineEditUrl = document.getElementById('engineEditUrl');
+    const engineEditResultUrlInput = document.getElementById('engineEditResultUrl');
+    const engineEditStep2 = document.getElementById('engineEditStep2');
+    const engineEditError = document.getElementById('engineEditError');
+    const importSettingsInput = document.getElementById('importSettingsInput');
+    const importModal = document.getElementById('importModal');
+    const importStats = document.getElementById('importStats');
+    const importModalCancel = document.getElementById('importModalCancel');
+    const importModalConfirm = document.getElementById('importModalConfirm');
+    const importModeMerge = document.getElementById('importModeMerge');
+    const importModeOverwrite = document.getElementById('importModeOverwrite');
+    const importModeMergeLabel = document.getElementById('importModeMergeLabel');
+    const importModeOverwriteLabel = document.getElementById('importModeOverwriteLabel');
+    const importOverwriteHint = document.getElementById('importOverwriteHint');
+    const importErrorToast = document.getElementById('importErrorToast');
+    const engineCandidates = document.getElementById('engineCandidates');
+    const spotlightOverlay = document.getElementById('spotlightOverlay');
+    const spotlightBackdrop = document.getElementById('spotlightBackdrop');
+    const spotlightTitle = document.getElementById('spotlightTitle');
+    const spotlightDismiss = document.getElementById('spotlightDismiss');
     let editingEngineIndex = -1;
+    let engineAddInStep2 = false;
+    let engineEditInStep2 = false;
+    let engineAddSiteHost = '';
+    let engineEditSiteHost = '';
+    let pendingImportData = null;
+    let selectedEngineMatch = null;
+
+    function setEngineModalError(el, msgKey) {
+      if (!el) return;
+      if (msgKey === 'site_mismatch') el.textContent = UI.engineSiteMismatch;
+      else if (msgKey === 'unsupported') el.textContent = UI.engineUnsupported;
+      else el.textContent = msgKey || '';
+      if (msgKey) el.classList.add('show');
+      else el.classList.remove('show');
+    }
+
+    function resetEngineAddForm() {
+      engineAddInStep2 = false;
+      engineAddSiteHost = '';
+      selectedEngineMatch = null;
+      if (engineUrlInput) engineUrlInput.value = '';
+      if (engineResultUrlInput) engineResultUrlInput.value = '';
+      if (engineAddStep1) engineAddStep1.style.display = '';
+      if (engineAddStep2) engineAddStep2.classList.remove('show');
+      setEngineModalError(engineAddError, '');
+      renderEngineCandidates('');
+    }
+
+    function resetEngineEditForm() {
+      engineEditInStep2 = false;
+      engineEditSiteHost = '';
+      if (engineEditUrl) engineEditUrl.value = '';
+      if (engineEditResultUrlInput) engineEditResultUrlInput.value = '';
+      if (engineEditStep2) engineEditStep2.classList.remove('show');
+      setEngineModalError(engineEditError, '');
+    }
+
+    function renderEngineCandidates(input) {
+      if (!engineCandidates) return;
+      engineCandidates.innerHTML = '';
+      var trimmed = (input || '').trim();
+      if (!trimmed || engineAddInStep2) {
+        engineCandidates.classList.remove('show');
+        selectedEngineMatch = null;
+        return;
+      }
+      var matches = fuzzyMatchEngines(trimmed);
+      var display = matches.filter(function (m) { return m.score >= 68; }).slice(0, 4);
+      if (!display.length) {
+        engineCandidates.classList.remove('show');
+        selectedEngineMatch = null;
+        return;
+      }
+      engineCandidates.classList.add('show');
+      if (display.length === 1 && display[0].score >= 90) {
+        selectedEngineMatch = display[0];
+      } else if (display.length > 1) {
+        selectedEngineMatch = null;
+      }
+      display.forEach(function (m) {
+        var item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'engine-candidate-item';
+        var nameSpan = document.createElement('span');
+        nameSpan.textContent = m.name;
+        var hint = document.createElement('small');
+        hint.textContent = m.hint || '';
+        item.appendChild(nameSpan);
+        item.appendChild(hint);
+        item.addEventListener('click', function () {
+          addEngineFromMatch(m);
+        });
+        engineCandidates.appendChild(item);
+      });
+    }
+
+    function resolveEngineFromFuzzy(input) {
+      var matches = fuzzyMatchEngines(input);
+      if (!matches.length) return null;
+      if (matches.length === 1 && matches[0].score >= 68) return matches[0];
+      if (matches[0].score >= 92 && matches[0].score - (matches[1] ? matches[1].score : 0) >= 10) return matches[0];
+      return selectedEngineMatch;
+    }
+
+    function resolveEngineConfig(siteUrl, resultUrl, siteHostOverride) {
+      var fuzzy = resolveEngineFromFuzzy(siteUrl);
+      if (fuzzy) {
+        return { name: fuzzy.name, searchUrl: fuzzy.searchUrl };
+      }
+      var site = parseEngineSiteInput(siteUrl);
+      if (!site) return { error: 'invalid' };
+      var known = resolveKnownEngineTemplate(site);
+      if (known) {
+        return { name: known.name, searchUrl: known.searchUrl };
+      }
+      var siteHost = siteHostOverride || site.hostname;
+      if (!resultUrl || !String(resultUrl).trim()) {
+        return { needStep2: true, siteHost: siteHost };
+      }
+      var learned = learnSearchTemplateFromResultUrl(resultUrl, siteHost);
+      if (learned && typeof learned === 'object' && learned.error === 'site_mismatch') {
+        return { error: 'site_mismatch' };
+      }
+      if (!learned || String(learned).indexOf('{q}') === -1) {
+        return { error: 'unsupported' };
+      }
+      return { name: nameFromDomain(siteHost), searchUrl: learned };
+    }
+
+    function handleDuplicateEngine(existing) {
+      setEngineById(existing.id);
+      renderEngineDropdown();
+      engineModal.classList.remove('show');
+      resetEngineAddForm();
+      showInfoToast(UI.engineDuplicateSwitched);
+    }
+
+    function addEngineFromMatch(match) {
+      if (!match) return;
+      const engines = getEngines();
+      var dup = findDuplicateEngine(engines, match.searchUrl);
+      if (dup) {
+        handleDuplicateEngine(dup);
+        return;
+      }
+      const id = 'custom_' + Date.now();
+      engines.push({ id: id, name: match.name, url: match.searchUrl, builtin: false });
+      saveEngines(engines);
+      setEngineById(id);
+      renderEngineDropdown();
+      resetEngineAddForm();
+      openEngineModal();
+    }
+
+    function commitEngineAdd() {
+      var siteUrl = engineUrlInput.value.trim();
+      if (!siteUrl) {
+        showInfoToast('请输入搜索引擎名称或网址');
+        return;
+      }
+      var resultUrl = engineAddInStep2 ? engineResultUrlInput.value.trim() : '';
+      var resolved = resolveEngineConfig(siteUrl, resultUrl, engineAddSiteHost);
+      if (resolved.needStep2) {
+        engineAddInStep2 = true;
+        engineAddSiteHost = resolved.siteHost || (parseEngineSiteInput(siteUrl) && parseEngineSiteInput(siteUrl).hostname) || '';
+        if (engineAddStep2) engineAddStep2.classList.add('show');
+        setEngineModalError(engineAddError, '');
+        return;
+      }
+      if (resolved.error === 'site_mismatch') {
+        setEngineModalError(engineAddError, 'site_mismatch');
+        return;
+      }
+      if (resolved.error === 'unsupported') {
+        setEngineModalError(engineAddError, 'unsupported');
+        return;
+      }
+      if (!resolved.searchUrl) {
+        showInfoToast('请输入有效搜索引擎');
+        return;
+      }
+      const engines = getEngines();
+      var existing = findDuplicateEngine(engines, resolved.searchUrl);
+      if (existing) {
+        handleDuplicateEngine(existing);
+        return;
+      }
+      const id = 'custom_' + Date.now();
+      engines.push({ id: id, name: resolved.name, url: resolved.searchUrl, builtin: false });
+      saveEngines(engines);
+      setEngineById(id);
+      renderEngineDropdown();
+      resetEngineAddForm();
+      openEngineModal();
+    }
+
+    function createEngineListRow(e, i, isDefault, canDelete) {
+      var row = document.createElement('div');
+      row.className = 'engine-list-item';
+      row.dataset.index = String(i);
+
+      var inner = document.createElement('div');
+      inner.className = 'engine-list-item-inner';
+
+      var content = document.createElement('div');
+      content.className = 'engine-list-row-content';
+      content.textContent = e.name || '';
+      if (isDefault) {
+        var small = document.createElement('small');
+        small.style.opacity = '0.8';
+        small.textContent = ' ' + UI.engineDefault;
+        content.appendChild(small);
+      }
+
+      var actions = document.createElement('div');
+      actions.className = 'engine-list-row-actions';
+
+      var btnDefault = document.createElement('button');
+      btnDefault.type = 'button';
+      btnDefault.className = 'btn-engine-action primary';
+      btnDefault.dataset.action = 'default';
+      btnDefault.dataset.engineId = e.id;
+      btnDefault.textContent = UI.engineSetDefault;
+
+      var btnEdit = document.createElement('button');
+      btnEdit.type = 'button';
+      btnEdit.className = 'btn-engine-action';
+      btnEdit.dataset.action = 'edit';
+      btnEdit.dataset.index = String(i);
+      btnEdit.textContent = UI.engineEdit;
+
+      actions.appendChild(btnDefault);
+      actions.appendChild(btnEdit);
+      if (canDelete) {
+        var btnDelete = document.createElement('button');
+        btnDelete.type = 'button';
+        btnDelete.className = 'btn-engine-action danger';
+        btnDelete.dataset.action = 'delete';
+        btnDelete.dataset.index = String(i);
+        btnDelete.textContent = UI.engineDelete;
+        actions.appendChild(btnDelete);
+      }
+
+      inner.appendChild(content);
+      inner.appendChild(actions);
+      row.appendChild(inner);
+      return row;
+    }
 
     function openEngineModal() {
       const engines = getEngines();
-      const defaultLabel = UI.engineDefault;
-      const setDefaultText = UI.engineSetDefault;
-      const editText = UI.engineEdit;
-      const deleteText = UI.engineDelete;
       const canDelete = engines.length > 1;
 
-      engineListWrap.innerHTML = engines.map((e, i) => {
-        const isDefault = e.id === currentEngineId;
-        return '<div class="engine-list-item" data-index="' + i + '">' +
-          '<div class="engine-list-item-inner">' +
-          '<div class="engine-list-row-content">' + e.name + (isDefault ? ' <small style="opacity:0.8">' + defaultLabel + '</small>' : '') + '</div>' +
-          '<div class="engine-list-row-actions">' +
-          '<button type="button" class="btn-engine-action primary" data-action="default" data-engine-id="' + e.id + '">' + setDefaultText + '</button>' +
-          '<button type="button" class="btn-engine-action" data-action="edit" data-index="' + i + '">' + editText + '</button>' +
-          (canDelete ? '<button type="button" class="btn-engine-action danger" data-action="delete" data-index="' + i + '">' + deleteText + '</button>' : '') +
-          '</div></div></div>';
-      }).join('');
+      engineListWrap.innerHTML = '';
+      engines.forEach(function (e, i) {
+        engineListWrap.appendChild(createEngineListRow(e, i, e.id === currentEngineId, canDelete));
+      });
 
-      engineListWrap.querySelectorAll('[data-action="default"]').forEach(btn => {
-        btn.addEventListener('click', (e) => { e.stopPropagation(); setEngineById(btn.dataset.engineId); openEngineModal(); });
+      engineListWrap.querySelectorAll('[data-action="default"]').forEach(function (btn) {
+        btn.addEventListener('click', function (ev) { ev.stopPropagation(); setEngineById(btn.dataset.engineId); openEngineModal(); });
       });
-      engineListWrap.querySelectorAll('[data-action="edit"]').forEach(btn => {
-        btn.addEventListener('click', (e) => { e.stopPropagation(); openEngineEditModal(parseInt(btn.dataset.index, 10)); });
+      engineListWrap.querySelectorAll('[data-action="edit"]').forEach(function (btn) {
+        btn.addEventListener('click', function (ev) { ev.stopPropagation(); openEngineEditModal(parseInt(btn.dataset.index, 10)); });
       });
-      engineListWrap.querySelectorAll('[data-action="delete"]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
+      engineListWrap.querySelectorAll('[data-action="delete"]').forEach(function (btn) {
+        btn.addEventListener('click', function (ev) {
+          ev.stopPropagation();
           const list = getEngines();
           if (list.length <= 1) return;
           const idx = parseInt(btn.dataset.index, 10);
@@ -2793,12 +4002,12 @@
           openEngineModal();
         });
       });
-      engineListWrap.querySelectorAll('.engine-list-item').forEach(row => {
-        let startX = 0;
-        row.addEventListener('touchstart', function(ev) {
+      engineListWrap.querySelectorAll('.engine-list-item').forEach(function (row) {
+        var startX = 0;
+        row.addEventListener('touchstart', function (ev) {
           startX = ev.touches[0].clientX;
         }, { passive: true });
-        row.addEventListener('touchend', function(ev) {
+        row.addEventListener('touchend', function (ev) {
           const endX = ev.changedTouches[0].clientX;
           const diff = startX - endX;
           if (Math.abs(diff) > 40) {
@@ -2807,52 +4016,428 @@
         }, { passive: true });
       });
 
-      engineNameInput.value = '';
-      engineUrlInput.value = '';
-      engineModal.classList.add('show');
+      resetEngineAddForm();
+      openOverlayWithFocus(engineModal, engineUrlInput);
     }
 
     function openEngineEditModal(index) {
       const engines = getEngines();
       const e = engines[index];
+      if (!e) return;
       editingEngineIndex = index;
-      engineEditName.value = e.name;
-      engineEditUrl.value = e.url;
-      engineEditModal.classList.add('show');
+      resetEngineEditForm();
+      engineEditUrl.value = getEngineDomain(e.url) || e.url;
+      openOverlayWithFocus(engineEditModal, engineEditUrl);
     }
 
-    document.getElementById('engineModalCancel').addEventListener('click', () => engineModal.classList.remove('show'));
-    engineModal.addEventListener('click', (e) => { if (e.target === engineModal) engineModal.classList.remove('show'); });
-    document.getElementById('engineModalAdd').addEventListener('click', () => {
-      const name = engineNameInput.value.trim();
-      const url = engineUrlInput.value.trim();
-      if (!url) return;
-      const resolved = normalizeEngineInput(url, name || undefined);
-      if (!resolved || !resolved.searchUrl) return;
-      const engines = getEngines();
-      const id = 'custom_' + Date.now();
-      engines.push({ id, name: resolved.name, url: resolved.searchUrl, builtin: false });
-      saveEngines(engines);
-      setEngineById(id);
-      renderEngineDropdown();
-      openEngineModal();
+    document.getElementById('engineModalCancel').addEventListener('click', function () {
+      closeOverlayRestoreFocus(engineModal);
+      resetEngineAddForm();
+    });
+    engineModal.addEventListener('click', function (e) {
+      if (e.target === engineModal) {
+        closeOverlayRestoreFocus(engineModal);
+        resetEngineAddForm();
+      }
+    });
+    document.getElementById('engineModalAdd').addEventListener('click', commitEngineAdd);
+    engineUrlInput.addEventListener('input', function () {
+      selectedEngineMatch = null;
+      renderEngineCandidates(engineUrlInput.value);
+    });
+    engineUrlInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commitEngineAdd();
+      }
+    });
+    engineResultUrlInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commitEngineAdd();
+      }
     });
 
-    document.getElementById('engineEditCancel').addEventListener('click', () => engineEditModal.classList.remove('show'));
-    engineEditModal.addEventListener('click', (e) => { if (e.target === engineEditModal) engineEditModal.classList.remove('show'); });
-    document.getElementById('engineEditSave').addEventListener('click', () => {
-      const name = engineEditName.value.trim();
-      const url = engineEditUrl.value.trim();
-      if (!name || !url || !url.includes('{q}') || editingEngineIndex < 0) return;
+    document.getElementById('engineEditCancel').addEventListener('click', function () {
+      closeOverlayRestoreFocus(engineEditModal);
+      resetEngineEditForm();
+    });
+    engineEditModal.addEventListener('click', function (e) {
+      if (e.target === engineEditModal) {
+        closeOverlayRestoreFocus(engineEditModal);
+        resetEngineEditForm();
+      }
+    });
+    function commitEngineEdit() {
+      if (editingEngineIndex < 0) return;
+      var siteUrl = engineEditUrl.value.trim();
+      if (!siteUrl) {
+        showInfoToast('请输入搜索引擎名称或网址');
+        return;
+      }
+      var resultUrl = engineEditInStep2 ? engineEditResultUrlInput.value.trim() : '';
+      var resolved = resolveEngineConfig(siteUrl, resultUrl, engineEditSiteHost);
+      if (resolved.needStep2) {
+        engineEditInStep2 = true;
+        engineEditSiteHost = resolved.siteHost || (parseEngineSiteInput(siteUrl) && parseEngineSiteInput(siteUrl).hostname) || '';
+        if (engineEditStep2) engineEditStep2.classList.add('show');
+        setEngineModalError(engineEditError, '');
+        return;
+      }
+      if (resolved.error === 'site_mismatch') {
+        setEngineModalError(engineEditError, 'site_mismatch');
+        return;
+      }
+      if (resolved.error === 'unsupported') {
+        setEngineModalError(engineEditError, 'unsupported');
+        return;
+      }
+      if (!resolved.searchUrl) return;
       const engines = getEngines();
-      engines[editingEngineIndex] = { ...engines[editingEngineIndex], name, url };
+      var existingDup = findDuplicateEngine(engines, resolved.searchUrl, editingEngineIndex);
+      if (existingDup) {
+        closeOverlayRestoreFocus(engineEditModal);
+        resetEngineEditForm();
+        handleDuplicateEngine(existingDup);
+        return;
+      }
+      var existing = engines[editingEngineIndex];
+      engines[editingEngineIndex] = {
+        id: existing.id,
+        name: resolved.name || existing.name,
+        url: resolved.searchUrl,
+        builtin: existing.builtin === true
+      };
       saveEngines(engines);
       renderEngineDropdown();
       setEngineById(engines[editingEngineIndex].id);
-      engineEditModal.classList.remove('show');
+      closeOverlayRestoreFocus(engineEditModal);
+      resetEngineEditForm();
       openEngineModal();
+    }
+    document.getElementById('engineEditSave').addEventListener('click', commitEngineEdit);
+    engineEditUrl.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); commitEngineEdit(); }
     });
+    engineEditResultUrlInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); commitEngineEdit(); }
+    });
+
+    function buildExportPayload() {
+      return {
+        app: 'WeiMinal Navigation',
+        version: 1,
+        data: {
+          links: getLinks(),
+          engines: getEngines(),
+          currentEngineId: currentEngineId,
+          nightMode: localStorage.getItem(STORAGE_NIGHT) === 'on' ? 'on' : 'off',
+          followSystem: isFollowSystem() ? '1' : '0'
+        }
+      };
+    }
+
+    function validateImportPayload(obj) {
+      if (!obj || typeof obj !== 'object') return null;
+      if (obj.app !== 'WeiMinal Navigation') return null;
+      if (obj.version !== 1) return null;
+      var data = obj.data;
+      if (!data || typeof data !== 'object') return null;
+      if (!Array.isArray(data.links)) return null;
+      if (!Array.isArray(data.engines) || !data.engines.length) return null;
+      for (var i = 0; i < data.links.length; i++) {
+        var link = data.links[i];
+        if (!link || typeof link.name !== 'string' || typeof link.url !== 'string') return null;
+      }
+      for (var j = 0; j < data.engines.length; j++) {
+        var eng = data.engines[j];
+        if (!eng || typeof eng.id !== 'string' || typeof eng.name !== 'string' || typeof eng.url !== 'string') return null;
+        if (eng.url.indexOf('{q}') === -1) return null;
+      }
+      if (typeof data.currentEngineId !== 'string') return null;
+      if (data.nightMode !== 'on' && data.nightMode !== 'off') return null;
+      if (data.followSystem !== '0' && data.followSystem !== '1') return null;
+      if (!data.engines.some(function (e) { return e.id === data.currentEngineId; })) return null;
+      return data;
+    }
+
+    function mergeImportData(backup) {
+      var currentLinks = getLinks();
+      var currentEngines = getEngines();
+      var urlSet = Object.create(null);
+      currentLinks.forEach(function (l) { urlSet[normalizeLinkUrlForCompare(l.url)] = true; });
+      var mergedLinks = currentLinks.slice();
+      backup.links.forEach(function (l) {
+        var key = normalizeLinkUrlForCompare(l.url);
+        if (!urlSet[key]) {
+          urlSet[key] = true;
+          mergedLinks.push({ name: l.name, url: l.url });
+        }
+      });
+      var engKeys = Object.create(null);
+      var idSet = Object.create(null);
+      currentEngines.forEach(function (e) {
+        engKeys[engineIdentityKey(e.url)] = true;
+        idSet[e.id] = true;
+      });
+      var mergedEngines = currentEngines.slice();
+      backup.engines.forEach(function (e) {
+        var key = engineIdentityKey(e.url);
+        if (engKeys[key]) return;
+        var item = { id: e.id, name: e.name, url: e.url, builtin: e.builtin === true };
+        if (idSet[item.id]) {
+          item.id = 'custom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        }
+        idSet[item.id] = true;
+        engKeys[key] = true;
+        mergedEngines.push(item);
+      });
+      saveLinks(mergedLinks);
+      saveEngines(mergedEngines);
+      location.reload();
+    }
+
+    function applyImportData(data, mode) {
+      if (mode === 'merge') {
+        mergeImportData(data);
+        return;
+      }
+      saveLinks(data.links);
+      saveEngines(data.engines);
+      localStorage.setItem(STORAGE_ENGINE_CURRENT, data.currentEngineId);
+      localStorage.setItem(STORAGE_NIGHT, data.nightMode);
+      localStorage.setItem(STORAGE_FOLLOW_SYSTEM, data.followSystem);
+      location.reload();
+    }
+
+    function showImportError(msg) {
+      if (!importErrorToast) return;
+      var msgEl = document.getElementById('importErrorMsg');
+      if (msgEl && msg) msgEl.textContent = msg;
+      importErrorToast.classList.add('show');
+      setTimeout(function () {
+        importErrorToast.classList.remove('show');
+      }, 3200);
+    }
+
+    function hideImportModal() {
+      pendingImportData = null;
+      if (importModal) importModal.classList.remove('show');
+    }
+
+    function updateImportModeUi() {
+      var isOverwrite = importModeOverwrite && importModeOverwrite.checked;
+      if (importModeMergeLabel) importModeMergeLabel.classList.toggle('selected', !isOverwrite);
+      if (importModeOverwriteLabel) importModeOverwriteLabel.classList.toggle('selected', !!isOverwrite);
+      if (importOverwriteHint) importOverwriteHint.classList.toggle('show', !!isOverwrite);
+    }
+
+    function promptImportConfirm(data) {
+      pendingImportData = data;
+      if (importStats) {
+        importStats.textContent = '快捷链接：' + data.links.length + ' 个\n搜索引擎：' + data.engines.length + ' 个';
+      }
+      if (importModeMerge) importModeMerge.checked = true;
+      updateImportModeUi();
+      openOverlayWithFocus(importModal, importModalConfirm);
+    }
+
+    function handleImportText(text) {
+      var obj;
+      try {
+        obj = JSON.parse(text);
+      } catch (e) {
+        showImportError('无法识别此配置文件');
+        return;
+      }
+      var data = validateImportPayload(obj);
+      if (!data) {
+        showImportError('无法识别此配置文件');
+        return;
+      }
+      promptImportConfirm(data);
+    }
+
+    function exportSettings() {
+      var payload = buildExportPayload();
+      var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = EXPORT_FILENAME;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 0);
+    }
+
+    if (importModeMerge) importModeMerge.addEventListener('change', updateImportModeUi);
+    if (importModeOverwrite) importModeOverwrite.addEventListener('change', updateImportModeUi);
+    if (importModalCancel) {
+      importModalCancel.addEventListener('click', hideImportModal);
+    }
+    if (importModalConfirm) {
+      importModalConfirm.addEventListener('click', function () {
+        if (!pendingImportData) return;
+        var mode = importModeOverwrite && importModeOverwrite.checked ? 'overwrite' : 'merge';
+        var data = pendingImportData;
+        hideImportModal();
+        applyImportData(data, mode);
+      });
+    }
+    if (importModal) {
+      importModal.addEventListener('click', function (e) {
+        if (e.target === importModal) hideImportModal();
+      });
+    }
+
+    if (importSettingsInput) {
+      importSettingsInput.addEventListener('change', function () {
+        var file = importSettingsInput.files && importSettingsInput.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          handleImportText(reader.result);
+        };
+        reader.readAsText(file);
+        importSettingsInput.value = '';
+      });
+    }
+
+    document.body.addEventListener('dragover', function (e) {
+      if (!e.dataTransfer) return;
+      if (Array.from(e.dataTransfer.types || []).indexOf('Files') === -1) return;
+      e.preventDefault();
+    });
+    document.body.addEventListener('drop', function (e) {
+      var files = e.dataTransfer && e.dataTransfer.files;
+      if (!files || !files.length) return;
+      var file = files[0];
+      if (!/\.json$/i.test(file.name) && file.type !== 'application/json') return;
+      e.preventDefault();
+      var reader = new FileReader();
+      reader.onload = function () {
+        handleImportText(reader.result);
+      };
+      reader.readAsText(file);
+    });
+
+    function dismissSpotlightGuide() {
+      if (!spotlightOverlay || !spotlightOverlay.classList.contains('show')) return;
+      spotlightOverlay.classList.remove('show');
+      spotlightOverlay.setAttribute('aria-hidden', 'true');
+      try { localStorage.setItem(STORAGE_SETUP_HINT, '1'); } catch (err) {}
+    }
+
+    function initSpotlightGuide() {
+      if (!spotlightOverlay) return;
+      try {
+        if (localStorage.getItem(STORAGE_SETUP_HINT) === '1') return;
+      } catch (err) {}
+      var isTouchPrimary = false;
+      try { isTouchPrimary = window.matchMedia('(pointer: coarse)').matches; } catch (err2) {}
+      if (spotlightTitle) {
+        spotlightTitle.textContent = isTouchPrimary ? '长按空白处管理页面' : '右键空白处管理页面';
+      }
+      spotlightOverlay.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(function () {
+        spotlightOverlay.classList.add('show');
+      });
+    }
+
+    if (spotlightDismiss) spotlightDismiss.addEventListener('click', dismissSpotlightGuide);
+    if (spotlightBackdrop) spotlightBackdrop.addEventListener('click', dismissSpotlightGuide);
+
+    function handleGlobalEscape() {
+      if (spotlightOverlay && spotlightOverlay.classList.contains('show')) {
+        dismissSpotlightGuide();
+        return true;
+      }
+      if (engineEditModal && engineEditModal.classList.contains('show')) {
+        closeOverlayRestoreFocus(engineEditModal);
+        resetEngineEditForm();
+        return true;
+      }
+      if (engineModal && engineModal.classList.contains('show')) {
+        closeOverlayRestoreFocus(engineModal);
+        resetEngineAddForm();
+        return true;
+      }
+      if (linkModal && linkModal.classList.contains('show')) {
+        closeOverlayRestoreFocus(linkModal);
+        showModalError(linkModalError, '');
+        return true;
+      }
+      if (importModal && importModal.classList.contains('show')) {
+        hideImportModal();
+        return true;
+      }
+      if (resetConfirmToast && resetConfirmToast.classList.contains('show')) {
+        hideResetConfirmToast();
+        return true;
+      }
+      if (engineDropdown && engineDropdown.classList.contains('show')) {
+        engineDropdown.classList.remove('show');
+        engineBtn.setAttribute('aria-expanded', 'false');
+        return true;
+      }
+      if (settingsDropdown && settingsDropdown.classList.contains('show')) {
+        settingsDropdown.classList.remove('show');
+        return true;
+      }
+      if (quickLinksWrap && quickLinksWrap.classList.contains('edit-mode')) {
+        setEditMode(false);
+        return true;
+      }
+      return false;
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        if (handleGlobalEscape()) e.preventDefault();
+        return;
+      }
+      if (e.key !== 'Enter' || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (importModal && importModal.classList.contains('show')) {
+        e.preventDefault();
+        if (importModalConfirm) importModalConfirm.click();
+        return;
+      }
+      if (resetConfirmToast && resetConfirmToast.classList.contains('show')) {
+        e.preventDefault();
+        if (resetConfirmPrimary) resetConfirmPrimary.click();
+      }
+    });
+
+    (function initPagePvCounter() {
+      var el = document.getElementById('vercount_value_page_pv');
+      if (!el) return;
+      if (DEBUG_PV) {
+        console.log('[WeiMinal PV] element found:', !!el);
+        window.addEventListener('load', function () {
+          console.log('[WeiMinal PV] vercount script tag:', !!document.querySelector('script[src*="vercount"]'));
+          setTimeout(function () {
+            console.log('[WeiMinal PV] current value:', el.textContent);
+          }, 3000);
+        });
+      }
+      function sanitizePvText() {
+        var v = (el.textContent || '').trim();
+        if (!v || /^loading$/i.test(v)) {
+          el.textContent = '—';
+        }
+      }
+      sanitizePvText();
+      try {
+        var obs = new MutationObserver(sanitizePvText);
+        obs.observe(el, { childList: true, characterData: true, subtree: true });
+      } catch (err) {}
+      setTimeout(sanitizePvText, 12000);
+    })();
+
+    initSpotlightGuide();
   </script>
-  <script defer src="https://cn.vercount.one/js"></script>
+  <script defer src="https://events.vercount.one/js"></script>
 </body>
 </html>
